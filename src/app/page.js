@@ -6,8 +6,6 @@ import styled from "styled-components"
 
 export default function Home() {
 
-  const [open, setOpen] = useState(false)
-
   return (
     <Container>
       <ContainerLogin>
