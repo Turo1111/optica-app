@@ -1,0 +1,74 @@
+import React from 'react'
+import styled from 'styled-components'
+import {FaInfo} from 'react-icons/fa'
+import {MdEdit} from 'react-icons/md'
+
+export default function ItemProducto({handleOpenModal}) {
+  return (
+    <Container onClick={handleOpenModal} >
+        <div >
+            <Title color={process.env.TEXT_COLOR}>Lentes de Contacto Acuvue OASYS con Hydraclear Plus</Title>
+            <div style={{display: 'flex'}}>
+                <Tag color={process.env.TEXT_COLOR}>
+                    <label style={{fontWeight: 500}}>Categoria :</label> Lentes
+                </Tag>
+                <Tag color={process.env.TEXT_COLOR}>
+                    <label style={{fontWeight: 500}}>Marca :</label> Rayban
+                </Tag>
+                <Tag color={process.env.TEXT_COLOR}>
+                    <label style={{fontWeight: 500}}>Color :</label> Azul
+                </Tag>
+                <Tag color={process.env.TEXT_COLOR}>
+                    <label style={{fontWeight: 500}}>Precio general :</label> $15600
+                </Tag>
+            </div>
+        </div>
+        <div style={{display: 'flex'}}>
+            <IconWrapper bg={'#8294C4'} hover={'#637195'}>
+                <FaInfo/>
+            </IconWrapper>
+            <IconWrapper bg={'#FCDDB0'} hover={'#E1BA82'}>
+                <MdEdit/>
+            </IconWrapper>
+        </div>
+    </Container>
+  )
+}
+
+const Container = styled.li `
+    list-style: none;
+    padding: 10px 25px;
+    margin: 10px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    :hover{
+        background-color: #F9F5F6;
+    }
+`
+
+const Title = styled.h2 `
+    font-size: 18px;
+    font-weight: 600;
+    margin: 5px;
+    color: ${props=>props.color};
+`
+const Tag = styled.label `
+    font-size: 16px;
+    padding: 0 15px;
+    color: ${props=>props.color};
+`
+
+const IconWrapper = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 35px;
+    color: #fff;
+    background-color: ${props=>props.bg || '#fff'};
+    padding: 15px;
+    :hover{
+        background-color: ${props=>props.hover || '#d9d9d9'};
+    }
+`
