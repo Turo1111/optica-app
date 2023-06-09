@@ -1,0 +1,111 @@
+import React, { useState } from 'react'
+import ToggleSwitch from '../ToggleSwitch'
+import { useFormik } from 'formik'
+import Input from '../Input'
+import Button from '../Button'
+import { useAppDispatch } from '@/redux/hook'
+import { setAlert } from '@/redux/alertSlice'
+import apiClient from '@/utils/client'
+
+export default function NewEditRol({item , edit, handleClose}) {
+
+  const dispatch = useAppDispatch();
+
+  const formik = useFormik({
+      initialValues: initialValues(item),
+      validateOnChange: false,
+      onSubmit: (formValue) => {
+        if (item) {
+          apiClient.patch(`/roles/${item._id}`, formValue)
+          .then(r=>{
+            handleClose()
+            dispatch(setAlert({
+              message: 'Rol modificado correctamente',
+              type: 'success'
+            }))
+          })
+          .catch(e=>dispatch(setAlert({
+            message: 'Hubo un error inesperado, revisa los datos',
+            type: 'error'
+          })))
+        }else{
+          apiClient.post(`/roles`, formValue)
+          .then(r=>{
+            handleClose()
+            dispatch(setAlert({
+              message: 'Rol creado correctamente',
+              type: 'success'
+            }))
+          })
+          .catch(e=>dispatch(setAlert({
+            message: 'Hubo un error inesperado, revisa los datos',
+            type: 'error'
+          })))
+        }
+        
+      }
+  })
+
+  return (
+    <div>
+        <Input label={"Descripcion"} type='text' name='descripcion' value={formik.values.descripcion} onChange={formik.handleChange} required={true}  />
+        <div>
+            {
+                 formik.values.permisos.map((permiso, index) => (
+                    <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 15}} key={index} >
+                        <label>{permiso.screen}</label>
+                        <ToggleSwitch checked={permiso.lectura} onChange={(newValue)=>formik.setFieldValue(`permisos[${index}].lectura`, newValue)} label={'Lectura'} />
+                        <ToggleSwitch checked={permiso.escritura} onChange={(newValue)=>formik.setFieldValue(`permisos[${index}].escritura`, newValue)} label={'Escritura'} />
+                    </div>
+                ))
+            }
+            
+        </div>
+        <div style={{display: 'flex', justifyContent: 'space-around', marginTop: 15}}>
+            <Button text={'CANCELAR'} onClick={handleClose}/>
+            <Button text={'ACEPTAR'} onClick={formik.handleSubmit}/>
+        </div>
+    </div>
+  )
+}
+
+function initialValues (item) {
+    if (item) {
+        return item
+    }
+    return {
+        descripcion: '',
+        permisos: [
+            {
+              screen: 'Venta',
+              lectura: false,
+              escritura: false,
+            },
+            {
+              screen: 'Cliente',
+              lectura: false,
+              escritura: false,
+            },
+            {
+              screen: 'Producto',
+              lectura: false,
+              escritura: false,
+            },
+            {
+              screen: 'Gestion',
+              lectura: false,
+              escritura: false,
+            },
+            {
+              screen: 'Contabilidad',
+              lectura: false,
+              escritura: false,
+            },
+            {
+              screen: 'Compra',
+              lectura: false,
+              escritura: false,
+            },
+        ],
+    }
+} 

@@ -3,31 +3,31 @@ import styled from 'styled-components'
 import {FaInfo} from 'react-icons/fa'
 import {MdEdit} from 'react-icons/md'
 
-export default function ItemProducto({handleOpenModal}) {
+export default function ItemProducto({handleOpenInfoModal, item, handleOpenEditModal}) {
   return (
-    <Container onClick={handleOpenModal} >
+    <Container >
         <div >
-            <Title color={process.env.TEXT_COLOR}>Lentes de Contacto Acuvue OASYS con Hydraclear Plus</Title>
+            <Title color={process.env.TEXT_COLOR}>{item.descripcion}</Title>
             <div style={{display: 'flex'}}>
                 <Tag color={process.env.TEXT_COLOR}>
-                    <label style={{fontWeight: 500}}>Categoria :</label> Lentes
+                    <label style={{fontWeight: 500}}>Categoria :</label> {item.categoria}
                 </Tag>
                 <Tag color={process.env.TEXT_COLOR}>
-                    <label style={{fontWeight: 500}}>Marca :</label> Rayban
+                    <label style={{fontWeight: 500}}>Marca :</label> {item.marca || 'No definido'}
                 </Tag>
                 <Tag color={process.env.TEXT_COLOR}>
-                    <label style={{fontWeight: 500}}>Color :</label> Azul
+                    <label style={{fontWeight: 500}}>Color :</label> {item.color || 'No definido'}
                 </Tag>
                 <Tag color={process.env.TEXT_COLOR}>
-                    <label style={{fontWeight: 500}}>Precio general :</label> $15600
+                    <label style={{fontWeight: 500}}>Precio general :</label> ${item.precioGeneral || 'No definido'}
                 </Tag>
             </div>
         </div>
         <div style={{display: 'flex'}}>
-            <IconWrapper bg={'#8294C4'} hover={'#637195'}>
+            <IconWrapper bg={'#8294C4'} hover={'#637195'}  onClick={handleOpenInfoModal}>
                 <FaInfo/>
             </IconWrapper>
-            <IconWrapper bg={'#FCDDB0'} hover={'#E1BA82'}>
+            <IconWrapper bg={'#FCDDB0'} hover={'#E1BA82'} onClick={handleOpenEditModal}>
                 <MdEdit/>
             </IconWrapper>
         </div>

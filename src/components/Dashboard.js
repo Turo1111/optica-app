@@ -11,32 +11,35 @@ export default function Dashboard({children}) {
    const pathname = usePathname()
 
   return (
-    <Container bg={process.env.BLUE_COLOR} >
-        <Logo>LOGOTIPO</Logo>
-        <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-            <UserContainer >
-                <IconWrapper>
-                    <BsPersonSquare/>
-                </IconWrapper>
-                <div>
-                    <User>Zurita Matias</User>
-                    <LogOut>Cerrar Sesion</LogOut>
-                </div>
-            </UserContainer>
-        </div>
-        <ListaMenu>
-            {itemsLi.map((item,index) => (
-                <Link href={"/"+(item.toLowerCase().split(' ').join(''))} style={{textDecoration: 'none'}}>
-                    <ItemMenu key={index} 
-                        isActive={"/"+(item.toLowerCase().split(' ').join('')) === pathname ? true : false}
-                        bc={process.env.BLUE_COLOR}
-                    >
-                        {item}
-                    </ItemMenu>
-                </Link>
-            ))}
-        </ListaMenu>
-    </Container>
+    <div style={{display: 'flex'}}>
+        <Container bg={process.env.BLUE_COLOR} >
+            <Logo>LOGOTIPO</Logo>
+            <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                <UserContainer >
+                    <IconWrapper>
+                        <BsPersonSquare/>
+                    </IconWrapper>
+                    <div>
+                        <User>Zurita Matias</User>
+                        <LogOut>Cerrar Sesion</LogOut>
+                    </div>
+                </UserContainer>
+            </div>
+            <ListaMenu>
+                {itemsLi.map((item,index) => (
+                    <Link href={"/dashboard/"+(item.toLowerCase().split(' ').join(''))} style={{textDecoration: 'none'}}>
+                        <ItemMenu key={index} 
+                            isActive={"/"+(item.toLowerCase().split(' ').join('')) === pathname ? true : false}
+                            bc={process.env.BLUE_COLOR}
+                        >
+                            {item}
+                        </ItemMenu>
+                    </Link>
+                ))}
+            </ListaMenu>
+        </Container>
+        {children}
+    </div>
   )
 }
 

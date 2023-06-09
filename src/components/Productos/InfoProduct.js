@@ -1,0 +1,135 @@
+import Image from 'next/image'
+import React, { useEffect, useState } from 'react'
+import styled from 'styled-components'
+import Table from '../Table'
+import NewStock from '../NewStock'
+import { useAppDispatch } from '@/redux/hook'
+import { setAlert } from '@/redux/alertSlice'
+import apiClient from '@/utils/client'
+import useBarcodeGenerator from '@/hooks/useBarcodeGenerator'
+
+export default function InfoProduct({item}) {
+
+    const [openNewStock, setOpenNewStock] = useState(false)
+    const [data, setData] = useState([])
+    const dispatch = useAppDispatch();
+
+    const { barcodeValue, barcodeDataURL, generateBarcode } = useBarcodeGenerator(item?.codigo);
+
+
+    useEffect(()=>{
+        if (item) {
+            apiClient.get(`/stock/${item?._id}`)
+              .then(r=>{
+                console.log("aca",r.data.body)
+                setData(r.data.body)
+              })
+              .catch(e=>dispatch(setAlert({
+                message: 'Hubo un error inesperado al cargar los empleados',
+                type: 'error'
+              })))
+        }
+    },[item])
+
+  return (
+    <div>
+        <Descripcion color={process.env.TEXT_COLOR}>{item?.descripcion}</Descripcion>
+        <div style={{display: 'flex', justifyContent: 'space-around', backgroundColor: '#F9F5F6', padding: 15, borderRadius: 20}} >
+            <div>
+                <Caracteristicas color={process.env.TEXT_COLOR}>
+                    <label style={{fontWeight: 600}}>Categoria :</label> {item?.categoria}
+                </Caracteristicas>
+                <Caracteristicas color={process.env.TEXT_COLOR}>
+                    <label style={{fontWeight: 600}}>Numeracion :</label> {item?.numeracion || 'No definido'}
+                </Caracteristicas>
+                <Caracteristicas color={process.env.TEXT_COLOR}>
+                    <label style={{fontWeight: 600}}>Alto :</label> {item?.alto || 'No definido'}
+                </Caracteristicas>
+                <Caracteristicas color={process.env.TEXT_COLOR}>
+                    <label style={{fontWeight: 600}}>Ancho :</label> {item?.ancho || 'No definido'}
+                </Caracteristicas>
+                <Caracteristicas color={process.env.TEXT_COLOR}>
+                    <label style={{fontWeight: 600}}>Marca :</label> {item?.marca || 'No definido'}
+                </Caracteristicas>
+                <Caracteristicas color={process.env.TEXT_COLOR}>
+                    <label style={{fontWeight: 600}}>Color :</label> {item?.color || 'No definido'}
+                </Caracteristicas>
+                <Caracteristicas color={process.env.TEXT_COLOR}>
+                    <label style={{fontWeight: 600}}>Precio general :</label> ${item?.precioGeneral || 'No definido'}
+                </Caracteristicas>
+                <Caracteristicas color={process.env.TEXT_COLOR}>
+                    <label style={{fontWeight: 600}}>Codigo :</label> {item?.codigo || 'No definido'}
+                </Caracteristicas>  
+                <div>
+                    <img src={barcodeDataURL} alt="Barcode" />
+                </div>
+            </div>
+            <div style={{display: 'flex', justifyContent: 'center', width: 250, height: 250, padding: 15, backgroundColor: '#d9d9d9', position: 'relative', overflow: 'hidden', borderRadius: 15}} >
+              <Image
+                  src={`${process.env.URL_BD}/${item?.imagen}`}
+                  alt="Imagen del producto"
+                  fill
+              />
+            </div>
+        </div>
+        <ButtonNewStock color={process.env.BLUE_COLOR} onClick={()=>setOpenNewStock(true)}>+ NUEVO STOCK</ButtonNewStock>
+        {
+            openNewStock ? 
+                <NewStock eClose={()=>setOpenNewStock(false)} idProducto={item._id} />
+            :
+                <Table columns={columns} data={data} />
+        }
+    </div>
+  )
+}
+
+const Caracteristicas = styled.h6 `
+    font-size: 14px;
+    font-weight: 400;
+    margin: 15px 0;
+    color: ${props=>props.color};
+`
+
+const Descripcion = styled.h2 `
+    font-size: 18px;
+    font-weight: 600;
+    margin: 15px 5px;
+    color: ${props=>props.color};
+`
+const TableHeader = styled.li `
+    border-radius: 3px;
+    padding: 25px 30px;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+    color: ${props=>props.color};
+    background-color: #F9F5F6;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+`
+
+const TableRow = styled.li `
+    border-radius: 3px;
+    padding: 25px 30px;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+    color: ${props=>props.color};
+    background-color: #ffffff;
+`
+
+const ButtonNewStock = styled.h6 `
+    font-size: 14px;
+    font-weight: 400;
+    margin: 15px 5px;
+    color: ${props=>props.color};
+    cursor: pointer;
+`
+
+const columns = [
+    { label: 'Sucursal', field: 'sucursal', width: '40%' },
+    { label: 'Stock', field: 'cantidad', width: '10%' },
+    { label: 'Precio Efectivo', field: 'precioEfectivo', width: '25%', align: 'center' },
+    { label: 'Precio Lista', field: 'precioLista', width: '25%', align: 'center' },
+  ];

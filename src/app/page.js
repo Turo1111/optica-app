@@ -1,21 +1,29 @@
   'use client'
 import Button from "@/components/Button"
 import Input from "@/components/Input"
-import { useState } from "react"
+import { setAlert } from "@/redux/alertSlice"
+import { useAppDispatch } from "@/redux/hook"
 import styled from "styled-components"
 
 export default function Home() {
+
+  const dispatch = useAppDispatch();
 
   return (
     <Container>
       <ContainerLogin>
         <Logo>OPTICA</Logo>
-        <div style={{}} >
+        <div>
           <Input label={'Usuario'}/>
           <Input type="password" label={'Contraseña'}/>
         </div>
         <div style={{display: "flex", justifyContent: "center"}} >
-          <Button text={'INGRESAR'} onClick={()=>console.log("ingresar")} width="150px" to={'/productos'}/>
+          <Button text={'INGRESAR'} onClick={()=>{
+            dispatch(setAlert({
+              message: 'Ingresado correctamente',
+              type: 'success'
+            }))
+          }} width="150px" to={'/dashboard/productos'}/>
         </div>
       </ContainerLogin>
     </Container>
@@ -34,7 +42,7 @@ const ContainerLogin = styled.div `
   width: 350px;
   background-color: #F9F5F6;
   border-radius: 15px;
-  padding: 15px 0;
+  padding: 15px;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 `
 

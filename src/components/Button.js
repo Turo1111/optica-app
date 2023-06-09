@@ -2,7 +2,7 @@ import Link from 'next/link'
 import React from 'react'
 import styled from 'styled-components'
 
-export default function Button({text, onClick, width='auto', to}) {
+export default function Button({text, onClick, width='auto', to, type=''}) {
 
   
   return (
@@ -15,7 +15,7 @@ export default function Button({text, onClick, width='auto', to}) {
           </Btn>
         </Link>
         :
-        <Btn onClick={onClick} bg={process.env.BLUE_COLOR} width={width} >
+        <Btn onClick={onClick} bg={process.env.BLUE_COLOR} width={width} type={type} >
           {text}
         </Btn>
       }

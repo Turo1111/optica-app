@@ -1,10 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import {IoIosArrowDown} from 'react-icons/io'
-import Button from './Button';
 import apiClient from '@/utils/client';
-import { useFormik } from 'formik';
-const io = require('socket.io-client')
 
 
 const InputWrapper = styled.div`
@@ -93,13 +90,13 @@ const Modal = styled.ul`
     padding: 0;
 `
 
-const InputSelectAdd = ({type = 'text', label, value, onChange, name, edit = false}) => {
+const InputSelect = ({type = 'text', label, value, onChange, name}) => {
   const [isActive, setIsActive] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
   const [openList, setOpenList] = useState(false)
   const [data, setData] = useState([])
 
-  const [inputValue, setInputValue] = useState(edit ? value : '')
+  const [inputValue, setInputValue] = useState('')
 
   const handleInputChange = (event) => {
     setInputValue(event.target.value);
@@ -123,19 +120,6 @@ const InputSelectAdd = ({type = 'text', label, value, onChange, name, edit = fal
     setIsFocused(true);
   }
 
-  const cleanValue = () => {
-    onChange('')
-    setInputValue('')
-    setIsActive(false);
-    setIsFocused(false);
-  }
-
-  const postValue = () => {
-    apiClient.post(`/${name}`, {descripcion: inputValue})
-    .then((r)=>onChange(r.data.body._id))
-    .catch(e=>console.log(e))
-  }
-
   useEffect(()=>{
     apiClient.get(`/${name}`)
     .then((r)=>setData(r.data.body))
@@ -143,62 +127,26 @@ const InputSelectAdd = ({type = 'text', label, value, onChange, name, edit = fal
   },[name])
 
   useEffect(()=>{
-    const socket = io('http://localhost:3001')
-    socket.on(`${name}`, (socket) => {
-      setData((prevData)=>{
-        const exist = prevData.find(elem => elem._id === socket.res._id )
-        if (exist) {
-          return prevData.map((item) =>
-          item._id === socket.res._id ? socket.res : item
-        )
-        }
-        return [...prevData, socket.res]
-      })
-    })
-    return () => {
-      socket.disconnect();
-    }; 
+    console.log(data)
   },[data])
 
-  useEffect(()=>{
-    if (value === '') {
-      setInputValue('')
-      setIsActive(false);
-      setIsFocused(false);
-    }else {
-      setIsActive(true);
-      setIsFocused(true);
-    }
-  },[value])
 
   return (
     <InputWrapper>
-      <InputLabel active={isActive} color={process.env.TEXT_COLOR} >{type === 'date' ? '' : label}</InputLabel>
-      <InputField
-        color={process.env.TEXT_COLOR}
-        type={type}
-        value={inputValue} 
-        onChange={handleInputChange}
-        name={name}
-        onFocus={handleInputFocus}
-        onBlur={handleInputBlur}
-        focused={isFocused}
-      />
-      {
-        inputValue === '' ?                                
+        <InputLabel active={isActive} color={process.env.TEXT_COLOR} >{type === 'date' ? '' : label}</InputLabel>
+        <InputField
+            color={process.env.TEXT_COLOR}
+            type={type}
+            value={inputValue} 
+            onChange={handleInputChange}
+            name={name}
+            onFocus={handleInputFocus}
+            onBlur={handleInputBlur}
+            focused={isFocused}
+        />                                
         <IconWrapper color={process.env.TEXT_COLOR} onClick={()=>setOpenList(!openList)}>
             <IoIosArrowDown/>
         </IconWrapper>
-        :
-         value === '' ? 
-          <IconWrapper onClick={postValue}>
-              <Tag color={process.env.TEXT_COLOR}>Agregar</Tag>
-          </IconWrapper>
-          :
-          <IconWrapper onClick={cleanValue}>
-              <Tag color={process.env.TEXT_COLOR}>Quitar</Tag>
-          </IconWrapper>
-      }
       {
         openList && 
         <Modal>
@@ -212,4 +160,4 @@ const InputSelectAdd = ({type = 'text', label, value, onChange, name, edit = fal
   );
 };
 
-export default InputSelectAdd;
+export default InputSelect;

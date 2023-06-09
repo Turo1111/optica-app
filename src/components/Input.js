@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 const InputWrapper = styled.div`
@@ -40,14 +40,10 @@ const InputField = styled.input`
   }
 `;
 
-const Input = ({type = 'text', label}) => {
-  const [inputValue, setInputValue] = useState('');
+const Input = ({type = 'text', label, value, onChange, name, required}) => {
+
   const [isActive, setIsActive] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
-
-  const handleInputChange = (event) => {
-    setInputValue(event.target.value);
-  };
 
   const handleInputFocus = () => {
     setIsActive(true);
@@ -55,18 +51,29 @@ const Input = ({type = 'text', label}) => {
   };
 
   const handleInputBlur = () => {
-    setIsActive(inputValue !== '');
+    setIsActive(value !== '');
     setIsFocused(false);
   };
 
+  useEffect(()=>{
+    if (value === '') {
+      setIsActive(false);
+      setIsFocused(false);
+    }else{
+      setIsActive(true);
+      setIsFocused(true);
+    }
+  },[value])
+
   return (
     <InputWrapper>
-      <InputLabel active={isActive} color={process.env.TEXT_COLOR} >{type === 'date' ? '' : label}</InputLabel>
+      <InputLabel active={isActive} color={process.env.TEXT_COLOR} >{type === 'date' ? '' : label}{required && ' - Campo requerido' }</InputLabel>
       <InputField
         color={process.env.TEXT_COLOR}
+        name={name}
         type={type}
-        value={inputValue}
-        onChange={handleInputChange}
+        value={value}
+        onChange={onChange}
         onFocus={handleInputFocus}
         onBlur={handleInputBlur}
         focused={isFocused}

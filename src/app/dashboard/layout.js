@@ -12,17 +12,14 @@ const inter = Inter({
 
 export default function RootLayout({children}) {
 
-  /* store.subscribe(() => {
-    const storeNow = store.getState()
-    console.log("cambia store", storeNow)
-  }) */
-
   return (
     <html lang="en" className={inter.className}>
       <body style={{margin: 0}} >
         <Provider store={store} >
           <Alerta/>
-          {children}
+          <Dashboard>
+            {children}
+          </Dashboard>
         </Provider>
       </body>
     </html>
