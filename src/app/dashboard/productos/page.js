@@ -1,5 +1,6 @@
 'use client'
 import Button from '@/components/Button'
+import EmptyList from '@/components/EmptyList'
 import InputSearch from '@/components/InputSearch'
 import ItemProducto from '@/components/ItemProducto'
 import Loading from '@/components/Loading'
@@ -7,6 +8,11 @@ import Modal from '@/components/Modal'
 import EditProduct from '@/components/Productos/EditProduct'
 import InfoProduct from '@/components/Productos/InfoProduct'
 import NewProduct from '@/components/Productos/NewProduct'
+import { useInputValue } from '@/hooks/useInputValue'
+import { useSearch } from '@/hooks/useSearch'
+import { setAlert } from '@/redux/alertSlice'
+import { useAppDispatch, useAppSelector } from '@/redux/hook'
+import { getUser } from '@/redux/userSlice'
 import apiClient from '@/utils/client'
 import React, { useEffect, useState } from 'react'
 const io = require('socket.io-client')
@@ -18,10 +24,32 @@ export default function Productos() {
   const [productSelected, setProductSelected] = useState(undefined)
   const [data, setData] = useState([])
   const [loading, setLoading] = useState(false)
+  const user = useAppSelector(getUser);
+  const [permission, setPermission] = useState(false)
+  const dispatch = useAppDispatch();
+
+  const search = useInputValue('','')
+
+  const tag = ["descripcion", "codigo"]
+
+  const listProducto = useSearch(search.value, tag, data)
+
+  useEffect(()=>{
+      user.roles.permisos.forEach((permiso) => {
+          if (permiso.screen.toLowerCase() === 'producto') {
+            if (!permiso.lectura) {
+              return setPermission(false)
+            }
+            return setPermission(true)
+          }
+      });
+  },[])
+
+    
 
   useEffect(() => {
     setLoading(true)
-    apiClient.get('/productoa')
+    apiClient.get('/producto')
       .then(r => {
         setData((prevData)=>{
           setLoading(false)
@@ -49,6 +77,23 @@ export default function Productos() {
     }; 
   },[data])
 
+  useEffect(()=>{
+    if (openNewProduct || openEditProduct) {
+      user.roles.permisos.forEach((permiso) => {
+        if (permiso.screen.toLowerCase() === 'producto') {
+          if (!permiso.escritura) {
+            setOpenNewProduct(false)
+            setOpenEditProduct(false)
+            dispatch(setAlert({
+              message: 'NO TIENES PERMISOS DE USUARIO',
+              type: 'error'
+            }))
+          }
+        }
+      });
+    }
+  },[openNewProduct, openEditProduct])
+
   const handleOpenInfoModal = (item) => {
     setProductSelected(item)
     setOpenInfoProduct(true)
@@ -66,37 +111,43 @@ export default function Productos() {
     setOpenEditProduct(false)
   }
 
+  if (!permission) {
+    return <h2>no tiene permisos</h2>
+  }
+
   return (
     <div style={{ display: 'flex', flex: 1 }}>
       <div style={{ flex: 1, display: 'flex', padding: 15 }}>
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: 25, backgroundColor: '#EEEEEE', borderRadius: 25 }} >
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <InputSearch placeholder={'Buscar Productos'} />
-            <Button text={'NUEVO'} onClick={() => setOpenNewProduct(true)} />
-          </div>
           {
             loading ? 
             <div style={{ display: 'flex', flex: 1, justifyContent: 'center', alignItems: 'center'}}>
               <Loading/>
             </div> 
             :
-            <ul style={{ flex: 1, backgroundColor: '#fff', borderRadius: 15, padding: 0 }}>
-              {
-                data.length === 0 ?
-                <h2>No hay productos creados</h2>
-                :
-                data.map((item, index) => (
-                  <ItemProducto
-                    key={index}
-                    handleOpenInfoModal={() => handleOpenInfoModal(item)}
-                    handleOpenEditModal={() => handleOpenEditModal(item)}
-                    item={item}
-                  >
-                    {item}
-                  </ItemProducto>
-                ))
-              }
-            </ul>
+            <>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <InputSearch placeholder={'Buscar Productos'} {...search} />
+                <Button text={'NUEVO'} onClick={() => setOpenNewProduct(true)} />
+              </div>
+              <ul style={{ flex: 1, backgroundColor: '#fff', borderRadius: 15, padding: 0 }}>
+                {
+                  listProducto.length === 0 ?
+                  <EmptyList onClick={() => setOpenNewProduct(true)} />
+                  :
+                  listProducto.map((item, index) => (
+                    <ItemProducto
+                      key={index}
+                      handleOpenInfoModal={() => handleOpenInfoModal(item)}
+                      handleOpenEditModal={() => handleOpenEditModal(item)}
+                      item={item}
+                    >
+                      {item}
+                    </ItemProducto>
+                  ))
+                }
+              </ul>
+            </>
           }
         </div>
       </div>

@@ -11,6 +11,9 @@ const nextConfig = {
     images: {
         domains: ['localhost'],
     },
+    compiler: {
+        styledComponents: true
+    }
 }
 
 module.exports = nextConfig

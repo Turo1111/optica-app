@@ -52,7 +52,7 @@ const LoadingText = styled.p`
   color: #8294C4;
 `;
 
-const Loading = () => {
+const Loading = ({text = 'Cargando...'}) => {
   return (
     <LoadingContainer>
       <LoadingItem>
@@ -61,7 +61,7 @@ const Loading = () => {
         <Spinner></Spinner>
         <Spinner></Spinner>
       </LoadingItem>
-      <LoadingText>Cargando...</LoadingText>
+      <LoadingText>{text}</LoadingText>
     </LoadingContainer>
   );
 };

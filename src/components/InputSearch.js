@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 
 const InputField = styled.input`
-  width: 80%;
+  width: ${props => props.width};
   height: 30px;
   padding: 5px 10px;
   font-size: 16px;
@@ -16,21 +16,16 @@ const InputField = styled.input`
   }
 `;
 
-const InputSearch = ({placeholder}) => {
-  const [inputValue, setInputValue] = useState('');
-
-  const handleInputChange = (event) => {
-    setInputValue(event.target.value);
-  };
-
+const InputSearch = ({placeholder, width = '80%', value, onChange}) => {
 
   return (
       <InputField
         color={process.env.TEXT_COLOR}
         type={'text'}
-        value={inputValue}
-        onChange={handleInputChange}
+        value={value}
+        onChange={onChange}
         placeholder={placeholder}
+        width={width}
       />
   );
 };

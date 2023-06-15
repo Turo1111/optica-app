@@ -1,6 +1,5 @@
 'use client'
 import Alerta from '@/components/Alerta';
-import Dashboard from '@/components/Dashboard';
 import { store } from '@/redux/store';
 import { Inter } from 'next/font/google';
 import { Provider } from 'react-redux';
@@ -11,11 +10,6 @@ const inter = Inter({
 });
 
 export default function RootLayout({children}) {
-
-  /* store.subscribe(() => {
-    const storeNow = store.getState()
-    console.log("cambia store", storeNow)
-  }) */
 
   return (
     <html lang="en" className={inter.className}>

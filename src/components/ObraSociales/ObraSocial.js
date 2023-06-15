@@ -4,8 +4,13 @@ import Button from '../Button'
 import Table from '../Table'
 import NewEditObraSocial from './NewEditObraSocial'
 import apiClient from '@/utils/client'
-import { useAppDispatch } from '@/redux/hook'
+import { useAppDispatch, useAppSelector } from '@/redux/hook'
 import { setAlert } from '@/redux/alertSlice'
+import Loading from '../Loading'
+import styled, { keyframes } from 'styled-components'
+import { getUser } from '@/redux/userSlice'
+import { useInputValue } from '@/hooks/useInputValue'
+import { useSearch } from '@/hooks/useSearch'
 const io = require('socket.io-client')
 
 export default function ObraSocial() {
@@ -15,10 +20,21 @@ export default function ObraSocial() {
     const [openNewEdit, setOpenNewEdit] = useState(false)
     const [selected, setSelected] = useState(null)
     const [data, setData] = useState([])
+    const [loading, setLoading] = useState(false)
+    const user = useAppSelector(getUser);
+    const search = useInputValue('','')
+
+    const tag = ["descripcion"]
+
+    const listObras = useSearch(search.value, tag, data)
 
     useEffect(()=>{
+      setLoading(true)
       apiClient.get('/obrasocial')
-      .then(r=>setData(r.data.body))
+      .then(r=>{
+        setData(r.data.body)
+        setLoading(false)
+      })
       .catch(e=>dispatch(setAlert({
         message: 'Hubo un error inesperado al cargar las obras sociales',
         type: 'error'
@@ -26,10 +42,13 @@ export default function ObraSocial() {
     },[])
 
     useEffect(()=>{
+      
       const socket = io('http://localhost:3001')
       socket.on('obraSocial', (obraSocial) => {
+        setLoading(true)
         setData((prevData)=>{
           const exist = prevData.find(elem => elem._id === obraSocial.res._id )
+          setLoading(false)
           if (exist) {
             return prevData.map((item) =>
             item._id === obraSocial.res._id ? obraSocial.res : item
@@ -43,27 +62,59 @@ export default function ObraSocial() {
       }; 
     },[data])
 
+    useEffect(()=>{
+      if (openNewEdit) {
+        user.roles.permisos.forEach((permiso) => {
+          if (permiso.screen.toLowerCase() === 'gestion') {
+            if (!permiso.escritura) {
+              dispatch(setAlert({
+                message: 'NO TIENES PERMISOS DE USUARIO',
+                type: 'error'
+              }))
+              setOpenNewEdit(false)
+            }
+          }
+        });
+      }
+    },[openNewEdit])
+
   return (
     <div style={{flex: 1, display: 'flex', flexDirection: 'column', padding: 25}} >
-      <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
-        <InputSearch placeholder={'Buscar Obra Social'} />
-        <Button text={'NUEVO'} onClick={()=>setOpenNewEdit(true)} />
-      </div> 
       {
-        openNewEdit ? 
-        <NewEditObraSocial handleClose={()=>{
-            setSelected(null)
-            setOpenNewEdit(false)
-        }} 
-        item={selected} edit={selected && true} 
-        />
+        loading ?
+          <div style={{ display: 'flex', flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+            <Loading/>
+          </div> 
         :
-        <Table data={data} columns={columns} onClick={(item)=>{
-            setSelected(item)
-            setOpenNewEdit(true)
-        }} 
-        />
-        
+        <>
+          <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
+            <InputSearch placeholder={'Buscar Obra Social'} {...search} />
+            <Button text={'NUEVO'} onClick={()=>{
+                setSelected(undefined)
+                setOpenNewEdit(true)
+              }} />
+          </div> 
+          {
+            openNewEdit ? 
+            <AnimatedContainer1>
+              <NewEditObraSocial handleClose={()=>{
+                  setSelected(null)
+                  setOpenNewEdit(false)
+              }} 
+              item={selected} edit={selected && true} 
+              />
+            </AnimatedContainer1>
+            :
+            <AnimatedContainer2>
+              <Table data={listObras} columns={columns} onClick={(item)=>{
+                  setSelected(item)
+                  setOpenNewEdit(true)
+              }} 
+              />
+            </AnimatedContainer2>
+            
+          }
+        </>
       }
     </div>
   )
@@ -71,24 +122,23 @@ export default function ObraSocial() {
 
 const columns = [
     { label: 'Obra social', field: 'descripcion', width: '30%' },
-    { label: 'Tipo', field: 'tipoDescuento', width: '15%' },
     { label: 'Descuento', field: 'cantidadDescuento', width: '20%', align: 'center' },
     { label: 'Devolucion', field: 'cantidadDevuelta', width: '20%', align: 'center' },
-    { label: 'Productos', field: 'cantidadProductos', width: '15%', align: 'center' },
-  ];
+];
 
-{/* <ul style={{flex: 1, backgroundColor: '#fff', borderRadius: 15, padding: 0 }}>
-            {
-                [1,2,3,4,5].map((item,index)=>(
-                    <li key={index} style={{ listStyle: 'none', margin: '15px' }}>
-                        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: '10px 0'}} >
-                            <label style={{fontSize: 18, fontWeight: 500, color: `${process.env.TEXT_COLOR}`}}>Enrique Serra</label>
-                        </div>
-                        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: '10px 0'}} >
-                            <label style={{fontSize: 16, fontWeight: 400, color: `${process.env.TEXT_COLOR}`}}>Tipo descuento : porcentaje</label>
-                            <label style={{fontSize: 16, fontWeight: 400, color: `${process.env.TEXT_COLOR}`}}>31613561616</label>
-                        </div>
-                    </li>
-                ))
-            }
-        </ul> */}
+const fadeAnimation = keyframes`
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+`;
+
+const AnimatedContainer1 = styled.div`
+  animation: ${fadeAnimation} 0.5s ease-in-out;
+`;
+
+const AnimatedContainer2 = styled.div`
+  animation: ${fadeAnimation} 0.5s ease-in-out;
+`;

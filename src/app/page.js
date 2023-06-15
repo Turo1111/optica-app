@@ -1,29 +1,68 @@
   'use client'
-import Button from "@/components/Button"
-import Input from "@/components/Input"
+import Button from "@/components/Button";
+import Input from "@/components/Input";
+import useLocalStorage from "@/hooks/useLocalStorage";
 import { setAlert } from "@/redux/alertSlice"
 import { useAppDispatch } from "@/redux/hook"
+import { setUser } from "@/redux/userSlice";
+import apiClient from "@/utils/client";
+import { useFormik } from "formik";
+import { useRouter } from "next/navigation";
 import styled from "styled-components"
 
 export default function Home() {
 
   const dispatch = useAppDispatch();
+  const router = useRouter();
+  const [valueStorage , setValue] = useLocalStorage("user", "")
+
+  const formik = useFormik({
+    initialValues: {
+      usuario: '',
+      password: ''
+    },
+    validateOnChange: false,
+    onSubmit: (formValue) => {
+      apiClient.post('/empleado/login', formValue)
+      .then(r=>{
+        const user = {
+          usuario: r.data.data[0].usuario,
+          token: r.data.token,
+          sucursal: r.data.data[0].sucursal,
+          roles: r.data.data[0].roles
+        }
+        dispatch(setAlert({
+          message: 'Ingresado correctamente',
+          type: 'success'
+        }))
+        dispatch(setUser(user))
+        setValue(user)
+        router.push('/dashboard/productos')
+      })
+      .catch(e=>console.log(e))
+        
+    }
+  })
+
+  if (valueStorage.token) {
+    dispatch(setAlert({
+      message: 'USUARIO YA LOGEADO',
+      type: 'success'
+    }))
+    dispatch(setUser(valueStorage))
+    router.push('/dashboard/productos')
+  }
 
   return (
     <Container>
       <ContainerLogin>
         <Logo>OPTICA</Logo>
         <div>
-          <Input label={'Usuario'}/>
-          <Input type="password" label={'Contraseña'}/>
+          <Input label={'Usuario'} name={'usuario'} value={formik.values.usuario} onChange={formik.handleChange}/>
+          <Input type="password" name={'password'} label={'Contraseña'} value={formik.values.password} onChange={formik.handleChange}/>
         </div>
         <div style={{display: "flex", justifyContent: "center"}} >
-          <Button text={'INGRESAR'} onClick={()=>{
-            dispatch(setAlert({
-              message: 'Ingresado correctamente',
-              type: 'success'
-            }))
-          }} width="150px" to={'/dashboard/productos'}/>
+          <Button text={'INGRESAR'} onClick={formik.handleSubmit} width="150px"/>
         </div>
       </ContainerLogin>
     </Container>

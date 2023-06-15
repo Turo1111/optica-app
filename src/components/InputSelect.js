@@ -90,13 +90,20 @@ const Modal = styled.ul`
     padding: 0;
 `
 
-const InputSelect = ({type = 'text', label, value, onChange, name}) => {
+const LoadingText = styled.p`
+  margin-top: 10px;
+  font-size: 16px;
+  color: #8294C4;
+`;
+
+const InputSelect = ({type = 'text', label, value, onChange, name, edit = false}) => {
   const [isActive, setIsActive] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
   const [openList, setOpenList] = useState(false)
   const [data, setData] = useState([])
+  const [loading, setLoading] = useState(false)
 
-  const [inputValue, setInputValue] = useState('')
+  const [inputValue, setInputValue] = useState(edit ? value : '')
 
   const handleInputChange = (event) => {
     setInputValue(event.target.value);
@@ -121,8 +128,12 @@ const InputSelect = ({type = 'text', label, value, onChange, name}) => {
   }
 
   useEffect(()=>{
+    setLoading(true)
     apiClient.get(`/${name}`)
-    .then((r)=>setData(r.data.body))
+    .then((r)=>{
+      setData(r.data.body)
+      setLoading(false)
+    })
     .catch(e=>console.log(e))
   },[name])
 
@@ -130,6 +141,17 @@ const InputSelect = ({type = 'text', label, value, onChange, name}) => {
     console.log(data)
   },[data])
 
+  useEffect(()=>{
+    console.log(name, value, edit)
+    if (value === '') {
+      setInputValue('')
+      setIsActive(false);
+      setIsFocused(false);
+    }else {
+      setIsActive(true);
+      setIsFocused(true);
+    }
+  },[value])
 
   return (
     <InputWrapper>
@@ -147,15 +169,22 @@ const InputSelect = ({type = 'text', label, value, onChange, name}) => {
         <IconWrapper color={process.env.TEXT_COLOR} onClick={()=>setOpenList(!openList)}>
             <IoIosArrowDown/>
         </IconWrapper>
-      {
-        openList && 
-        <Modal>
-            {
-                data.length === 0 ? 'Vacio' : 
-                data.map((item, index)=> <ItemModal key={index} color={process.env.TEXT_COLOR} onClick={()=>addValue(item._id, item.descripcion)} >{item.descripcion}</ItemModal>)
-            }
-        </Modal>
-      }
+        {
+          openList && (
+            <Modal>
+              {loading ? 
+                <LoadingText>Cargando...</LoadingText>
+              :
+                <>
+                  {
+                      data.length === 0 ? 'Vacio' : 
+                      data.map((item, index)=> <ItemModal key={index} color={process.env.TEXT_COLOR} onClick={()=>addValue(item._id, item.descripcion)} >{item.descripcion}</ItemModal>)
+                  }
+                </>
+              }
+            </Modal>
+          )
+        }
     </InputWrapper>
   );
 };

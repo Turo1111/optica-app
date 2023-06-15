@@ -1,14 +1,36 @@
 import React from 'react'
 import styled from 'styled-components'
 import {BsPersonSquare} from 'react-icons/bs'
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { clearUser, getUser, setUser } from '@/redux/userSlice';
+import { useAppDispatch, useAppSelector } from '@/redux/hook';
+import { setAlert } from '@/redux/alertSlice';
+import UserNotLogged from './UserNotLogged';
+import useLocalStorage from '@/hooks/useLocalStorage';
 
-const itemsLi = ["GENERAR VENTA", "VENTAS", "PRODUCTOS", "CLIENTES", "COMPRAS", "GESTION", "CONTABILIDAD"]
+/* const itemsLi = ["GENERAR VENTA", "VENTA", "PRODUCTO", "CLIENTE", "COMPRA", "GESTION", "CONTABILIDAD"] */
+const itemsLi = ["PRODUCTOS","GESTION", "CLIENTES"]
 
 export default function Dashboard({children}) {
 
    const pathname = usePathname()
+   const user = useAppSelector(getUser);
+   const dispatch = useAppDispatch();
+   const router = useRouter()
+   const [valueStorage , setValue, clearValue] = useLocalStorage("user", "")
+
+    if (valueStorage.token) {
+        dispatch(setAlert({
+          message: 'USUARIO YA LOGEADO',
+          type: 'success'
+        }))
+        dispatch(setUser(valueStorage))
+    }
+
+    if (!valueStorage.token) {
+        return <UserNotLogged/>
+    }
 
   return (
     <div style={{display: 'flex'}}>
@@ -20,22 +42,30 @@ export default function Dashboard({children}) {
                         <BsPersonSquare/>
                     </IconWrapper>
                     <div>
-                        <User>Zurita Matias</User>
-                        <LogOut>Cerrar Sesion</LogOut>
+                        <User>{user?.usuario || 'NO DEFINIDO'}</User>
+                        <LogOut onClick={()=>{
+                            dispatch(clearUser())
+                            clearValue()
+                            setTimeout(() => {
+                                router.push('/')
+                            }, 2000);
+                        }} >Cerrar Sesion</LogOut>
                     </div>
                 </UserContainer>
             </div>
             <ListaMenu>
-                {itemsLi.map((item,index) => (
-                    <Link href={"/dashboard/"+(item.toLowerCase().split(' ').join(''))} style={{textDecoration: 'none'}}>
-                        <ItemMenu key={index} 
-                            isActive={"/"+(item.toLowerCase().split(' ').join('')) === pathname ? true : false}
-                            bc={process.env.BLUE_COLOR}
-                        >
-                            {item}
-                        </ItemMenu>
-                    </Link>
-                ))}
+                {itemsLi.map((item,index) => {
+                    return(
+                        <Link href={"/dashboard/"+(item.toLowerCase().split(' ').join(''))} style={{textDecoration: 'none'}}>
+                            <ItemMenu key={index} 
+                                isActive={"/"+(item.toLowerCase().split(' ').join('')) === pathname ? true : false}
+                                bc={process.env.BLUE_COLOR}
+                            >
+                                {item}
+                            </ItemMenu>
+                        </Link>
+                    )
+                })}
             </ListaMenu>
         </Container>
         {children}

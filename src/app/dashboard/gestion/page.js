@@ -5,8 +5,10 @@ import Modal from '@/components/Modal'
 import ObraSocial from '@/components/ObraSociales/ObraSocial'
 import Roles from '@/components/Roles/Roles'
 import Sucursales from '@/components/Sucursales/Sucursales'
+import { useAppSelector } from '@/redux/hook'
+import { getUser } from '@/redux/userSlice'
 import Link from 'next/link'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { MdArrowForwardIos } from 'react-icons/md'
 import styled from 'styled-components'
 
@@ -16,6 +18,23 @@ export default function Gestion() {
     const [openObraSocial, setOpenObraSocial] = useState(false)
     const [openUsuarios, setOpenUsuarios] = useState(false)
     const [openRoles, setOpenRoles] = useState(false)
+    const user = useAppSelector(getUser);
+    const [permission, setPermission] = useState(false)
+
+    useEffect(()=>{
+        user.roles.permisos.forEach((permiso) => {
+            if (permiso.screen.toLowerCase() === 'gestion') {
+              if (!permiso.lectura) {
+                return setPermission(false)
+              }
+              return setPermission(true)
+            }
+        });
+    },[])
+
+    if (!permission) {
+        return <h2>no tiene permisos</h2>
+    }
 
   return (
     <div style={{display: 'flex', flex: 1}} >

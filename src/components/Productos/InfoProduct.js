@@ -7,22 +7,25 @@ import { useAppDispatch } from '@/redux/hook'
 import { setAlert } from '@/redux/alertSlice'
 import apiClient from '@/utils/client'
 import useBarcodeGenerator from '@/hooks/useBarcodeGenerator'
+import Loading from '../Loading'
 
 export default function InfoProduct({item}) {
 
     const [openNewStock, setOpenNewStock] = useState(false)
     const [data, setData] = useState([])
     const dispatch = useAppDispatch();
+    const [loading, setLoading] = useState(false)
 
-    const { barcodeValue, barcodeDataURL, generateBarcode } = useBarcodeGenerator(item?.codigo);
+    const { barcodeDataURL } = useBarcodeGenerator(item?.codigo);
 
 
     useEffect(()=>{
+        setLoading(true)
         if (item) {
             apiClient.get(`/stock/${item?._id}`)
               .then(r=>{
-                console.log("aca",r.data.body)
                 setData(r.data.body)
+                setLoading(false)
               })
               .catch(e=>dispatch(setAlert({
                 message: 'Hubo un error inesperado al cargar los empleados',
@@ -72,12 +75,21 @@ export default function InfoProduct({item}) {
               />
             </div>
         </div>
-        <ButtonNewStock color={process.env.BLUE_COLOR} onClick={()=>setOpenNewStock(true)}>+ NUEVO STOCK</ButtonNewStock>
         {
-            openNewStock ? 
-                <NewStock eClose={()=>setOpenNewStock(false)} idProducto={item._id} />
+            loading ?
+              <div style={{ display: 'flex', flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+                <Loading/>
+              </div> 
             :
-                <Table columns={columns} data={data} />
+            <>
+                <ButtonNewStock color={process.env.BLUE_COLOR} onClick={()=>setOpenNewStock(true)}>+ NUEVO STOCK</ButtonNewStock>
+                {
+                    openNewStock ? 
+                        <NewStock eClose={()=>setOpenNewStock(false)} idProducto={item._id} />
+                    :
+                        <Table columns={columns} data={data} />
+                }
+            </>
         }
     </div>
   )

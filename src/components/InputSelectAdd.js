@@ -93,11 +93,18 @@ const Modal = styled.ul`
     padding: 0;
 `
 
+const LoadingText = styled.p`
+  margin-top: 10px;
+  font-size: 16px;
+  color: #8294C4;
+`;
+
 const InputSelectAdd = ({type = 'text', label, value, onChange, name, edit = false}) => {
   const [isActive, setIsActive] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
   const [openList, setOpenList] = useState(false)
   const [data, setData] = useState([])
+  const [loading, setLoading] = useState(false)
 
   const [inputValue, setInputValue] = useState(edit ? value : '')
 
@@ -137,8 +144,12 @@ const InputSelectAdd = ({type = 'text', label, value, onChange, name, edit = fal
   }
 
   useEffect(()=>{
+    setLoading(true)
     apiClient.get(`/${name}`)
-    .then((r)=>setData(r.data.body))
+    .then((r)=>{
+      setLoading(false)
+      setData(r.data.body)
+    })
     .catch(e=>console.log(e))
   },[name])
 
@@ -202,10 +213,17 @@ const InputSelectAdd = ({type = 'text', label, value, onChange, name, edit = fal
       {
         openList && 
         <Modal>
-            {
-                data.length === 0 ? 'Vacio' : 
-                data.map((item, index)=> <ItemModal key={index} color={process.env.TEXT_COLOR} onClick={()=>addValue(item._id, item.descripcion)} >{item.descripcion}</ItemModal>)
-            }
+          {
+            loading ? 
+              <LoadingText>Cargando...</LoadingText>
+            :
+            <>
+              {
+                  data.length === 0 ? 'Vacio' : 
+                  data.map((item, index)=> <ItemModal key={index} color={process.env.TEXT_COLOR} onClick={()=>addValue(item._id, item.descripcion)} >{item.descripcion}</ItemModal>)
+              }
+            </>
+          }
         </Modal>
       }
     </InputWrapper>

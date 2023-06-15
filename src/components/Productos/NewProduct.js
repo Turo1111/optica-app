@@ -4,15 +4,22 @@ import Button from '../Button'
 import InputSelectAdd from '../InputSelectAdd'
 import { useFormik } from 'formik'
 import apiClient from '@/utils/client'
+import useBarcodeGenerator from '@/hooks/useBarcodeGenerator'
 
 export default function NewProduct({eClose}) {
+
+  const generateRandomBarcode = () => {
+    const randomNumber = Math.floor(Math.random() * 1000000000);
+    const barcodeNumber = randomNumber.toString().padStart(9, '0');
+    return barcodeNumber
+  };
 
   const formik = useFormik({
     initialValues: initialValues,
     validateOnChange: false,
     onSubmit: (formValue) => {
       console.log(formValue)
-      apiClient.post('/producto', formValue, {
+      /* apiClient.post('/producto', formValue, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
@@ -22,7 +29,7 @@ export default function NewProduct({eClose}) {
         eClose()
         console.log(r)
       })
-      .catch(e=>console.log(e))
+      .catch(e=>console.log(e)) */
     }
   })
 
@@ -34,7 +41,13 @@ export default function NewProduct({eClose}) {
   return (
     <div>
         <Input label={"Descripcion"} type='text' name='descripcion' value={formik.values.descripcion} onChange={formik.handleChange} required={true}  />
-        <Input label={"Codigo de barra"} type='text' name='codigo' value={formik.values.codigo} onChange={formik.handleChange} />
+        <div style={{display: 'flex', alignItems: 'center'}} >
+          <Input label={"Codigo de barra"} type='text' name='codigo' value={formik.values.codigo} onChange={formik.handleChange} />
+          <Button text={'GENERAR'} onClick={()=>{
+            const randomCode = generateRandomBarcode()
+            formik.setFieldValue('codigo', randomCode)
+          }} />
+        </div>
         <Input label={"Numeracion"} type='text' name='numeracion' value={formik.values.numeracion} onChange={formik.handleChange} />
         <Input label={"Alto"} type='text' name='alto' value={formik.values.alto} onChange={formik.handleChange} />
         <Input label={"Ancho"} type='text' name='ancho' value={formik.values.ancho} onChange={formik.handleChange} />
@@ -57,14 +70,15 @@ export default function NewProduct({eClose}) {
 }
 
 const initialValues = {
-  descripcion: '',
-  codigo: '',
-  numeracion: '',
-  ancho: '',
-  alto: '',
-  categoria: '',
-  marca: '',
-  color: '',
-  imagen: null,
-  precioGeneral: ''
+    descripcion: '',
+    codigo: '',
+    numeracion: '',
+    ancho: '',
+    alto: '',
+    categoria: '',
+    marca: '',
+    color: '',
+    imagen: null,
+    precioGeneral: ''
+  
 }
