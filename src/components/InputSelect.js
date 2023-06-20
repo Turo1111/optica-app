@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import {IoIosArrowDown} from 'react-icons/io'
 import apiClient from '@/utils/client';
+import { getUser } from '@/redux/userSlice';
+import { useAppSelector } from '@/redux/hook';
 
 
 const InputWrapper = styled.div`
@@ -102,6 +104,7 @@ const InputSelect = ({type = 'text', label, value, onChange, name, edit = false}
   const [openList, setOpenList] = useState(false)
   const [data, setData] = useState([])
   const [loading, setLoading] = useState(false)
+  const user = useAppSelector(getUser);
 
   const [inputValue, setInputValue] = useState(edit ? value : '')
 
@@ -129,7 +132,12 @@ const InputSelect = ({type = 'text', label, value, onChange, name, edit = false}
 
   useEffect(()=>{
     setLoading(true)
-    apiClient.get(`/${name}`)
+    apiClient.get(`/${name}`,
+    {
+      headers: {
+        Authorization: `Bearer ${user.token}` // Agregar el token en el encabezado como "Bearer {token}"
+      }
+    })
     .then((r)=>{
       setData(r.data.body)
       setLoading(false)

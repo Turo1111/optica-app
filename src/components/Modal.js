@@ -118,7 +118,6 @@ const Content = styled.div`
   @media only screen and (max-width: 1024px) {
     width: auto;
   }
-
   @media only screen and (max-width: 768px) {
     height: auto;
     width: 95%;

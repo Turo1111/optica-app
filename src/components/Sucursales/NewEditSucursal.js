@@ -7,7 +7,7 @@ import apiClient from '@/utils/client'
 import { useAppDispatch } from '@/redux/hook'
 import { setAlert } from '@/redux/alertSlice'
 
-export default function NewEditSucursal({item , edit, handleClose}) {
+export default function NewEditSucursal({token, item , edit, handleClose}) {
 
     const dispatch = useAppDispatch();
 
@@ -16,8 +16,12 @@ export default function NewEditSucursal({item , edit, handleClose}) {
         validateOnChange: false,
         onSubmit: (formValue) => {
           if (item) {
-            console.log(formValue)
-            apiClient.patch(`/sucursal/${item._id}`, formValue)
+            apiClient.patch(`/sucursal/${item._id}` ,
+            {
+              headers: {
+                Authorization: `Bearer ${token}` // Agregar el token en el encabezado como "Bearer {token}"
+              }
+            }, formValue)
             .then(r=>{
               dispatch(setAlert({
                 message: 'Sucursal modificada correctamente',
@@ -30,7 +34,12 @@ export default function NewEditSucursal({item , edit, handleClose}) {
               type: 'error'
             })))
           }else{
-            apiClient.post(`/sucursal`, formValue)
+            apiClient.post(`/sucursal` ,
+            {
+              headers: {
+                Authorization: `Bearer ${token}` // Agregar el token en el encabezado como "Bearer {token}"
+              }
+            }, formValue)
             .then(r=>{
               handleClose()
               dispatch(setAlert({

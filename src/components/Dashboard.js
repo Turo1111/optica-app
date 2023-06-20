@@ -1,5 +1,5 @@
-import React from 'react'
-import styled from 'styled-components'
+import React, { useEffect, useState } from 'react'
+import styled, { keyframes } from 'styled-components'
 import {BsPersonSquare} from 'react-icons/bs'
 import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -8,9 +8,11 @@ import { useAppDispatch, useAppSelector } from '@/redux/hook';
 import { setAlert } from '@/redux/alertSlice';
 import UserNotLogged from './UserNotLogged';
 import useLocalStorage from '@/hooks/useLocalStorage';
+import { AiOutlineMenu } from 'react-icons/ai';
+import { MdClose } from 'react-icons/md';
 
 /* const itemsLi = ["GENERAR VENTA", "VENTA", "PRODUCTO", "CLIENTE", "COMPRA", "GESTION", "CONTABILIDAD"] */
-const itemsLi = ["PRODUCTOS","GESTION", "CLIENTES"]
+const itemsLi = ["GENERAR VENTA", "PRODUCTOS","GESTION", "CLIENTES", "COMPRA", "GESTION", "CONTABILIDAD"]
 
 export default function Dashboard({children}) {
 
@@ -19,22 +21,37 @@ export default function Dashboard({children}) {
    const dispatch = useAppDispatch();
    const router = useRouter()
    const [valueStorage , setValue, clearValue] = useLocalStorage("user", "")
+   const [openMenu, setOpenMenu] = useState(false)
 
-    if (valueStorage.token) {
-        dispatch(setAlert({
-          message: 'USUARIO YA LOGEADO',
-          type: 'success'
-        }))
-        dispatch(setUser(valueStorage))
-    }
+   useEffect(()=>{
+       if (valueStorage?.token) {
+           dispatch(setAlert({
+             message: 'USUARIO YA LOGEADO',
+             type: 'success'
+           }))
+           dispatch(setUser(valueStorage))
+       }
+   },[dispatch])
 
-    if (!valueStorage.token) {
+
+    if (!(valueStorage?.token)) {
         return <UserNotLogged/>
     }
 
   return (
-    <div style={{display: 'flex'}}>
-        <Container bg={process.env.BLUE_COLOR} >
+    <Container>
+        <HeaderMobile>
+            <IconWrapper onClick={()=>setOpenMenu(!openMenu)} >
+                {
+                    openMenu ? 
+                    <MdClose/>
+                    :
+                    <AiOutlineMenu/>
+                }
+            </IconWrapper>
+            <h2 style={{fontSize: 22, color: '#fff', textAlign: 'center', marginLeft: 25}} >PRODUCTOS</h2>
+        </HeaderMobile>
+        <ContainerDashboard bg={process.env.BLUE_COLOR} open={openMenu} >
             <Logo>LOGOTIPO</Logo>
             <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                 <UserContainer >
@@ -60,6 +77,7 @@ export default function Dashboard({children}) {
                             <ItemMenu key={index} 
                                 isActive={"/"+(item.toLowerCase().split(' ').join('')) === pathname ? true : false}
                                 bc={process.env.BLUE_COLOR}
+                                onClick={()=>setOpenMenu(false)}
                             >
                                 {item}
                             </ItemMenu>
@@ -67,18 +85,60 @@ export default function Dashboard({children}) {
                     )
                 })}
             </ListaMenu>
-        </Container>
+        </ContainerDashboard>
         {children}
-    </div>
+    </Container>
   )
 }
 
-const Container = styled.div `
-    height: 100vh;
-    width: 250px;
+const slideIn = keyframes`
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+`;
+
+const ContainerDashboard = styled.div `
     background-color: ${props=>props.bg};
     border-top-right-radius: 25px;
-    border-bottom-right-radius: 25px;
+    border-bottom-right-radius: 25px; 
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    @media only screen and (max-width: 768px) {
+        display: ${props=>props.open ? 'flex' : 'none'};
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        border-top-right-radius: 0px;
+        border-bottom-right-radius: 0px;
+        animation: ${slideIn} 1s ease-in-out;
+        flex-direction: column;
+    }
+`
+
+const HeaderMobile = styled.nav `
+    display: none;
+    @media only screen and (max-width: 768px) {
+        display: flex;
+        align-items: center;
+        padding: 0 15px;
+        background-color: ${process.env.BLUE_COLOR}
+    }
+`
+
+const Container = styled.div `
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    position: relative;
+    height: 100vh;
+    @media only screen and (max-width: 768px) {
+        flex-direction: column;
+    }
 `
 
 const Logo = styled.h2 `
@@ -105,7 +165,7 @@ const IconWrapper = styled.div`
     align-items: center;
     justify-content: center;
     font-size: 35px;
-    color: #FFFFFF;
+    color: ${props=>props.color ? props.color : '#fff'};
     padding: 5px;
 `
 
@@ -128,6 +188,10 @@ const LogOut = styled.div `
 const ListaMenu = styled.ul`
     padding: 0;
     margin: 0;
+    height: 50%;
+    @media only screen and (max-width: 768px) {
+        overflow-y: scroll;
+    }
 `
 
 const ItemMenu = styled.li `

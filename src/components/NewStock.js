@@ -5,11 +5,13 @@ import Input from './Input'
 import Button from './Button'
 import apiClient from '@/utils/client'
 import { setAlert } from '@/redux/alertSlice'
-import { useAppDispatch } from '@/redux/hook'
+import { useAppDispatch, useAppSelector } from '@/redux/hook'
+import { getUser } from '@/redux/userSlice'
 
 export default function NewStock({idProducto, item, eClose}) {
 
     const dispatch = useAppDispatch();
+    const user = useAppSelector(getUser);
   
     const formik = useFormik({
         initialValues: initialValues(idProducto, item),
@@ -17,7 +19,12 @@ export default function NewStock({idProducto, item, eClose}) {
         onSubmit: (formValue) => {
           console.log(formValue)
           if (item) {
-            apiClient.patch(`/stock/${item._id}`, formValue)
+            apiClient.patch(`/stock/${item._id}`,
+            {
+              headers: {
+                Authorization: `Bearer ${user.token}` // Agregar el token en el encabezado como "Bearer {token}"
+              }
+            }, formValue)
               .then(r=>{
                 handleClose()
                 dispatch(setAlert({
@@ -30,7 +37,12 @@ export default function NewStock({idProducto, item, eClose}) {
                 type: 'error'
               })))
           }else{
-              apiClient.post('/stock', formValue)
+              apiClient.post('/stock',
+              {
+                headers: {
+                  Authorization: `Bearer ${user.token}` // Agregar el token en el encabezado como "Bearer {token}"
+                }
+              }, formValue)
               .then(r=>{
                 handleClose()
                 dispatch(setAlert({

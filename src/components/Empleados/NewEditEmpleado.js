@@ -8,7 +8,7 @@ import apiClient from '@/utils/client'
 import { useAppDispatch } from '@/redux/hook'
 import { setAlert } from '@/redux/alertSlice'
 
-export default function NewEditEmpleado({item , edit, handleClose}) {
+export default function NewEditEmpleado({token, item , edit, handleClose}) {
 
     const dispatch = useAppDispatch();
 
@@ -18,7 +18,12 @@ export default function NewEditEmpleado({item , edit, handleClose}) {
         onSubmit: (formValue) => {
           console.log(formValue)
           if (item) {
-            apiClient.patch(`/empleado/${item._id}`, formValue)
+            apiClient.patch(`/empleado/${item._id}` ,
+            {
+              headers: {
+                Authorization: `Bearer ${token}` // Agregar el token en el encabezado como "Bearer {token}"
+              }
+            }, formValue)
             .then(r=>{
               handleClose()
               dispatch(setAlert({
@@ -31,7 +36,12 @@ export default function NewEditEmpleado({item , edit, handleClose}) {
               type: 'error'
             })))
           }else{
-            apiClient.post(`/empleado`, formValue)
+            apiClient.post(`/empleado` ,
+            {
+              headers: {
+                Authorization: `Bearer ${token}` // Agregar el token en el encabezado como "Bearer {token}"
+              }
+            }, formValue)
             .then(r=>{
               handleClose()
               dispatch(setAlert({

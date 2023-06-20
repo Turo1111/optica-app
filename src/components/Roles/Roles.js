@@ -29,7 +29,12 @@ export default function Roles() {
 
     useEffect(()=>{
       setLoading(true)
-      apiClient.get(`/roles`)
+      apiClient.get(`/roles` ,
+      {
+        headers: {
+          Authorization: `Bearer ${user.token}` // Agregar el token en el encabezado como "Bearer {token}"
+        }
+      })
           .then(r=>{
             setData(r.data.body)
             setLoading(false)
@@ -93,7 +98,7 @@ export default function Roles() {
           {
             openNewEdit ? 
             <AnimatedContainer1>
-              <NewEditRol handleClose={()=>setOpenNewEdit(false)} item={selected} />
+              <NewEditRol handleClose={()=>setOpenNewEdit(false)} item={selected} token={user.token} />
             </AnimatedContainer1>
             :
             <AnimatedContainer2>

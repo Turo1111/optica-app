@@ -4,6 +4,8 @@ import {IoIosArrowDown} from 'react-icons/io'
 import Button from './Button';
 import apiClient from '@/utils/client';
 import { useFormik } from 'formik';
+import { useAppSelector } from '@/redux/hook';
+import { getUser } from '@/redux/userSlice';
 const io = require('socket.io-client')
 
 
@@ -105,6 +107,7 @@ const InputSelectAdd = ({type = 'text', label, value, onChange, name, edit = fal
   const [openList, setOpenList] = useState(false)
   const [data, setData] = useState([])
   const [loading, setLoading] = useState(false)
+  const user = useAppSelector(getUser);
 
   const [inputValue, setInputValue] = useState(edit ? value : '')
 
@@ -138,14 +141,24 @@ const InputSelectAdd = ({type = 'text', label, value, onChange, name, edit = fal
   }
 
   const postValue = () => {
-    apiClient.post(`/${name}`, {descripcion: inputValue})
+    apiClient.post(`/${name}`,
+    {
+      headers: {
+        Authorization: `Bearer ${user.token}` // Agregar el token en el encabezado como "Bearer {token}"
+      }
+    }, {descripcion: inputValue})
     .then((r)=>onChange(r.data.body._id))
     .catch(e=>console.log(e))
   }
 
   useEffect(()=>{
     setLoading(true)
-    apiClient.get(`/${name}`)
+    apiClient.get(`/${name}`,
+    {
+      headers: {
+        Authorization: `Bearer ${user.token}` // Agregar el token en el encabezado como "Bearer {token}"
+      }
+    })
     .then((r)=>{
       setLoading(false)
       setData(r.data.body)

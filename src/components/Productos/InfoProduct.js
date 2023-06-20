@@ -9,7 +9,7 @@ import apiClient from '@/utils/client'
 import useBarcodeGenerator from '@/hooks/useBarcodeGenerator'
 import Loading from '../Loading'
 
-export default function InfoProduct({item}) {
+export default function InfoProduct({token, item}) {
 
     const [openNewStock, setOpenNewStock] = useState(false)
     const [data, setData] = useState([])
@@ -22,7 +22,12 @@ export default function InfoProduct({item}) {
     useEffect(()=>{
         setLoading(true)
         if (item) {
-            apiClient.get(`/stock/${item?._id}`)
+            apiClient.get(`/stock/${item?._id}` ,
+            {
+              headers: {
+                Authorization: `Bearer ${token}` // Agregar el token en el encabezado como "Bearer {token}"
+              }
+            })
               .then(r=>{
                 setData(r.data.body)
                 setLoading(false)

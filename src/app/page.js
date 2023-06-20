@@ -44,9 +44,9 @@ export default function Home() {
     }
   })
 
-  if (valueStorage.token) {
+  if (valueStorage?.token) {
     dispatch(setAlert({
-      message: 'USUARIO YA LOGEADO',
+      message: `USUARIO YA LOGEADO ${valueStorage.usuario}`,
       type: 'success'
     }))
     dispatch(setUser(valueStorage))
@@ -70,6 +70,7 @@ export default function Home() {
 }
 
 const Container = styled.div `
+  padding: 0 15px;
   display: flex;
   justify-content: center;
   align-items: center;

@@ -35,6 +35,8 @@ export default function Productos() {
   const listProducto = useSearch(search.value, tag, data)
 
   useEffect(()=>{
+    if (user.usuario !== '') {  
+      console.log(user)
       user.roles.permisos.forEach((permiso) => {
           if (permiso.screen.toLowerCase() === 'producto') {
             if (!permiso.lectura) {
@@ -43,21 +45,28 @@ export default function Productos() {
             return setPermission(true)
           }
       });
-  },[])
-
-    
+    }
+  },[user])
 
   useEffect(() => {
     setLoading(true)
-    apiClient.get('/producto')
-      .then(r => {
-        setData((prevData)=>{
-          setLoading(false)
-          return r.data.body
-        })
+    if (user.token) {
+      apiClient.get('/producto' ,
+      {
+        headers: {
+          Authorization: `Bearer ${user.token}` // Agregar el token en el encabezado como "Bearer {token}"
+        }
       })
-      .catch(e => console.log(e))
-  }, [])
+        .then(r => {
+          console.log(r.data.body)
+          setData((prevData)=>{
+            setLoading(false)
+            return r.data.body
+          })
+        })
+        .catch(e => console.log(e))
+    }
+  }, [user.token])
 
   useEffect(()=>{
     const socket = io('http://localhost:3001')
@@ -158,7 +167,7 @@ export default function Productos() {
         width='40%'
         eClose={handleCloseModals}
       >
-        <NewProduct eClose={handleCloseModals} />
+        <NewProduct eClose={handleCloseModals} token={user.token}/>
       </Modal>
       {productSelected && (
         <>
@@ -169,7 +178,7 @@ export default function Productos() {
             width='40%'
             eClose={handleCloseModals}
           >
-            <EditProduct item={productSelected} eClose={handleCloseModals} />
+            <EditProduct item={productSelected} eClose={handleCloseModals} token={user.token} />
           </Modal>
           <Modal
             open={openInfoProduct}
@@ -178,7 +187,7 @@ export default function Productos() {
             width='40%'
             eClose={handleCloseModals}
           >
-            <InfoProduct item={productSelected} />
+            <InfoProduct item={productSelected} token={user.token} />
           </Modal>
         </>
       )}

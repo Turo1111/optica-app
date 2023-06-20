@@ -21,7 +21,7 @@ export default function Alerta() {
 
   return (
         <Container background={alert.color} open={alert.open} >
-            {alert.message}
+            {alert.message || 'SOY UNA ALERTA'}
         </Container>
     )
 }
@@ -32,10 +32,10 @@ const Container = styled.div `
     padding: 15px 50px;
     background-color: ${props=>props.background ? props.background : '#F7A4A4' };
     position: fixed;
-    text-align: center;
-    left: 50%;
     margin-top: 25px;
     border-radius: 15px;
     color: #F9F5F6;
     font-weight: 600;
+    left: 50%;
+    transform: translateX(-50%);
 `

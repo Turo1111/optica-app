@@ -6,14 +6,19 @@ import InputSelectAdd from '../InputSelectAdd'
 import Button from '../Button'
 
 
-export default function EditProduct({eClose, item}) {
+export default function EditProduct({token, eClose, item}) {
   
     const formik = useFormik({
         initialValues: initialValues(item),
         validateOnChange: false,
         onSubmit: (formValue) => {
           console.log(formValue)
-          apiClient.patch(`/producto/${item._id}`, formValue, {
+          apiClient.patch(`/producto/${item._id}` ,
+          {
+            headers: {
+              Authorization: `Bearer ${token}` // Agregar el token en el encabezado como "Bearer {token}"
+            }
+          }, formValue, {
             headers: {
               'Content-Type': 'multipart/form-data'
             }

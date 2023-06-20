@@ -7,7 +7,7 @@ import { useAppDispatch } from '@/redux/hook'
 import { setAlert } from '@/redux/alertSlice'
 import apiClient from '@/utils/client'
 
-export default function NewEditRol({item , edit, handleClose}) {
+export default function NewEditRol({token, item , edit, handleClose}) {
 
   const dispatch = useAppDispatch();
 
@@ -16,7 +16,12 @@ export default function NewEditRol({item , edit, handleClose}) {
       validateOnChange: false,
       onSubmit: (formValue) => {
         if (item) {
-          apiClient.patch(`/roles/${item._id}`, formValue)
+          apiClient.patch(`/roles/${item._id}` ,
+          {
+            headers: {
+              Authorization: `Bearer ${token}` // Agregar el token en el encabezado como "Bearer {token}"
+            }
+          }, formValue)
           .then(r=>{
             handleClose()
             dispatch(setAlert({
@@ -29,7 +34,12 @@ export default function NewEditRol({item , edit, handleClose}) {
             type: 'error'
           })))
         }else{
-          apiClient.post(`/roles`, formValue)
+          apiClient.post(`/roles` ,
+          {
+            headers: {
+              Authorization: `Bearer ${token}` // Agregar el token en el encabezado como "Bearer {token}"
+            }
+          }, formValue)
           .then(r=>{
             handleClose()
             dispatch(setAlert({

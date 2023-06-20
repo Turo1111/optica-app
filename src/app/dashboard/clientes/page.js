@@ -33,7 +33,12 @@ export default function Clientes() {
 
   useEffect(() => {
     setLoading(true)
-    apiClient.get('/cliente')
+    apiClient.get('/cliente',
+    {
+      headers: {
+        Authorization: `Bearer ${user.token}` // Agregar el token en el encabezado como "Bearer {token}"
+      }
+    })
       .then(r => {
         setData((prevData)=>{
           setLoading(false)

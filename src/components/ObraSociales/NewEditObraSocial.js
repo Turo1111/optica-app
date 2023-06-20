@@ -12,7 +12,7 @@ import InputSearch from '../InputSearch'
 import Loading from '../Loading'
 import styled from 'styled-components'
 
-export default function NewEditObraSocial({item , edit, handleClose}) {
+export default function NewEditObraSocial({token, item , edit, handleClose}) {
 
     const dispatch = useAppDispatch();
     const [data, setData] = useState([])
@@ -27,7 +27,12 @@ export default function NewEditObraSocial({item , edit, handleClose}) {
           formValue.productosDescuento = selectedItems;
           console.log(formValue)
           if (item) {
-            apiClient.patch(`/obrasocial/${item._id}`, formValue)
+            apiClient.patch(`/obrasocial/${item._id}` ,
+            {
+              headers: {
+                Authorization: `Bearer ${token}` // Agregar el token en el encabezado como "Bearer {token}"
+              }
+            }, formValue)
             .then(r=>{
               handleClose()
               dispatch(setAlert({
@@ -40,7 +45,12 @@ export default function NewEditObraSocial({item , edit, handleClose}) {
               type: 'error'
             })))
           }else{
-            apiClient.post(`/obrasocial`, formValue)
+            apiClient.post(`/obrasocial` ,
+            {
+              headers: {
+                Authorization: `Bearer ${token}` // Agregar el token en el encabezado como "Bearer {token}"
+              }
+            }, formValue)
             .then(r=>{
               handleClose()
               dispatch(setAlert({
@@ -58,7 +68,12 @@ export default function NewEditObraSocial({item , edit, handleClose}) {
 
     useEffect(() => {
       setLoading(true)
-      apiClient.get('/producto')
+      apiClient.get('/producto' ,
+      {
+        headers: {
+          Authorization: `Bearer ${token}` // Agregar el token en el encabezado como "Bearer {token}"
+        }
+      })
         .then(r => {
           setData((prevData)=>{
             setLoading(false)

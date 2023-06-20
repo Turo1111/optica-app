@@ -112,6 +112,7 @@ export default function Sucursales() {
                 handleClose={() => setOpenNewEdit(false)}
                 item={selected}
                 edit={selected && true}
+                token={user.token}
               />
             </AnimatedContainer1>
             :

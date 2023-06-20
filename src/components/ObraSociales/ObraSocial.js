@@ -30,7 +30,12 @@ export default function ObraSocial() {
 
     useEffect(()=>{
       setLoading(true)
-      apiClient.get('/obrasocial')
+      apiClient.get('/obrasocial' ,
+      {
+        headers: {
+          Authorization: `Bearer ${user.token}` // Agregar el token en el encabezado como "Bearer {token}"
+        }
+      })
       .then(r=>{
         setData(r.data.body)
         setLoading(false)

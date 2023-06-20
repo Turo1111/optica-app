@@ -22,15 +22,17 @@ export default function Gestion() {
     const [permission, setPermission] = useState(false)
 
     useEffect(()=>{
-        user.roles.permisos.forEach((permiso) => {
-            if (permiso.screen.toLowerCase() === 'gestion') {
-              if (!permiso.lectura) {
-                return setPermission(false)
-              }
-              return setPermission(true)
-            }
-        });
-    },[])
+        if (user) {
+            user.roles.permisos.forEach((permiso) => {
+                if (permiso.screen.toLowerCase() === 'gestion') {
+                  if (!permiso.lectura) {
+                    return setPermission(false)
+                  }
+                  return setPermission(true)
+                }
+            });
+        }
+    },[user])
 
     if (!permission) {
         return <h2>no tiene permisos</h2>

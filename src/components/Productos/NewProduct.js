@@ -6,7 +6,7 @@ import { useFormik } from 'formik'
 import apiClient from '@/utils/client'
 import useBarcodeGenerator from '@/hooks/useBarcodeGenerator'
 
-export default function NewProduct({eClose}) {
+export default function NewProduct({token, eClose}) {
 
   const generateRandomBarcode = () => {
     const randomNumber = Math.floor(Math.random() * 1000000000);
@@ -19,7 +19,12 @@ export default function NewProduct({eClose}) {
     validateOnChange: false,
     onSubmit: (formValue) => {
       console.log(formValue)
-      /* apiClient.post('/producto', formValue, {
+       apiClient.post('/producto',
+       {
+         headers: {
+           Authorization: `Bearer ${token}` // Agregar el token en el encabezado como "Bearer {token}"
+         }
+       }, formValue, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
@@ -29,7 +34,7 @@ export default function NewProduct({eClose}) {
         eClose()
         console.log(r)
       })
-      .catch(e=>console.log(e)) */
+      .catch(e=>console.log(e)) 
     }
   })
 
