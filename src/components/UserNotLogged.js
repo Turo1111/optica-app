@@ -1,15 +1,25 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import Loading from './Loading'
 import styled from 'styled-components'
 import { useRouter } from 'next/navigation';
 
 export default function UserNotLogged() {
 
-    const router = useRouter();
+  const router = typeof window !== 'undefined' ? useRouter() : null;
 
-    setTimeout(() => {
-        router.push('/')
-    }, 5000);
+  useEffect(() => {
+    const redirect = async () => {
+      await delay(5000); // Esperar 5 segundos
+      
+      router.push('/');
+    };
+
+    redirect();
+  }, [router]);
+
+  const delay = (ms) => {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  };
 
   return (
     <div style={{textAlign: 'center', margin: 25}}>

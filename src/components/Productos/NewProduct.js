@@ -18,13 +18,12 @@ export default function NewProduct({token, eClose}) {
     initialValues: initialValues,
     validateOnChange: false,
     onSubmit: (formValue) => {
-      console.log(formValue)
-       apiClient.post('/producto',
+       apiClient.post('/producto', formValue,
        {
          headers: {
            Authorization: `Bearer ${token}` // Agregar el token en el encabezado como "Bearer {token}"
          }
-       }, formValue, {
+       }, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
@@ -32,7 +31,7 @@ export default function NewProduct({token, eClose}) {
       .then(r=>{
         formik.resetForm(initialValues)
         eClose()
-        console.log(r)
+        console.log("respuesta",r)
       })
       .catch(e=>console.log(e)) 
     }

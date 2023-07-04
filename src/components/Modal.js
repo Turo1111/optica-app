@@ -116,10 +116,10 @@ const Content = styled.div`
   }
 
   @media only screen and (max-width: 1024px) {
-    width: auto;
+    width: 80%;
   }
   @media only screen and (max-width: 768px) {
-    height: auto;
+    height: ${({height}) => height ? 'auto' : 'auto'};
     width: 95%;
   }
 `;

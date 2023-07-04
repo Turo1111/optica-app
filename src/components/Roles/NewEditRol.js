@@ -16,12 +16,12 @@ export default function NewEditRol({token, item , edit, handleClose}) {
       validateOnChange: false,
       onSubmit: (formValue) => {
         if (item) {
-          apiClient.patch(`/roles/${item._id}` ,
+          apiClient.patch(`/roles/${item._id}`, formValue ,
           {
             headers: {
               Authorization: `Bearer ${token}` // Agregar el token en el encabezado como "Bearer {token}"
             }
-          }, formValue)
+          })
           .then(r=>{
             handleClose()
             dispatch(setAlert({
@@ -34,12 +34,12 @@ export default function NewEditRol({token, item , edit, handleClose}) {
             type: 'error'
           })))
         }else{
-          apiClient.post(`/roles` ,
+          apiClient.post(`/roles` , formValue,
           {
             headers: {
               Authorization: `Bearer ${token}` // Agregar el token en el encabezado como "Bearer {token}"
             }
-          }, formValue)
+          })
           .then(r=>{
             handleClose()
             dispatch(setAlert({

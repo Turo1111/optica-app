@@ -146,7 +146,7 @@ const InputSelect = ({type = 'text', label, value, onChange, name, edit = false}
   },[name])
 
   useEffect(()=>{
-    console.log(data)
+    console.log("data input select",data)
   },[data])
 
   useEffect(()=>{

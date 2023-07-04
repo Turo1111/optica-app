@@ -17,14 +17,14 @@ export default function NewStock({idProducto, item, eClose}) {
         initialValues: initialValues(idProducto, item),
         validateOnChange: false,
         onSubmit: (formValue) => {
-          console.log(formValue)
+          console.log("form value newStock",formValue)
           if (item) {
-            apiClient.patch(`/stock/${item._id}`,
+            apiClient.patch(`/stock/${item._id}`, formValue,
             {
               headers: {
                 Authorization: `Bearer ${user.token}` // Agregar el token en el encabezado como "Bearer {token}"
               }
-            }, formValue)
+            })
               .then(r=>{
                 handleClose()
                 dispatch(setAlert({
@@ -37,12 +37,12 @@ export default function NewStock({idProducto, item, eClose}) {
                 type: 'error'
               })))
           }else{
-              apiClient.post('/stock',
+              apiClient.post('/stock', formValue,
               {
                 headers: {
                   Authorization: `Bearer ${user.token}` // Agregar el token en el encabezado como "Bearer {token}"
                 }
-              }, formValue)
+              })
               .then(r=>{
                 handleClose()
                 dispatch(setAlert({

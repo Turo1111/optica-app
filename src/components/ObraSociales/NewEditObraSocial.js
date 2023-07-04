@@ -17,7 +17,7 @@ export default function NewEditObraSocial({token, item , edit, handleClose}) {
     const dispatch = useAppDispatch();
     const [data, setData] = useState([])
     const [loading, setLoading] = useState(false)
-    const [selectedItems, setSelectedItems] = useState(item.productosDescuento);
+    const [selectedItems, setSelectedItems] = useState(item?.productosDescuento);
 
 
     const formik = useFormik({
@@ -25,14 +25,14 @@ export default function NewEditObraSocial({token, item , edit, handleClose}) {
         validateOnChange: false,
         onSubmit: (formValue) => {
           formValue.productosDescuento = selectedItems;
-          console.log(formValue)
+          console.log("formvalue obra social",formValue)
           if (item) {
-            apiClient.patch(`/obrasocial/${item._id}` ,
+            apiClient.patch(`/obrasocial/${item._id}`, formValue ,
             {
               headers: {
                 Authorization: `Bearer ${token}` // Agregar el token en el encabezado como "Bearer {token}"
               }
-            }, formValue)
+            })
             .then(r=>{
               handleClose()
               dispatch(setAlert({
@@ -45,12 +45,12 @@ export default function NewEditObraSocial({token, item , edit, handleClose}) {
               type: 'error'
             })))
           }else{
-            apiClient.post(`/obrasocial` ,
+            apiClient.post(`/obrasocial`, formValue ,
             {
               headers: {
                 Authorization: `Bearer ${token}` // Agregar el token en el encabezado como "Bearer {token}"
               }
-            }, formValue)
+            })
             .then(r=>{
               handleClose()
               dispatch(setAlert({
@@ -80,7 +80,7 @@ export default function NewEditObraSocial({token, item , edit, handleClose}) {
             return r.data.body
           })
         })
-        .catch(e => console.log(e))
+        .catch(e => console.log("error",e))
     }, [])
 
   return (
@@ -122,7 +122,7 @@ export default function NewEditObraSocial({token, item , edit, handleClose}) {
         <div style={{display: 'flex', justifyContent: 'space-around', marginTop: 15}}>
             <Button text={'CANCELAR'} onClick={handleClose}/>
             <Button text={'ACEPTAR'} onClick={formik.handleSubmit}/>
-        </div>
+        </div> 
     </div>
   )
 }

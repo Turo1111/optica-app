@@ -21,7 +21,7 @@ export default function Alerta() {
 
   return (
         <Container background={alert.color} open={alert.open} >
-            {alert.message || 'SOY UNA ALERTA'}
+            {alert.message}
         </Container>
     )
 }

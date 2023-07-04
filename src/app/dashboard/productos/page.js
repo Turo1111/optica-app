@@ -36,7 +36,6 @@ export default function Productos() {
 
   useEffect(()=>{
     if (user.usuario !== '') {  
-      console.log(user)
       user.roles.permisos.forEach((permiso) => {
           if (permiso.screen.toLowerCase() === 'producto') {
             if (!permiso.lectura) {
@@ -58,7 +57,7 @@ export default function Productos() {
         }
       })
         .then(r => {
-          console.log(r.data.body)
+          console.log("data productos",r.data.body)
           setData((prevData)=>{
             setLoading(false)
             return r.data.body
@@ -125,41 +124,37 @@ export default function Productos() {
   }
 
   return (
-    <div style={{ display: 'flex', flex: 1 }}>
-      <div style={{ flex: 1, display: 'flex', padding: 15 }}>
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: 25, backgroundColor: '#EEEEEE', borderRadius: 25 }} >
-          {
-            loading ? 
-            <div style={{ display: 'flex', flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-              <Loading/>
-            </div> 
-            :
-            <>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <InputSearch placeholder={'Buscar Productos'} {...search} />
-                <Button text={'NUEVO'} onClick={() => setOpenNewProduct(true)} />
-              </div>
-              <ul style={{ flex: 1, backgroundColor: '#fff', borderRadius: 15, padding: 0 }}>
-                {
-                  listProducto.length === 0 ?
-                  <EmptyList onClick={() => setOpenNewProduct(true)} />
-                  :
-                  listProducto.map((item, index) => (
-                    <ItemProducto
-                      key={index}
-                      handleOpenInfoModal={() => handleOpenInfoModal(item)}
-                      handleOpenEditModal={() => handleOpenEditModal(item)}
-                      item={item}
-                    >
-                      {item}
-                    </ItemProducto>
-                  ))
-                }
-              </ul>
-            </>
-          }
-        </div>
-      </div>
+    <>
+      {
+        loading ? 
+        <div style={{ display: 'flex', flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+          <Loading/>
+        </div> 
+        :
+        <>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <InputSearch placeholder={'Buscar Productos'} {...search} />
+            <Button text={'NUEVO'} onClick={() => setOpenNewProduct(true)} />
+          </div>
+          <ul style={{ flex: 1, backgroundColor: '#fff', borderRadius: 15, padding: 0, overflowY: scroll }}>
+            {
+              listProducto.length === 0 ?
+              <EmptyList onClick={() => setOpenNewProduct(true)} />
+              :
+              listProducto.map((item, index) => (
+                <ItemProducto
+                  key={index}
+                  handleOpenInfoModal={() => handleOpenInfoModal(item)}
+                  handleOpenEditModal={() => handleOpenEditModal(item)}
+                  item={item}
+                >
+                  {item}
+                </ItemProducto>
+              ))
+            }
+          </ul>
+        </>
+      }
       <Modal
         open={openNewProduct}
         title={'Nuevo Producto'}
@@ -191,6 +186,6 @@ export default function Productos() {
           </Modal>
         </>
       )}
-    </div>
+    </>
   )
 }

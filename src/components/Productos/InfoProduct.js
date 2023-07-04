@@ -42,7 +42,7 @@ export default function InfoProduct({token, item}) {
   return (
     <div>
         <Descripcion color={process.env.TEXT_COLOR}>{item?.descripcion}</Descripcion>
-        <div style={{display: 'flex', justifyContent: 'space-around', backgroundColor: '#F9F5F6', padding: 15, borderRadius: 20}} >
+        <ContainerInfo>
             <div>
                 <Caracteristicas color={process.env.TEXT_COLOR}>
                     <label style={{fontWeight: 600}}>Categoria :</label> {item?.categoria}
@@ -79,7 +79,7 @@ export default function InfoProduct({token, item}) {
                   fill
               />
             </div>
-        </div>
+        </ContainerInfo>
         {
             loading ?
               <div style={{ display: 'flex', flex: 1, justifyContent: 'center', alignItems: 'center'}}>
@@ -113,6 +113,18 @@ const Descripcion = styled.h2 `
     margin: 15px 5px;
     color: ${props=>props.color};
 `
+
+const ContainerInfo = styled.div `
+    display: flex;
+    justify-content: space-around;
+    background-color: #F9F5F6;
+    padding: 15px;
+    border-radius: 20px;
+    @media only screen and (max-width: 425px) {
+        display: block;
+    }
+`
+
 const TableHeader = styled.li `
     border-radius: 3px;
     padding: 25px 30px;

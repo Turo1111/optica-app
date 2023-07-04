@@ -84,7 +84,7 @@ export default function ObraSocial() {
     },[openNewEdit])
 
   return (
-    <div style={{flex: 1, display: 'flex', flexDirection: 'column', padding: 25}} >
+    <Container>
       {
         loading ?
           <div style={{ display: 'flex', flex: 1, justifyContent: 'center', alignItems: 'center'}}>
@@ -95,7 +95,8 @@ export default function ObraSocial() {
           <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
             <InputSearch placeholder={'Buscar Obra Social'} {...search} />
             <Button text={'NUEVO'} onClick={()=>{
-                setSelected(undefined)
+                console.log("aca")
+                /* setSelected(null) */
                 setOpenNewEdit(true)
               }} />
           </div> 
@@ -103,8 +104,8 @@ export default function ObraSocial() {
             openNewEdit ? 
             <AnimatedContainer1>
               <NewEditObraSocial handleClose={()=>{
-                  setSelected(null)
-                  setOpenNewEdit(false)
+                  /* setSelected(null)
+                  setOpenNewEdit(false) */
               }} 
               item={selected} edit={selected && true} 
               />
@@ -117,13 +118,23 @@ export default function ObraSocial() {
               }} 
               />
             </AnimatedContainer2>
-            
           }
         </>
       }
-    </div>
+    </Container>
   )
 }
+
+const Container = styled.div `
+  flex: 1; 
+  display: flex; 
+  flex-direction: column; 
+  padding: 25px;
+  @media only screen and (max-width: 425px) {
+    padding: 5px;
+  }
+  
+`
 
 const columns = [
     { label: 'Obra social', field: 'descripcion', width: '30%' },

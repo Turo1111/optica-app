@@ -13,7 +13,7 @@ import styled from "styled-components"
 export default function Home() {
 
   const dispatch = useAppDispatch();
-  const router = useRouter();
+  const router = typeof window !== 'undefined' ? useRouter() : null;
   const [valueStorage , setValue] = useLocalStorage("user", "")
 
   const formik = useFormik({
@@ -50,7 +50,7 @@ export default function Home() {
       type: 'success'
     }))
     dispatch(setUser(valueStorage))
-    router.push('/dashboard/productos')
+    return router.push('/dashboard/productos')
   }
 
   return (

@@ -22,7 +22,7 @@ export default function Gestion() {
     const [permission, setPermission] = useState(false)
 
     useEffect(()=>{
-        if (user) {
+        if (user.usuario !== '') {
             user.roles.permisos.forEach((permiso) => {
                 if (permiso.screen.toLowerCase() === 'gestion') {
                   if (!permiso.lectura) {
@@ -39,38 +39,33 @@ export default function Gestion() {
     }
 
   return (
-    <div style={{display: 'flex', flex: 1}} >
-        {/* <Dashboard/> */}
-        <div style={{ flex: 1, display: 'flex', padding: 15 }}>
-            <div style={{flex: 1, display: 'flex', flexDirection: 'column', padding: 25, backgroundColor: '#EEEEEE', borderRadius: 25}} >
-              <ul style={{flex: 1, backgroundColor: '#fff', borderRadius: 15, padding: 0 }}>
-                <ItemLista color={process.env.TEXT_COLOR} onClick={()=>setOpenSucursal(true)} >
-                    SUCURSALES
-                    <IconWrapper color={process.env.TEXT_COLOR}>
-                        <MdArrowForwardIos/>
-                    </IconWrapper>
-                </ItemLista>
-                <ItemLista color={process.env.TEXT_COLOR} onClick={()=>setOpenObraSocial(true)} >
-                    OBRAS SOCIALES
-                    <IconWrapper color={process.env.TEXT_COLOR}>
-                        <MdArrowForwardIos/>
-                    </IconWrapper>
-                </ItemLista>
-                <ItemLista color={process.env.TEXT_COLOR} onClick={()=>setOpenUsuarios(true)} >
-                    EMPLEADOS
-                    <IconWrapper color={process.env.TEXT_COLOR}>
-                        <MdArrowForwardIos/>
-                    </IconWrapper>
-                </ItemLista>
-                <ItemLista color={process.env.TEXT_COLOR} onClick={()=>setOpenRoles(true)} >
-                    ROLES
-                    <IconWrapper color={process.env.TEXT_COLOR}>
-                        <MdArrowForwardIos/>
-                    </IconWrapper>
-                </ItemLista>
-              </ul>
-            </div>
-        </div>
+    <>
+        <Lista>
+          <ItemLista color={process.env.TEXT_COLOR} onClick={()=>setOpenSucursal(true)} >
+              SUCURSALES
+              <IconWrapper color={process.env.TEXT_COLOR}>
+                  <MdArrowForwardIos/>
+              </IconWrapper>
+          </ItemLista>
+          <ItemLista color={process.env.TEXT_COLOR} onClick={()=>setOpenObraSocial(true)} >
+              OBRAS SOCIALES
+              <IconWrapper color={process.env.TEXT_COLOR}>
+                  <MdArrowForwardIos/>
+              </IconWrapper>
+          </ItemLista>
+          <ItemLista color={process.env.TEXT_COLOR} onClick={()=>setOpenUsuarios(true)} >
+              EMPLEADOS
+              <IconWrapper color={process.env.TEXT_COLOR}>
+                  <MdArrowForwardIos/>
+              </IconWrapper>
+          </ItemLista>
+          <ItemLista color={process.env.TEXT_COLOR} onClick={()=>setOpenRoles(true)} >
+              ROLES
+              <IconWrapper color={process.env.TEXT_COLOR}>
+                  <MdArrowForwardIos/>
+              </IconWrapper>
+          </ItemLista>
+        </Lista>
         <Modal eClose={()=>setOpenSucursal(false)} open={openSucursal} title={'SUCURSALES'} height='90%' width='40%' >
             <Sucursales/>
         </Modal>
@@ -83,9 +78,16 @@ export default function Gestion() {
         <Modal eClose={()=>setOpenUsuarios(false)} open={openUsuarios} title={'EMPLEADOS'} height='90%' width='40%' >
             <Empleados/>
         </Modal>
-    </div>
+    </>
   )
 }
+
+const Lista = styled.ul `
+    flex: 1; 
+    background-color: '#fff'; 
+    border-radius: 15; 
+    padding: 0 ;
+`
 
 const ItemLista = styled.li `
     list-style: none;
@@ -101,6 +103,10 @@ const ItemLista = styled.li `
     :hover{
         background-color: #F9F5F6;
     };
+    @media only screen and (max-width: 425px) {
+        margin: 5px 25px;
+        font-size: 26px;
+    }
 `
 
 const IconWrapper = styled.div`

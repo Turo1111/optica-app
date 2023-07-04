@@ -16,12 +16,12 @@ export default function NewEditSucursal({token, item , edit, handleClose}) {
         validateOnChange: false,
         onSubmit: (formValue) => {
           if (item) {
-            apiClient.patch(`/sucursal/${item._id}` ,
+            apiClient.patch(`/sucursal/${item._id}`, formValue ,
             {
               headers: {
                 Authorization: `Bearer ${token}` // Agregar el token en el encabezado como "Bearer {token}"
               }
-            }, formValue)
+            })
             .then(r=>{
               dispatch(setAlert({
                 message: 'Sucursal modificada correctamente',
@@ -34,12 +34,12 @@ export default function NewEditSucursal({token, item , edit, handleClose}) {
               type: 'error'
             })))
           }else{
-            apiClient.post(`/sucursal` ,
+            apiClient.post(`/sucursal`, formValue ,
             {
               headers: {
                 Authorization: `Bearer ${token}` // Agregar el token en el encabezado como "Bearer {token}"
               }
-            }, formValue)
+            })
             .then(r=>{
               handleClose()
               dispatch(setAlert({

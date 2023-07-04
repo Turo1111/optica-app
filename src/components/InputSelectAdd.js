@@ -141,12 +141,12 @@ const InputSelectAdd = ({type = 'text', label, value, onChange, name, edit = fal
   }
 
   const postValue = () => {
-    apiClient.post(`/${name}`,
+    apiClient.post(`/${name}`, {descripcion: inputValue},
     {
       headers: {
         Authorization: `Bearer ${user.token}` // Agregar el token en el encabezado como "Bearer {token}"
       }
-    }, {descripcion: inputValue})
+    })
     .then((r)=>onChange(r.data.body._id))
     .catch(e=>console.log(e))
   }

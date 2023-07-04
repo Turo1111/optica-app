@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
-const InputWrapper = styled.div`
+const TextAreaWrapper = styled.div`
   position: relative;
   margin: 25px 0;
   width: -webkit-fill-available;
@@ -10,7 +10,7 @@ const InputWrapper = styled.div`
   flex-direction: column;
 `;
 
-const InputLabel = styled.label`
+const TextAreaLabel = styled.label`
   position: absolute;
   top: 15px;
   left: 15px;
@@ -27,32 +27,21 @@ const InputLabel = styled.label`
   `}
 `;
 
-const Prefix = styled.div`
-  position: absolute;
-  top: 13px;
-  left: 10px;
-  font-size: 16px;
-  color: ${props => props.color};
-  display: flex;
-  align-items: center;
-`;
-
-const InputField = styled.input`
-  height: 35px;
+const TextAreaField = styled.textarea`
+  height: 100px;
   padding: 5px 10px;
   font-size: 16px;
   color: ${props => props.color};
   border-radius: 10px;
   border: ${({ focused }) => (focused ? '2px solid #7286D3' : '1px solid #d9d9d9')};
   transition: border-color 0.2s ease-in-out;
-  padding-left: ${({ hasPrefix }) => (hasPrefix ? '30px' : '10px')};
 
   &:focus {
     outline: none;
   }
 `;
 
-const Input = ({ type = 'text', label, value, onChange, name, required, readOnly, prefix }) => {
+const TextArea = ({ label, value, onChange, name, required }) => {
   const [isActive, setIsActive] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
 
@@ -77,26 +66,22 @@ const Input = ({ type = 'text', label, value, onChange, name, required, readOnly
   }, [value]);
 
   return (
-    <InputWrapper>
-      {prefix && <Prefix color={process.env.TEXT_COLOR}>{prefix}</Prefix>}
-      <InputLabel active={isActive} color={process.env.TEXT_COLOR}>
-        {type === 'date' ? '' : label}
+    <TextAreaWrapper>
+      <TextAreaLabel active={isActive} color={process.env.TEXT_COLOR}>
+        {label}
         {required && ' - Campo requerido'}
-      </InputLabel>
-      <InputField
+      </TextAreaLabel>
+      <TextAreaField
         color={process.env.TEXT_COLOR}
         name={name}
-        type={type}
         value={value}
         onChange={onChange}
         onFocus={handleInputFocus}
         onBlur={handleInputBlur}
         focused={isFocused}
-        readOnly={readOnly}
-        hasPrefix={!!prefix}
       />
-    </InputWrapper>
+    </TextAreaWrapper>
   );
 };
 
-export default Input;
+export default TextArea;

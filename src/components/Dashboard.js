@@ -10,6 +10,7 @@ import UserNotLogged from './UserNotLogged';
 import useLocalStorage from '@/hooks/useLocalStorage';
 import { AiOutlineMenu } from 'react-icons/ai';
 import { MdClose } from 'react-icons/md';
+import { CSSTransition } from 'react-transition-group'
 
 /* const itemsLi = ["GENERAR VENTA", "VENTA", "PRODUCTO", "CLIENTE", "COMPRA", "GESTION", "CONTABILIDAD"] */
 const itemsLi = ["GENERAR VENTA", "PRODUCTOS","GESTION", "CLIENTES", "COMPRA", "GESTION", "CONTABILIDAD"]
@@ -19,19 +20,32 @@ export default function Dashboard({children}) {
    const pathname = usePathname()
    const user = useAppSelector(getUser);
    const dispatch = useAppDispatch();
-   const router = useRouter()
+   const router = typeof window !== 'undefined' ? useRouter() : null;
    const [valueStorage , setValue, clearValue] = useLocalStorage("user", "")
    const [openMenu, setOpenMenu] = useState(false)
 
-   useEffect(()=>{
-       if (valueStorage?.token) {
-           dispatch(setAlert({
-             message: 'USUARIO YA LOGEADO',
-             type: 'success'
-           }))
-           dispatch(setUser(valueStorage))
-       }
-   },[dispatch])
+   useEffect(() => {
+    const checkUser = async () => {
+      if (valueStorage?.token) {
+        dispatch(
+          setAlert({
+            message: 'USUARIO YA LOGEADO',
+            type: 'success',
+          })
+        );
+        dispatch(setUser(valueStorage));
+      } else {
+        await delay(5000); // Esperar 5 segundos antes de redireccionar
+        router.push('/');
+      }
+    };
+
+    checkUser();
+  }, [dispatch, router, valueStorage]);
+
+  const delay = (ms) => {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  };
 
 
     if (!(valueStorage?.token)) {
@@ -51,42 +65,50 @@ export default function Dashboard({children}) {
             </IconWrapper>
             <h2 style={{fontSize: 22, color: '#fff', textAlign: 'center', marginLeft: 25}} >PRODUCTOS</h2>
         </HeaderMobile>
-        <ContainerDashboard bg={process.env.BLUE_COLOR} open={openMenu} >
-            <Logo>LOGOTIPO</Logo>
-            <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                <UserContainer >
-                    <IconWrapper>
-                        <BsPersonSquare/>
-                    </IconWrapper>
-                    <div>
-                        <User>{user?.usuario || 'NO DEFINIDO'}</User>
-                        <LogOut onClick={()=>{
-                            dispatch(clearUser())
-                            clearValue()
-                            setTimeout(() => {
-                                router.push('/')
-                            }, 2000);
-                        }} >Cerrar Sesion</LogOut>
-                    </div>
-                </UserContainer>
+        <Content>
+            <ContainerDashboard bg={process.env.BLUE_COLOR} open={openMenu} >
+                <Logo>LOGOTIPO</Logo>
+                <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                    <UserContainer >
+                        <IconWrapper>
+                            <BsPersonSquare/>
+                        </IconWrapper>
+                        <div>
+                            <User>{user?.usuario || 'NO DEFINIDO'}</User>
+                            <LogOut onClick={()=>{
+                                dispatch(clearUser())
+                                clearValue()
+                                setTimeout(() => {
+                                    router.push('/')
+                                }, 2000);
+                            }} >Cerrar Sesion</LogOut>
+                        </div>
+                    </UserContainer>
+                </div>
+                <ListaMenu>
+                    {itemsLi.map((item,index) => {
+                        return(
+                            <Link href={"/dashboard/"+(item.toLowerCase().split(' ').join(''))} style={{textDecoration: 'none'}}>
+                                <ItemMenu key={index} 
+                                    isActive={"/"+(item.toLowerCase().split(' ').join('')) === pathname ? true : false}
+                                    bc={process.env.BLUE_COLOR}
+                                    onClick={()=>setOpenMenu(false)}
+                                >
+                                    {item}
+                                </ItemMenu>
+                            </Link>
+                        )
+                    })}
+                </ListaMenu>
+            </ContainerDashboard>
+            <div style={{ display: 'flex', flex: 1 }}>
+                <Container1>
+                    <Container2>
+                        {children}
+                    </Container2>
+                </Container1>
             </div>
-            <ListaMenu>
-                {itemsLi.map((item,index) => {
-                    return(
-                        <Link href={"/dashboard/"+(item.toLowerCase().split(' ').join(''))} style={{textDecoration: 'none'}}>
-                            <ItemMenu key={index} 
-                                isActive={"/"+(item.toLowerCase().split(' ').join('')) === pathname ? true : false}
-                                bc={process.env.BLUE_COLOR}
-                                onClick={()=>setOpenMenu(false)}
-                            >
-                                {item}
-                            </ItemMenu>
-                        </Link>
-                    )
-                })}
-            </ListaMenu>
-        </ContainerDashboard>
-        {children}
+        </Content>
     </Container>
   )
 }
@@ -100,6 +122,15 @@ const slideIn = keyframes`
   }
 `;
 
+const slideOut = keyframes`
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(100%);
+  }
+`;
+
 const ContainerDashboard = styled.div `
     background-color: ${props=>props.bg};
     border-top-right-radius: 25px;
@@ -107,16 +138,14 @@ const ContainerDashboard = styled.div `
     flex: 1;
     display: flex;
     flex-direction: column;
+    max-width: 225px;
     @media only screen and (max-width: 768px) {
-        display: ${props=>props.open ? 'flex' : 'none'};
-        position: fixed;
-        top: 0;
-        left: 0;
-        bottom: 0;
+        position: absolute;
         border-top-right-radius: 0px;
         border-bottom-right-radius: 0px;
-        animation: ${slideIn} 1s ease-in-out;
-        flex-direction: column;
+        animation: ${({ open }) => open ? slideIn : slideOut} 1s ease-in-out;
+        display: ${({ open }) => open ? 'flex' : 'none'};
+        height: -webkit-fill-available;
     }
 `
 
@@ -130,9 +159,35 @@ const HeaderMobile = styled.nav `
     }
 `
 
+const Content = styled.main `
+    display: flex;
+    flex: 1;
+`
+
+const Container1 = styled.main `
+    display: flex;
+    flex: 1;
+    padding: 15px;
+    @media only screen and (max-width: 768px) {
+        padding: 0
+    }
+`
+
+const Container2 = styled.main `
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    background-color: #EEEEEE;
+    padding: 25px;
+    border-radius: 25px;
+    @media only screen and (max-width: 768px) {
+        padding: 5px;
+        border-radius: 0px;
+    }
+`
+
 const Container = styled.div `
     display: flex;
-    flex-direction: column;
     height: 100vh;
     position: relative;
     height: 100vh;

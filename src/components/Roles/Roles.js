@@ -80,7 +80,7 @@ export default function Roles() {
     },[openNewEdit])
 
   return (
-    <div style={{flex: 1, display: 'flex', flexDirection: 'column', padding: 25}} >
+    <Container>
       {
         loading ?
           <div style={{ display: 'flex', flex: 1, justifyContent: 'center', alignItems: 'center'}}>
@@ -124,9 +124,19 @@ export default function Roles() {
           }
         </>
       }
-    </div>
+    </Container>
   )
 }
+
+const Container = styled.div `
+  flex: 1; 
+  display: flex; 
+  flex-direction: column; 
+  padding: 25px;
+  @media only screen and (max-width: 425px) {
+    padding: 5px;
+  }
+`
 
 const Item = styled.li `
   padding: 15px;
@@ -135,6 +145,9 @@ const Item = styled.li `
   :hover{
       background-color: #F9F5F6;
   };
+  @media only screen and (max-width: 425px) {
+    padding: 5px;
+  }
 `
 
 const fadeAnimation = keyframes`

@@ -10,7 +10,7 @@ const InputField = styled.input`
   border-radius: 10px;
   border: ${({ focused }) => (focused ? '2px solid #7286D3' : '1px solid #d9d9d9')};
   transition: border-color 0.2s ease-in-out;
-
+  margin-right: 5px;
   &:focus {
     outline: none;
   }
