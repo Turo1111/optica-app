@@ -13,7 +13,7 @@ import { MdClose } from 'react-icons/md';
 import { CSSTransition } from 'react-transition-group'
 
 /* const itemsLi = ["GENERAR VENTA", "VENTA", "PRODUCTO", "CLIENTE", "COMPRA", "GESTION", "CONTABILIDAD"] */
-const itemsLi = ["GENERAR VENTA", "PRODUCTOS","GESTION", "CLIENTES", "COMPRA", "GESTION", "CONTABILIDAD"]
+const itemsLi = ["PRODUCTOS","GESTION", "CLIENTES", "GESTION"]
 
 export default function Dashboard({children}) {
 

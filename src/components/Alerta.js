@@ -38,4 +38,5 @@ const Container = styled.div `
     font-weight: 600;
     left: 50%;
     transform: translateX(-50%);
+    min-width: 250px;
 `
