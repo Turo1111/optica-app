@@ -25,7 +25,6 @@ export default function NewEditObraSocial({token, item , edit, handleClose}) {
         validateOnChange: false,
         onSubmit: (formValue) => {
           formValue.productosDescuento = selectedItems;
-          console.log("formvalue obra social",formValue)
           if (item) {
             apiClient.patch(`/obrasocial/${item._id}`, formValue ,
             {

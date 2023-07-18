@@ -16,7 +16,6 @@ export default function NewEditEmpleado({token, item , edit, handleClose}) {
         initialValues: initialValues(item),
         validateOnChange: false,
         onSubmit: (formValue) => {
-          console.log("form value newempleado",formValue)
           if (item) {
             apiClient.patch(`/empleado/${item._id}`, formValue ,
             {

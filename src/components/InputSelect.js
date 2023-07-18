@@ -146,11 +146,6 @@ const InputSelect = ({type = 'text', label, value, onChange, name, edit = false}
   },[name])
 
   useEffect(()=>{
-    console.log("data input select",data)
-  },[data])
-
-  useEffect(()=>{
-    console.log(name, value, edit)
     if (value === '') {
       setInputValue('')
       setIsActive(false);

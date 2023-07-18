@@ -12,7 +12,6 @@ export default function EditProduct({token, eClose, item}) {
         initialValues: initialValues(item),
         validateOnChange: false,
         onSubmit: (formValue) => {
-          console.log("formvalue editproduct",formValue)
           apiClient.patch(`/producto/${item._id}`, formValue ,
           {
             headers: {
@@ -25,7 +24,6 @@ export default function EditProduct({token, eClose, item}) {
           })
           .then(r=>{
             eClose()
-            console.log("respuesta editproduct",r)
           })
           .catch(e=>console.log(e))
         }

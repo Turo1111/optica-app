@@ -95,7 +95,6 @@ export default function ObraSocial() {
           <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
             <InputSearch placeholder={'Buscar Obra Social'} {...search} />
             <Button text={'NUEVO'} onClick={()=>{
-                console.log("aca")
                 /* setSelected(null) */
                 setOpenNewEdit(true)
               }} />

@@ -31,7 +31,6 @@ export default function NewProduct({token, eClose}) {
       .then(r=>{
         formik.resetForm(initialValues)
         eClose()
-        console.log("respuesta",r)
       })
       .catch(e=>console.log(e)) 
     }

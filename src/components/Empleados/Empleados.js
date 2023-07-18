@@ -109,7 +109,6 @@ export default function Empleados() {
                     :
                     listEmpleados.map((item,index)=>(
                         <Item key={index} onClick={()=>{
-                          console.log("item",item)
                           setSelected(item) 
                           setOpenNewEdit(true) 
                         }} >

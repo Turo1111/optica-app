@@ -85,7 +85,6 @@ export default function Clientes() {
     const socket = io('https://optica-api.onrender.com')
     socket.on('cliente', (cliente) => {
       setData((prevData)=>{
-        console.log('cliente', cliente)
         const exist = prevData.find(elem => elem._id === cliente.res._id )
         if (exist) {
           return prevData.map((item) =>

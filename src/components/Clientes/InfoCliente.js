@@ -9,7 +9,7 @@ export default function InfoCliente({nombreCompleto, telefono, dni}) {
         <Tag color={process.env.TEXT_COLOR}> Telefono : {telefono}</Tag>
         <Tag color={process.env.TEXT_COLOR}> DNI : {dni}</Tag>
         <Tag color={process.env.TEXT_COLOR}> Seña activa : </Tag>
-        <Table data={[{armazon: 5000, lentes: 3000, total: 8000}]} columns={columnsSenia} onClick={(item)=>console.log("algo")} 
+        <Table data={[{armazon: 5000, lentes: 3000, total: 8000}]} columns={columnsSenia} onClick={(item)=>console.log("")} 
         />
     </div>
   )

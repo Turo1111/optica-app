@@ -57,7 +57,6 @@ export default function Productos() {
         }
       })
         .then(r => {
-          console.log("data productos",r.data.body)
           setData((prevData)=>{
             setLoading(false)
             return r.data.body
