@@ -167,7 +167,7 @@ const InputSelectAdd = ({type = 'text', label, value, onChange, name, edit = fal
   },[name])
 
   useEffect(()=>{
-    const socket = io('http://localhost:3001')
+    const socket = io('https://optica-api.onrender.com')
     socket.on(`${name}`, (socket) => {
       setData((prevData)=>{
         const exist = prevData.find(elem => elem._id === socket.res._id )

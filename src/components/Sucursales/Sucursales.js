@@ -55,7 +55,7 @@ export default function Sucursales() {
     },[])
 
     useEffect(()=>{
-      const socket = io('http://localhost:3001')
+      const socket = io('https://optica-api.onrender.com')
       socket.on('sucursal', (sucursal) => {
         setData((prevData)=>{
           const exist = prevData.find(elem => elem._id === sucursal.res._id )

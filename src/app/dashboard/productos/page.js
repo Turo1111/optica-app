@@ -68,7 +68,7 @@ export default function Productos() {
   }, [user.token])
 
   useEffect(()=>{
-    const socket = io('http://localhost:3001')
+    const socket = io('https://optica-api.onrender.com')
     socket.on('producto', (producto) => {
       setData((prevData)=>{
         const exist = prevData.find(elem => elem._id === producto.res._id )

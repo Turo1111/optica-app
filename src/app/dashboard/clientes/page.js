@@ -82,7 +82,7 @@ export default function Clientes() {
   }, [])
 
   useEffect(()=>{
-    const socket = io('http://localhost:3001')
+    const socket = io('https://optica-api.onrender.com')
     socket.on('cliente', (cliente) => {
       setData((prevData)=>{
         console.log('cliente', cliente)
