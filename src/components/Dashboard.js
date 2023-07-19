@@ -13,7 +13,7 @@ import { MdClose } from 'react-icons/md';
 import { CSSTransition } from 'react-transition-group'
 
 /* const itemsLi = ["GENERAR VENTA", "VENTA", "PRODUCTO", "CLIENTE", "COMPRA", "GESTION", "CONTABILIDAD"] */
-const itemsLi = ["PRODUCTOS","GESTION", "CLIENTES", "GESTION"]
+const itemsLi = ["PRODUCTOS","GESTION", "CLIENTES"]
 
 export default function Dashboard({children}) {
 
@@ -24,7 +24,13 @@ export default function Dashboard({children}) {
    const [valueStorage , setValue, clearValue] = useLocalStorage("user", "")
    const [openMenu, setOpenMenu] = useState(false)
 
+   function extractLastPart(pathname) {
+    const parts = pathname.split('/');
+    return parts[parts.length - 1];
+  }
+
    useEffect(() => {
+    console.log(pathname)
     const checkUser = async () => {
       if (valueStorage?.token) {
         dispatch(
@@ -63,7 +69,7 @@ export default function Dashboard({children}) {
                     <AiOutlineMenu/>
                 }
             </IconWrapper>
-            <h2 style={{fontSize: 22, color: '#fff', textAlign: 'center', marginLeft: 25}} >PRODUCTOS</h2>
+            <h2 style={{fontSize: 22, color: '#fff', textAlign: 'center', marginLeft: 25}} >{extractLastPart(pathname).toUpperCase()}</h2>
         </HeaderMobile>
         <Content>
             <ContainerDashboard bg={process.env.BLUE_COLOR} open={openMenu} >
@@ -90,7 +96,7 @@ export default function Dashboard({children}) {
                         return(
                             <Link href={"/dashboard/"+(item.toLowerCase().split(' ').join(''))} style={{textDecoration: 'none'}}>
                                 <ItemMenu key={index} 
-                                    isActive={"/"+(item.toLowerCase().split(' ').join('')) === pathname ? true : false}
+                                    isActive={"/dashboard/"+(item.toLowerCase().split(' ').join('')) === pathname ? true : false}
                                     bc={process.env.BLUE_COLOR}
                                     onClick={()=>setOpenMenu(false)}
                                 >
@@ -255,7 +261,7 @@ const ItemMenu = styled.li `
     font-size: 16px;
     color: ${props=>props.isActive ? props.bc : '#fff'};
     margin: 15px 0;
-    padding: 10px 0;
+    padding: 10px;
     padding-inline-start: 30px;
     background-color: ${props=>props.isActive ? '#fff' : props.bc};
     margin-right: 40px;
@@ -266,4 +272,7 @@ const ItemMenu = styled.li `
         color: ${props=>props.bc};
         background-color: #fff
     }
+    /* @media only screen and (max-width: 768px) {
+        padding: 10px;
+    } */
 `
