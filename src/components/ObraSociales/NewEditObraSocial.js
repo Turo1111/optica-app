@@ -94,10 +94,16 @@ export default function NewEditObraSocial({token, item , edit, handleClose}) {
             <Loading/>
           </div> 
           :
+
           <div style={{marginTop: 15}}>
             <InputSearch placeholder={'Buscar Productos'} width='50%' />
             <ul style={{ flex: 1, backgroundColor: '#fff', borderRadius: 15, padding: 0 }}>
               {
+                data.length === 0 ? 
+                <div>
+                  no hay productos creados
+                </div>
+                :
                 data.map((item, index) => (
                   <Title color={process.env.TEXT_COLOR} key={index} 
                     onClick={() => {

@@ -103,10 +103,11 @@ export default function ObraSocial() {
             openNewEdit ? 
             <AnimatedContainer1>
               <NewEditObraSocial handleClose={()=>{
-                  /* setSelected(null)
-                  setOpenNewEdit(false) */
+                  setSelected(null)
+                  setOpenNewEdit(false) 
               }} 
               item={selected} edit={selected && true} 
+              token={user.token}
               />
             </AnimatedContainer1>
             :

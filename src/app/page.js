@@ -39,7 +39,12 @@ export default function Home() {
         setValue(user)
         router.push('/dashboard/productos')
       })
-      .catch(e=>console.log(e))
+      .catch(e=>
+        dispatch(setAlert({
+          message: 'Hubo un error, revise los datos',
+          type: 'error'
+        }))  
+      )
         
     }
   })
