@@ -30,7 +30,7 @@ const Title = styled.h2 `
     font-weight: 600;
     margin: 5px 0;
     color: ${props=>props.color};
-    @media only screen and (max-width: 425px) {
+    @media only screen and (max-width: 445px) {
         font-size: 14px;
     }
 `
@@ -39,7 +39,7 @@ const Tag = styled.h2 `
     font-size: 16px;
     font-weight: 500;
     color: ${props=>props.color};
-    @media only screen and (max-width: 425px) {
+    @media only screen and (max-width: 445px) {
         font-size: 14px;
     }
 `

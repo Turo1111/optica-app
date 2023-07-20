@@ -207,7 +207,7 @@ const Title = styled.div`
   @media only screen and (max-width: 1024px) {
     font-size: 16px;
   }
-  @media only screen and (max-width: 425px) {
+  @media only screen and (max-width: 445px) {
     font-size: 14px;
   }
 `;

@@ -148,7 +148,7 @@ const ContainerInfo = styled.div `
     background-color: #F9F5F6;
     padding: 15px;
     border-radius: 20px;
-    @media only screen and (max-width: 425px) {
+    @media only screen and (max-width: 445px) {
         display: block;
     }
 `

@@ -103,7 +103,7 @@ const ItemLista = styled.li `
     :hover{
         background-color: #F9F5F6;
     };
-    @media only screen and (max-width: 425px) {
+    @media only screen and (max-width: 445px) {
         margin: 5px 25px;
         font-size: 26px;
     }
