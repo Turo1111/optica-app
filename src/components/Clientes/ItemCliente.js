@@ -13,7 +13,7 @@ export default function ItemCliente({_id, nombreCompleto, telefono, dni, senia, 
             <Title color={process.env.TEXT_COLOR}>{nombreCompleto}</Title>
             <Tag color={process.env.TEXT_COLOR}> Telefono : {telefono}</Tag>
             <Tag color={process.env.TEXT_COLOR}> DNI : {dni}</Tag>
-            <Tag color={process.env.TEXT_COLOR}> 16 COMPRAS</Tag> 
+            {/* <Tag color={process.env.TEXT_COLOR}> 16 COMPRAS</Tag>  */}
         </div>
         <div style={{display: 'flex'}}>
             <IconWrapper bg={'#8294C4'} hover={'#637195'}  onClick={()=>handleOpenInfoModal({_id, nombreCompleto, telefono, dni, senia})}>
