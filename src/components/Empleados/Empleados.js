@@ -98,7 +98,7 @@ export default function Empleados() {
           {
             openNewEdit ? 
             <AnimatedContainer1>
-              <NewEditEmpleado handleClose={()=>setOpenNewEdit(false)} item={selected} />
+              <NewEditEmpleado handleClose={()=>setOpenNewEdit(false)} item={selected} token={user.token} />
             </AnimatedContainer1>
             :
             <AnimatedContainer2>

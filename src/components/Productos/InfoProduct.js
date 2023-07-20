@@ -8,6 +8,7 @@ import { setAlert } from '@/redux/alertSlice'
 import apiClient from '@/utils/client'
 import useBarcodeGenerator from '@/hooks/useBarcodeGenerator'
 import Loading from '../Loading'
+const io = require('socket.io-client')
 
 export default function InfoProduct({token, item}) {
 
@@ -15,9 +16,11 @@ export default function InfoProduct({token, item}) {
     const [data, setData] = useState([])
     const dispatch = useAppDispatch();
     const [loading, setLoading] = useState(false)
+    const [stockSelected, setStockSelected] = useState(undefined)
 
     const { barcodeDataURL } = useBarcodeGenerator(item?.codigo);
 
+    console.log(item)
 
     useEffect(()=>{
         setLoading(true)
@@ -38,6 +41,28 @@ export default function InfoProduct({token, item}) {
               })))
         }
     },[item])
+
+    useEffect(()=>{
+      
+        const socket = io('https://optica-api.onrender.com')
+        socket.on('stock', (stock) => {
+          setLoading(true)
+          setData((prevData)=>{
+            const exist = prevData.find(elem => elem._id === stock.res._id )
+            setLoading(false)
+            if (exist) {
+              return prevData.map((item) =>
+              item._id === stock.res._id ? stock.res : item
+            )
+            }
+            return [...prevData, stock.res]
+          })
+        })
+        return () => {
+          socket.disconnect();
+        }; 
+
+      },[data])
 
   return (
     <div>
@@ -90,9 +115,12 @@ export default function InfoProduct({token, item}) {
                 <ButtonNewStock color={process.env.BLUE_COLOR} onClick={()=>setOpenNewStock(true)}>+ NUEVO STOCK</ButtonNewStock>
                 {
                     openNewStock ? 
-                        <NewStock eClose={()=>setOpenNewStock(false)} idProducto={item._id} />
+                        <NewStock eClose={()=>setOpenNewStock(false)} idProducto={item._id} item={stockSelected}/>
                     :
-                        <Table columns={columns} data={data} />
+                        <Table columns={columns} data={data} onClick={(item)=>{
+                          setOpenNewStock(true)
+                          setStockSelected(item)
+                        }} />
                 }
             </>
         }

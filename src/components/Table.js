@@ -54,6 +54,9 @@ const TableHeader = styled.li `
     font-size: 14px;
     text-transform: uppercase;
     letter-spacing: 0.03em;
+    @media only screen and (max-width: 425px) {
+      font-size: 10px;
+    }
 `
 
 const TableRow = styled.li `

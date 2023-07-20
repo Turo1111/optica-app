@@ -30,7 +30,6 @@ export default function Dashboard({children}) {
   }
 
    useEffect(() => {
-    console.log(pathname)
     const checkUser = async () => {
       if (valueStorage?.token) {
         dispatch(

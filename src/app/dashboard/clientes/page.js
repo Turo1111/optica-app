@@ -135,7 +135,10 @@ export default function Clientes() {
             <>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <InputSearch placeholder={'Buscar Clientes'} {...search} />
-                <Button text={'NUEVO'} onClick={() => setOpenNewEdit(true)} />
+                <Button text={'NUEVO'} onClick={() => {
+                  setOpenNewEdit(true)
+                  setClientSelected(undefined)
+                }} />
               </div>
               <List>
                 {

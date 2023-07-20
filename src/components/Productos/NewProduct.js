@@ -5,8 +5,12 @@ import InputSelectAdd from '../InputSelectAdd'
 import { useFormik } from 'formik'
 import apiClient from '@/utils/client'
 import useBarcodeGenerator from '@/hooks/useBarcodeGenerator'
+import { setAlert } from '@/redux/alertSlice'
+import { useAppDispatch } from '@/redux/hook'
 
 export default function NewProduct({token, eClose}) {
+
+  const dispatch = useAppDispatch();
 
   const generateRandomBarcode = () => {
     const randomNumber = Math.floor(Math.random() * 1000000000);
@@ -31,8 +35,17 @@ export default function NewProduct({token, eClose}) {
       .then(r=>{
         formik.resetForm(initialValues)
         eClose()
+        dispatch(setAlert({
+          message: 'Producto creado correctamente',
+          type: 'success'
+        }))
       })
-      .catch(e=>console.log(e)) 
+      .catch(e=>
+        dispatch(setAlert({
+          message: 'Hubo un error, revisa los datos',
+          type: 'error'
+        }))  
+      ) 
     }
   })
 

@@ -25,7 +25,6 @@ export default function NewSenia({id, token, handleClose}) {
                 idCliente: id,
                 estado: true
             }
-
             apiClient.post(`/senia`, senia ,
             {
               headers: {

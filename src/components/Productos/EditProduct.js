@@ -4,9 +4,13 @@ import React from 'react'
 import Input from '../Input'
 import InputSelectAdd from '../InputSelectAdd'
 import Button from '../Button'
+import { setAlert } from '@/redux/alertSlice'
+import { useAppDispatch } from '@/redux/hook'
 
 
 export default function EditProduct({token, eClose, item}) {
+
+  const dispatch = useAppDispatch();
   
     const formik = useFormik({
         initialValues: initialValues(item),
@@ -24,8 +28,15 @@ export default function EditProduct({token, eClose, item}) {
           })
           .then(r=>{
             eClose()
+            dispatch(setAlert({
+              message: 'Producto editado correctamente',
+              type: 'success'
+            }))
           })
-          .catch(e=>console.log(e))
+          .catch(e=>dispatch(setAlert({
+            message: 'Hubo un error, revisa los datos',
+            type: 'error'
+          }))  )
         }
     })
 

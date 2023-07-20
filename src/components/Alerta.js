@@ -29,7 +29,7 @@ export default function Alerta() {
 const Container = styled.div `
     display: ${props=> props.open ? 'block' : 'none' };
     z-index: 100;
-    padding: 15px 50px;
+    padding: 15px 15px;
     background-color: ${props=>props.background ? props.background : '#F7A4A4' };
     position: fixed;
     margin-top: 25px;
@@ -38,5 +38,5 @@ const Container = styled.div `
     font-weight: 600;
     left: 50%;
     transform: translateX(-50%);
-    min-width: 250px;
+    text-align: center;
 `
