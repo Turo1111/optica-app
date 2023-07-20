@@ -25,6 +25,13 @@ export default function Home() {
     onSubmit: (formValue) => {
       apiClient.post('/empleado/login', formValue)
       .then(r=>{
+        if (!r.data.data[0].estado) {
+          dispatch(setAlert({
+            message: 'No tienes permiso para iniciar sesion',
+            type: 'error'
+          })) 
+          return null
+        }
         const user = {
           usuario: r.data.data[0].usuario,
           token: r.data.token,
