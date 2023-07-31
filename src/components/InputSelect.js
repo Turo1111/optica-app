@@ -98,7 +98,7 @@ const LoadingText = styled.p`
   color: #8294C4;
 `;
 
-const InputSelect = ({type = 'text', label, value, onChange, name, edit = false}) => {
+const InputSelect = ({type = 'text', label, value, onChange, name, edit = false, preData}) => {
   const [isActive, setIsActive] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
   const [openList, setOpenList] = useState(false)
@@ -122,9 +122,14 @@ const InputSelect = ({type = 'text', label, value, onChange, name, edit = false}
     setIsFocused(false);
   };
 
-  const addValue = (_id, value) => {
-    onChange(_id)
-    setInputValue(value)
+  const addValue = (item) => {
+    if (preData) {
+      onChange(item)
+    }
+    else{
+      onChange(item._id)
+    }
+    setInputValue(item.descripcion)
     setOpenList(false)
     setIsActive(true);
     setIsFocused(true);
@@ -132,17 +137,23 @@ const InputSelect = ({type = 'text', label, value, onChange, name, edit = false}
 
   useEffect(()=>{
     setLoading(true)
-    apiClient.get(`/${name}`,
-    {
-      headers: {
-        Authorization: `Bearer ${user.token}` // Agregar el token en el encabezado como "Bearer {token}"
-      }
-    })
-    .then((r)=>{
-      setData(r.data.body)
+    if(preData){
+      setData(preData)
       setLoading(false)
-    })
-    .catch(e=>console.log(e))
+    }
+    else{
+      apiClient.get(`/${name}`,
+      {
+        headers: {
+          Authorization: `Bearer ${user.token}` // Agregar el token en el encabezado como "Bearer {token}"
+        }
+      })
+      .then((r)=>{
+        setData(r.data.body)
+        setLoading(false)
+      })
+      .catch(e=>console.log(e))
+    }
   },[name])
 
   useEffect(()=>{
@@ -150,7 +161,6 @@ const InputSelect = ({type = 'text', label, value, onChange, name, edit = false}
   },[data])
 
   useEffect(()=>{
-    console.log(name, value, edit)
     if (value === '') {
       setInputValue('')
       setIsActive(false);
@@ -186,7 +196,7 @@ const InputSelect = ({type = 'text', label, value, onChange, name, edit = false}
                 <>
                   {
                       data.length === 0 ? 'Vacio' : 
-                      data.map((item, index)=> <ItemModal key={index} color={process.env.TEXT_COLOR} onClick={()=>addValue(item._id, item.descripcion)} >{item.descripcion}</ItemModal>)
+                      data.map((item, index)=> <ItemModal key={index} color={process.env.TEXT_COLOR} onClick={()=>addValue(item)} >{item.descripcion}</ItemModal>)
                   }
                 </>
               }

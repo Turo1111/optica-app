@@ -27,7 +27,7 @@ const Title = styled.h2 `
     font-weight: 600;
     margin: 5px;
     color: ${props=>props.color};
-    @media only screen and (max-width: 425px) {
+    @media only screen and (max-width: 445px) {
         font-size: 14px;
     }
 `

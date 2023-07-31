@@ -12,8 +12,8 @@ import { AiOutlineMenu } from 'react-icons/ai';
 import { MdClose } from 'react-icons/md';
 import { CSSTransition } from 'react-transition-group'
 
-/* const itemsLi = ["GENERAR VENTA", "VENTA", "PRODUCTO", "CLIENTE", "COMPRA", "GESTION", "CONTABILIDAD"] */
-const itemsLi = ["GENERAR VENTA", "PRODUCTOS","GESTION", "CLIENTES", "COMPRA", "GESTION", "CONTABILIDAD"]
+/* const itemsLi = ["GENERAR VENTA", "PRODUCTO", "CLIENTE", "COMPRA", "GESTION", "CONTABILIDAD"] */
+const itemsLi = ["NUEVA VENTA", "VENTA", "PRODUCTOS","GESTION", "CLIENTES", "COMPRA", "GESTION", "CONTABILIDAD"]
 
 export default function Dashboard({children}) {
 
@@ -146,6 +146,7 @@ const ContainerDashboard = styled.div `
         animation: ${({ open }) => open ? slideIn : slideOut} 1s ease-in-out;
         display: ${({ open }) => open ? 'flex' : 'none'};
         height: -webkit-fill-available;
+        z-index: 100;
     }
 `
 

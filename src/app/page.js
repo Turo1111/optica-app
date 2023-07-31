@@ -23,9 +23,13 @@ export default function Home() {
     },
     validateOnChange: false,
     onSubmit: (formValue) => {
+      console.log("form",formValue)
       apiClient.post('/empleado/login', formValue)
       .then(r=>{
+        console.log(r)
         const user = {
+          idEmpleado: r.data.data[0]._id,
+          idSucursal: r.data.data[0].idSucursal,
           usuario: r.data.data[0].usuario,
           token: r.data.token,
           sucursal: r.data.data[0].sucursal,
@@ -39,7 +43,7 @@ export default function Home() {
         setValue(user)
         router.push('/dashboard/productos')
       })
-      .catch(e=>console.log(e))
+      .catch(e=>console.log("error",e))
         
     }
   })

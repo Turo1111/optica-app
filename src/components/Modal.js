@@ -138,6 +138,17 @@ const ModalContent = styled.div`
   flex: 1;
   padding: 0 20px;
   overflow-y: scroll;
+  ::-webkit-scrollbar {
+      width: 5px;
+  }
+  ::-webkit-scrollbar-track {
+      box-shadow: inset 0 0 6px rgba(0,0,0,0.3); 
+      border-radius: 10px;
+  }
+  ::-webkit-scrollbar-thumb {
+      border-radius: 10px;
+      box-shadow: inset 0 0 6px rgba(0,0,0,0.5); 
+  }
   @media only screen and (max-width: 768px) {
     padding: 5px;
     overflow-y: scroll;
@@ -207,7 +218,7 @@ const Title = styled.div`
   @media only screen and (max-width: 1024px) {
     font-size: 16px;
   }
-  @media only screen and (max-width: 425px) {
+  @media only screen and (max-width: 445px) {
     font-size: 14px;
   }
 `;

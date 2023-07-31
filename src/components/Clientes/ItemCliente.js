@@ -41,7 +41,7 @@ const Container = styled.li `
     :hover{
         background-color: #F9F5F6;
     }
-    @media only screen and (max-width: 425px) {
+    @media only screen and (max-width: 445px) {
         padding: 10px 5px;
     }
 `
@@ -57,7 +57,7 @@ const IconWrapper = styled.div`
     :hover{
         background-color: ${props=>props.hover || '#d9d9d9'};
     }
-    @media only screen and (max-width: 425px) {
+    @media only screen and (max-width: 445px) {
         font-size: 18px;
     }
 `
@@ -67,7 +67,7 @@ const Title = styled.h2 `
     font-weight: 600;
     margin: 5px;
     color: ${props=>props.color};
-    @media only screen and (max-width: 425px) {
+    @media only screen and (max-width: 445px) {
         font-size: 14px;
     }
 `
@@ -76,7 +76,7 @@ const Tag = styled.label `
     font-size: 16px;
     padding: 0 15px;
     color: ${props=>props.color};
-    @media only screen and (max-width: 425px) {
+    @media only screen and (max-width: 445px) {
         display: none;
     }
 `

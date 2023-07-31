@@ -9,6 +9,10 @@ export const useInputValue = (initialValue, onlyType) => {
 
   const [value, setvalue] = useState(initialValue)
 
+  const clearValue = () => {
+    setvalue('')
+  }
+
   const onChange = e => {
 
     if (onlyType === 'number') {
@@ -22,5 +26,5 @@ export const useInputValue = (initialValue, onlyType) => {
     }
   }
   
-  return { value, onChange}
+  return { value, onChange, clearValue}
 }
