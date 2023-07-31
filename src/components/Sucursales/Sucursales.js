@@ -55,7 +55,7 @@ export default function Sucursales() {
     },[])
 
     useEffect(()=>{
-      const socket = io('https://optica-api.onrender.com')
+      const socket = io('http://localhost:3001/')
       socket.on('sucursal', (sucursal) => {
         setData((prevData)=>{
           const exist = prevData.find(elem => elem._id === sucursal.res._id )
@@ -117,7 +117,7 @@ export default function Sucursales() {
             </AnimatedContainer1>
             :
             <AnimatedContainer2>
-              <ul style={{flex: 1, backgroundColor: '#fff', borderRadius: 15, padding: 0 }}>
+              <List>
                   {
                     listSucursales.length === 0 ?
                     <EmptyList onClick={() => setOpenNewEdit(true)} />
@@ -138,7 +138,7 @@ export default function Sucursales() {
                           </Item>
                       ))
                   }
-              </ul>
+              </List>
             </AnimatedContainer2>
           }
         </>
@@ -146,6 +146,14 @@ export default function Sucursales() {
     </Container>
   )
 }
+
+const List = styled.ul `
+  flex: 1;
+  background-color: #fff; 
+  border-radius: 15px;
+  padding: 0;
+  overflow-y: scroll;
+`
 
 const Container = styled.div `
   flex: 1; 

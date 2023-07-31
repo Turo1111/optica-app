@@ -27,6 +27,8 @@ export default function Roles() {
 
     const listRoles = useSearch(search.value, tag, data)
 
+    console.log(listRoles)
+
     useEffect(()=>{
       setLoading(true)
       apiClient.get(`/roles` ,
@@ -46,14 +48,14 @@ export default function Roles() {
     },[])
 
     useEffect(()=>{
-      const socket = io('https://optica-api.onrender.com')
+      const socket = io('http://localhost:3001/')
       socket.on('roles', (roles) => {
         setData((prevData)=>{
           const exist = prevData.find(elem => elem._id === roles.res._id )
           if (exist) {
             return prevData.map((item) =>
-            item._id === roles.res._id ? roles.res : item
-          )
+              item._id === roles.res._id ? roles.res : item
+            )
           }
           return [...prevData, roles.res]
         })
@@ -102,7 +104,7 @@ export default function Roles() {
             </AnimatedContainer1>
             :
             <AnimatedContainer2>
-              <ul style={{flex: 1, backgroundColor: '#fff', borderRadius: 15, padding: 0 }}>
+              <List>
                   {
                     listRoles.length === 0 ?
                     <EmptyList onClick={() => setOpenNewEdit(true)} />
@@ -114,12 +116,12 @@ export default function Roles() {
                         }} >
                             <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: '10px 0'}} >
                                 <label style={{fontSize: 18, fontWeight: 500, color: `${process.env.TEXT_COLOR}`}}>{item.descripcion}</label>
-                                <label style={{fontSize: 16, fontWeight: 400, color: `${process.env.TEXT_COLOR}`}}>2 USUARIOS</label>
+                                <label style={{fontSize: 16, fontWeight: 400, color: `${process.env.TEXT_COLOR}`}}>{item.totalEmpleados} Empleados</label>
                             </div>
                         </Item>
                     ))
                   }
-              </ul>
+              </List>
             </AnimatedContainer2>
           }
         </>
@@ -127,6 +129,14 @@ export default function Roles() {
     </Container>
   )
 }
+
+const List = styled.ul `
+  flex: 1;
+  background-color: #fff; 
+  border-radius: 15px;
+  padding: 0;
+  overflow-y: scroll;
+`
 
 const Container = styled.div `
   flex: 1; 

@@ -13,8 +13,8 @@ export default function NewProduct({token, eClose}) {
   const dispatch = useAppDispatch();
 
   const generateRandomBarcode = () => {
-    const randomNumber = Math.floor(Math.random() * 1000000000);
-    const barcodeNumber = randomNumber.toString().padStart(9, '0');
+    const randomNumber = Math.floor(Math.random() * 100000);
+    const barcodeNumber = randomNumber.toString().padStart(5, '0');
     return barcodeNumber
   };
 
@@ -22,6 +22,7 @@ export default function NewProduct({token, eClose}) {
     initialValues: initialValues,
     validateOnChange: false,
     onSubmit: (formValue) => {
+      console.log(formValue)
        apiClient.post('/producto', formValue,
        {
          headers: {
@@ -67,9 +68,18 @@ export default function NewProduct({token, eClose}) {
         <Input label={"Numeracion"} type='text' name='numeracion' value={formik.values.numeracion} onChange={formik.handleChange} />
         <Input label={"Alto"} type='text' name='alto' value={formik.values.alto} onChange={formik.handleChange} />
         <Input label={"Ancho"} type='text' name='ancho' value={formik.values.ancho} onChange={formik.handleChange} />
-        <InputSelectAdd label={"Categoria"} type='text' value={formik.values.categoria} onChange={(text)=>formik.setFieldValue('categoria', text)} name='categoria' />
-        <InputSelectAdd label={"Marca"} type='text' value={formik.values.marca} onChange={(text)=>formik.setFieldValue('marca', text)} name='marca'/>
-        <InputSelectAdd label={"Color"} type='text' value={formik.values.color} onChange={(text)=>formik.setFieldValue('color', text)} name='color'/>
+        <InputSelectAdd label={"Categoria"} type='text' value={formik.values.idCategoria} onChange={(id, text)=>{
+          formik.setFieldValue('idCategoria', id)
+          formik.setFieldValue('categoria', text)
+        }} name='categoria' />
+        <InputSelectAdd label={"Marca"} type='text' value={formik.values.idMarca} onChange={(id, text)=>{
+          formik.setFieldValue('idMarca', id)
+          formik.setFieldValue('marca', text)
+        }} name='marca'/>
+        <InputSelectAdd label={"Color"} type='text' value={formik.values.idColor} onChange={(id, text)=>{
+          formik.setFieldValue('idColor', id)
+          formik.setFieldValue('color', text)
+        }} name='color'/>
         <Input type='file' name='imagen'
           onChange={(event) => {
             formik.setFieldValue('imagen', event.currentTarget.files[0]);
@@ -91,6 +101,9 @@ const initialValues = {
     numeracion: '',
     ancho: '',
     alto: '',
+    idCategoria: '',
+    idMarca: '',
+    idColor: '',
     categoria: '',
     marca: '',
     color: '',

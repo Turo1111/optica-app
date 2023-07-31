@@ -8,6 +8,7 @@ import Modal from '@/components/Modal'
 import EditProduct from '@/components/Productos/EditProduct'
 import InfoProduct from '@/components/Productos/InfoProduct'
 import NewProduct from '@/components/Productos/NewProduct'
+import NewTransfer from '@/components/Productos/NewTransfer'
 import { useInputValue } from '@/hooks/useInputValue'
 import { useSearch } from '@/hooks/useSearch'
 import { setAlert } from '@/redux/alertSlice'
@@ -15,6 +16,7 @@ import { useAppDispatch, useAppSelector } from '@/redux/hook'
 import { getUser } from '@/redux/userSlice'
 import apiClient from '@/utils/client'
 import React, { useEffect, useState } from 'react'
+import styled from 'styled-components'
 const io = require('socket.io-client')
 
 export default function Productos() {
@@ -27,6 +29,7 @@ export default function Productos() {
   const user = useAppSelector(getUser);
   const [permission, setPermission] = useState(false)
   const dispatch = useAppDispatch();
+  const [openNewTransfer, setOpenNewTransfer] = useState(false)
 
   const search = useInputValue('','')
 
@@ -67,8 +70,9 @@ export default function Productos() {
   }, [user.token])
 
   useEffect(()=>{
-    const socket = io('https://optica-api.onrender.com')
+    const socket = io('http://localhost:3001/')
     socket.on('producto', (producto) => {
+      console.log(producto)
       setData((prevData)=>{
         const exist = prevData.find(elem => elem._id === producto.res._id )
         if (exist) {
@@ -111,11 +115,17 @@ export default function Productos() {
     setOpenEditProduct(true)
   }
 
+  const handleOpenTransferModal = (item) => {
+    setProductSelected(item)
+    setOpenNewTransfer(true)
+  }
+
   const handleCloseModals = () => {
     setProductSelected(undefined)
     setOpenNewProduct(false)
     setOpenInfoProduct(false)
     setOpenEditProduct(false)
+    setOpenNewTransfer(false)
   }
 
   if (!permission) {
@@ -135,7 +145,7 @@ export default function Productos() {
             <InputSearch placeholder={'Buscar Productos'} {...search} />
             <Button text={'NUEVO'} onClick={() => setOpenNewProduct(true)} />
           </div>
-          <ul style={{ flex: 1, backgroundColor: '#fff', borderRadius: 15, padding: 0, overflowY: scroll }}>
+          <List>
             {
               listProducto.length === 0 ?
               <EmptyList onClick={() => setOpenNewProduct(true)} />
@@ -145,20 +155,21 @@ export default function Productos() {
                   key={index}
                   handleOpenInfoModal={() => handleOpenInfoModal(item)}
                   handleOpenEditModal={() => handleOpenEditModal(item)}
+                  handleOpenTransferModal={() => handleOpenTransferModal(item)}
                   item={item}
                 >
                   {item}
                 </ItemProducto>
               ))
             }
-          </ul>
+          </List>
         </>
       }
       <Modal
         open={openNewProduct}
         title={'Nuevo Producto'}
         height='90%'
-        width='40%'
+        width='50%'
         eClose={handleCloseModals}
       >
         <NewProduct eClose={handleCloseModals} token={user.token}/>
@@ -169,7 +180,7 @@ export default function Productos() {
             open={openEditProduct}
             title={'Editar Producto'}
             height='90%'
-            width='40%'
+            width='50%'
             eClose={handleCloseModals}
           >
             <EditProduct item={productSelected} eClose={handleCloseModals} token={user.token} />
@@ -178,13 +189,30 @@ export default function Productos() {
             open={openInfoProduct}
             title={'Info del Producto'}
             height='90%'
-            width='40%'
+            width='50%'
             eClose={handleCloseModals}
           >
             <InfoProduct item={productSelected} token={user.token} />
+          </Modal>
+          <Modal
+            open={openNewTransfer}
+            title={'Transferencia de stock'}
+            height='auto'
+            width='40%'
+            eClose={handleCloseModals}
+          >
+            <NewTransfer item={productSelected} token={user.token} handleClose={handleCloseModals} />
           </Modal>
         </>
       )}
     </>
   )
 }
+
+const List = styled.ul `
+  flex: 1;
+  background-color: #fff; 
+  border-radius: 15px;
+  padding: 0;
+  overflow-y: scroll;
+`

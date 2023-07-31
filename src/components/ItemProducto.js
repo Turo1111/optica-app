@@ -2,8 +2,9 @@ import React from 'react'
 import styled from 'styled-components'
 import {FaInfo} from 'react-icons/fa'
 import {MdEdit} from 'react-icons/md'
+import {BiTransfer} from 'react-icons/bi'
 
-export default function ItemProducto({handleOpenInfoModal, item, handleOpenEditModal}) {
+export default function ItemProducto({handleOpenInfoModal, item, handleOpenEditModal, handleOpenTransferModal}) {
   return (
     <Container >
         <div >
@@ -29,6 +30,9 @@ export default function ItemProducto({handleOpenInfoModal, item, handleOpenEditM
             </IconWrapper>
             <IconWrapper bg={'#FCDDB0'} hover={'#E1BA82'} onClick={handleOpenEditModal}>
                 <MdEdit/>
+            </IconWrapper>
+            <IconWrapper bg={'#A2CDB0'} hover={'#85A389'} onClick={handleOpenTransferModal}>
+                <BiTransfer/>
             </IconWrapper>
         </div>
     </Container>

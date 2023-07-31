@@ -48,7 +48,7 @@ export default function ObraSocial() {
 
     useEffect(()=>{
       
-      const socket = io('https://optica-api.onrender.com')
+      const socket = io('http://localhost:3001/')
       socket.on('obraSocial', (obraSocial) => {
         setLoading(true)
         setData((prevData)=>{

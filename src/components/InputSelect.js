@@ -123,7 +123,7 @@ const InputSelect = ({type = 'text', label, value, onChange, name, edit = false}
   };
 
   const addValue = (_id, value) => {
-    onChange(_id)
+    onChange(_id, value)
     setInputValue(value)
     setOpenList(false)
     setIsActive(true);

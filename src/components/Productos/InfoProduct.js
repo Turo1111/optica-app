@@ -20,8 +20,6 @@ export default function InfoProduct({token, item}) {
 
     const { barcodeDataURL } = useBarcodeGenerator(item?.codigo);
 
-    console.log(item)
-
     useEffect(()=>{
         setLoading(true)
         if (item) {
@@ -36,7 +34,7 @@ export default function InfoProduct({token, item}) {
                 setLoading(false)
               })
               .catch(e=>dispatch(setAlert({
-                message: 'Hubo un error inesperado al cargar los empleados',
+                message: 'Hubo un error inesperado al cargar los stock',
                 type: 'error'
               })))
         }
@@ -44,7 +42,7 @@ export default function InfoProduct({token, item}) {
 
     useEffect(()=>{
       
-        const socket = io('https://optica-api.onrender.com')
+        const socket = io('http://localhost:3001/')
         socket.on('stock', (stock) => {
           setLoading(true)
           setData((prevData)=>{

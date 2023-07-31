@@ -34,6 +34,8 @@ export default function Clientes() {
 
   const listCliente = useSearch(search.value, tag, data)   
 
+  console.log(listCliente)
+
   useEffect(()=>{
     if (user.usuario !== '') {  
       user.roles.permisos.forEach((permiso) => {
@@ -82,7 +84,7 @@ export default function Clientes() {
   }, [])
 
   useEffect(()=>{
-    const socket = io('https://optica-api.onrender.com')
+    const socket = io('http://localhost:3001/')
     socket.on('cliente', (cliente) => {
       setData((prevData)=>{
         const exist = prevData.find(elem => elem._id === cliente.res._id )
@@ -90,6 +92,33 @@ export default function Clientes() {
           return prevData.map((item) =>
           item._id === cliente.res._id ? cliente.res : item
         )
+        }
+        return [...prevData, cliente.res]
+      })
+    })
+    return () => {
+      socket.disconnect();
+    }; 
+  },[data])
+
+  useEffect(()=>{
+    const socket = io('http://localhost:3001/')
+    socket.on('senia', (senia) => {
+      console.log('senia', senia)
+      setData((prevData)=>{
+        const exist = prevData.find(elem => elem._id === senia.res.idCliente )
+        if (exist) {
+          return prevData.map((item) =>{
+          /* item._id === senia.res.idCliente ? (item.senia = senia.res) : item */
+          if (item._id === senia.res.idCliente) {
+            return {
+              ...item,
+              senia: senia.res
+            }
+          }else{
+            return item
+          }
+        })
         }
         return [...prevData, cliente.res]
       })
@@ -163,7 +192,7 @@ export default function Clientes() {
               <Modal
                 open={openNewEdit}
                 title={clientSelected ? 'Editar Cliente' : 'Nuevo Cliente'}
-                height='45%'
+                height='auto'
                 width='40%'
                 eClose={()=>setOpenNewEdit(false)}
               >
@@ -176,7 +205,7 @@ export default function Clientes() {
               <Modal
                 open={openNewSenia}
                 title={'Nueva seña'}
-                height='45%'
+                height='auto'
                 width='40%'
                 eClose={()=>setOpenNewSenia(false)}
               >
@@ -189,7 +218,7 @@ export default function Clientes() {
               <Modal
                 open={openInfo}
                 title={'Info del Cliente'}
-                height='45%'
+                height='auto'
                 width='30%'
                 eClose={()=>setOpenInfo(false)}
               >

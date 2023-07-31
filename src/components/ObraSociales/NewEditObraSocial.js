@@ -11,14 +11,18 @@ import ItemProducto from '../ItemProducto'
 import InputSearch from '../InputSearch'
 import Loading from '../Loading'
 import styled from 'styled-components'
+import { useInputValue } from '@/hooks/useInputValue'
+import { useSearch } from '@/hooks/useSearch'
 
 export default function NewEditObraSocial({token, item , edit, handleClose}) {
 
     const dispatch = useAppDispatch();
     const [data, setData] = useState([])
     const [loading, setLoading] = useState(false)
-    const [selectedItems, setSelectedItems] = useState(item?.productosDescuento);
-
+    const [selectedItems, setSelectedItems] = useState(item?.productosDescuento || []);
+    const search = useInputValue('','')
+    const tag = ["descripcion", "codigo"]
+    const listProducto = useSearch(search.value, tag, data)
 
     const formik = useFormik({
         initialValues: initialValues(item),
@@ -96,18 +100,18 @@ export default function NewEditObraSocial({token, item , edit, handleClose}) {
           :
 
           <div style={{marginTop: 15}}>
-            <InputSearch placeholder={'Buscar Productos'} width='50%' />
-            <ul style={{ flex: 1, backgroundColor: '#fff', borderRadius: 15, padding: 0 }}>
+            <InputSearch placeholder={'Buscar Productos'} width='50%' {...search} />
+            <List>
               {
-                data.length === 0 ? 
+                listProducto.length === 0 ? 
                 <div>
                   no hay productos creados
                 </div>
                 :
-                data.map((item, index) => (
+                listProducto.map((item, index) => (
                   <Title color={process.env.TEXT_COLOR} key={index} 
                     onClick={() => {
-                      if (!selectedItems.includes(item._id)) {
+                      if (!selectedItems?.includes(item._id)) {
                         setSelectedItems((prevSelectedItems) => [...prevSelectedItems, item._id]);
                       } else {
                         setSelectedItems((prevSelectedItems) =>
@@ -115,13 +119,13 @@ export default function NewEditObraSocial({token, item , edit, handleClose}) {
                         );
                       }
                     }}
-                    active={selectedItems.includes(item._id)}
+                    active={selectedItems?.includes(item._id)}
                   >
                     {item.descripcion}
                   </Title>
                 ))
               }
-            </ul>
+            </List>
           </div>
         }
         <div style={{display: 'flex', justifyContent: 'space-around', marginTop: 15}}>
@@ -156,4 +160,13 @@ const Title = styled.h2 `
     :hover {
       background-color: #d9d9d9;
     }
+`
+
+const List = styled.ul `
+  flex: 1;
+  background-color: #fff; 
+  border-radius: 15px;
+  padding: 0;
+  overflow-y: scroll;
+  height: 200px;
 `

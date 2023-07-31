@@ -16,8 +16,8 @@ export default function NewEditEmpleado({token, item , edit, handleClose}) {
         initialValues: initialValues(item),
         validateOnChange: false,
         onSubmit: (formValue) => {
+          console.log("editar empelado", formValue)
           if (item) {
-            console.log("editar empelado", formValue, token, item._id)
             apiClient.patch(`/empleado/${item._id}`, formValue ,
             {
               headers: {
@@ -64,7 +64,10 @@ export default function NewEditEmpleado({token, item , edit, handleClose}) {
         <Input label={"Direccion"} type='text' name='direccion' value={formik.values.direccion} onChange={formik.handleChange} required={true}  />
         <Input label={"Usuario"} type='text' name='usuario' value={formik.values.usuario} onChange={formik.handleChange} required={true}  />
         <Input label={"Contraseña"} type='password' name='password' value={formik.values.password} onChange={formik.handleChange} required={true} />
-        <InputSelect label={"Sucursal"} type='text' name='sucursal' value={formik.values.sucursal}  onChange={(text)=>formik.setFieldValue('idSucursal', text)} edit={item && true}  />
+        <InputSelect label={"Sucursal"} type='text' name='sucursal' value={formik.values.sucursal}  onChange={(id, text)=>{
+            formik.setFieldValue('idSucursal', id)
+            formik.setFieldValue('sucursal', text)
+          }} edit={item && true}  />
         <InputSelect label={"Rol"} type='text' name='roles' value={formik.values.roles}  onChange={(text)=>formik.setFieldValue('idRol', text)} edit={item && true} />
         <ToggleSwitch checked={formik.values.estado} onChange={(newValue)=>formik.setFieldValue(`estado`, newValue)} label={'Estado'} />
         <div style={{display: 'flex', justifyContent: 'space-around', marginTop: 15}}>

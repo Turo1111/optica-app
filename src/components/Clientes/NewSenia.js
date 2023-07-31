@@ -17,7 +17,7 @@ export default function NewSenia({id, token, handleClose}) {
         initialValues: initialValues(),
         validateOnChange: false,
         onSubmit: (formValue) => {
-          if (formik.values.armazon > 0 || formik.values.lente > 0) {
+          if (formik.values.saldo > 0) {
 
             const senia = {
                 ...formValue,
@@ -52,23 +52,10 @@ export default function NewSenia({id, token, handleClose}) {
         }
     })
 
-    useEffect(()=>{
-        let total = formik.values.saldo
-        if (formik.values.armazon > 0 || formik.values.lente > 0) {
-            total = formik.values.armazon+formik.values.lente
-        }
-        else{
-            total = 0
-        }
-        formik.setFieldValue('saldo', total)
-    },[formik.values.armazon, formik.values.lente])
-
   return (
     <div>
-        <Input label={"Armazon"} type='number' name='armazon' prefix={'$'} value={formik.values.armazon} onChange={formik.handleChange} required={true}  />
-        <Input label={"Lente"} type='number' name='lente' prefix={'$'} value={formik.values.lente} onChange={formik.handleChange} required={true}  />
         <TextArea  label={"Observacion"} name='observacion' value={formik.values.observacion} onChange={formik.handleChange}/>
-        <Input label={"Saldo Total"} type='number' name='saldo' prefix={'$'} value={formik.values.saldo} onChange={formik.handleChange} readOnly={true}/>
+        <Input label={"Saldo Total"} type='number' name='saldo' prefix={'$'} value={formik.values.saldo} onChange={formik.handleChange} />
         <div style={{display: 'flex', justifyContent: 'space-around', marginTop: 15}}>
             <Button text={'CANCELAR'} onClick={handleClose}/>
             <Button text={'ACEPTAR'} onClick={formik.handleSubmit}/>
@@ -79,8 +66,6 @@ export default function NewSenia({id, token, handleClose}) {
 
 function initialValues () {
     return {
-        armazon: 0,
-        lente: 0,
         observacion: '',
         saldo: 0
     }
