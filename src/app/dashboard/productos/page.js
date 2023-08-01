@@ -70,11 +70,7 @@ export default function Productos() {
   }, [user.token])
 
   useEffect(()=>{
-<<<<<<< HEAD
-    const socket = io('https://optica-api.onrender.com')
-=======
     const socket = io('http://localhost:3001/')
->>>>>>> main
     socket.on('producto', (producto) => {
       console.log(producto)
       setData((prevData)=>{
