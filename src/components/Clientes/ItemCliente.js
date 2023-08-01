@@ -4,7 +4,7 @@ import { MdEdit } from 'react-icons/md'
 import styled from 'styled-components'
 import { FaMoneyCheckAlt } from "react-icons/fa";
 
-export default function ItemCliente({_id, nombreCompleto, telefono, dni, handleOpenInfoModal, handleOpenEditModal, handleOpenSeniaModal}) {
+export default function ItemCliente({_id, nombreCompleto, telefono, dni, senia, handleOpenInfoModal, handleOpenEditModal, handleOpenSeniaModal}) {
 
   
   return (
@@ -13,16 +13,16 @@ export default function ItemCliente({_id, nombreCompleto, telefono, dni, handleO
             <Title color={process.env.TEXT_COLOR}>{nombreCompleto}</Title>
             <Tag color={process.env.TEXT_COLOR}> Telefono : {telefono}</Tag>
             <Tag color={process.env.TEXT_COLOR}> DNI : {dni}</Tag>
-            <Tag color={process.env.TEXT_COLOR}> 16 COMPRAS</Tag> 
+            {/* <Tag color={process.env.TEXT_COLOR}> 16 COMPRAS</Tag>  */}
         </div>
         <div style={{display: 'flex'}}>
-            <IconWrapper bg={'#8294C4'} hover={'#637195'}  onClick={()=>handleOpenInfoModal({_id, nombreCompleto, telefono, dni})}>
+            <IconWrapper bg={'#8294C4'} hover={'#637195'}  onClick={()=>handleOpenInfoModal({_id, nombreCompleto, telefono, dni, senia})}>
                 <FaInfo/>
             </IconWrapper>
-            <IconWrapper bg={'#AAC8A7'} hover={'#637195'}  onClick={()=>handleOpenSeniaModal({_id, nombreCompleto, telefono, dni})}>
+            <IconWrapper bg={'#AAC8A7'} hover={'#637195'}  onClick={()=>handleOpenSeniaModal({_id, nombreCompleto, telefono, dni, senia})}>
                 <FaMoneyCheckAlt/>
             </IconWrapper>
-            <IconWrapper bg={'#FCDDB0'} hover={'#E1BA82'} onClick={()=>handleOpenEditModal({_id, nombreCompleto, telefono, dni})}>
+            <IconWrapper bg={'#FCDDB0'} hover={'#E1BA82'} onClick={()=>handleOpenEditModal({_id, nombreCompleto, telefono, dni, senia})}>
                 <MdEdit/>
             </IconWrapper>
         </div>

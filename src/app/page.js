@@ -26,7 +26,17 @@ export default function Home() {
       console.log("form",formValue)
       apiClient.post('/empleado/login', formValue)
       .then(r=>{
+<<<<<<< HEAD
         console.log(r)
+=======
+        if (!r.data.data[0].estado) {
+          dispatch(setAlert({
+            message: 'No tienes permiso para iniciar sesion',
+            type: 'error'
+          })) 
+          return null
+        }
+>>>>>>> main
         const user = {
           idEmpleado: r.data.data[0]._id,
           idSucursal: r.data.data[0].idSucursal,
@@ -43,7 +53,16 @@ export default function Home() {
         setValue(user)
         router.push('/dashboard/productos')
       })
+<<<<<<< HEAD
       .catch(e=>console.log("error",e))
+=======
+      .catch(e=>
+        dispatch(setAlert({
+          message: 'Hubo un error, revise los datos',
+          type: 'error'
+        }))  
+      )
+>>>>>>> main
         
     }
   })

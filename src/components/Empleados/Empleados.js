@@ -46,8 +46,10 @@ export default function Empleados() {
     },[])
 
     useEffect(()=>{
-      const socket = io('http://localhost:3001')
+      console.log(data)
+      const socket = io('http://localhost:3001/')
       socket.on('empleado', (empleado) => {
+        console.log("algo en empleado",empleado)
         setData((prevData)=>{
           const exist = prevData.find(elem => elem._id === empleado.res._id )
           if (exist) {
@@ -98,18 +100,17 @@ export default function Empleados() {
           {
             openNewEdit ? 
             <AnimatedContainer1>
-              <NewEditEmpleado handleClose={()=>setOpenNewEdit(false)} item={selected} />
+              <NewEditEmpleado handleClose={()=>setOpenNewEdit(false)} item={selected} token={user.token} />
             </AnimatedContainer1>
             :
             <AnimatedContainer2>
-              <ul style={{flex: 1, backgroundColor: '#fff', borderRadius: 15, padding: 0 }}>
+              <List>
                   {
                     listEmpleados.length === 0 ?
                     <EmptyList onClick={() => setOpenNewEdit(true)} />
                     :
                     listEmpleados.map((item,index)=>(
                         <Item key={index} onClick={()=>{
-                          console.log("item",item)
                           setSelected(item) 
                           setOpenNewEdit(true) 
                         }} >
@@ -128,7 +129,7 @@ export default function Empleados() {
                         </Item>
                     ))
                   }
-              </ul>
+              </List>
             </AnimatedContainer2>
           }
         </>
@@ -145,6 +146,13 @@ const Container = styled.div `
   @media only screen and (max-width: 445px) {
     padding: 5px;
   }
+`
+const List = styled.ul `
+  flex: 1;
+  background-color: #fff; 
+  border-radius: 15px;
+  padding: 0;
+  overflow-y: scroll;
 `
 
 const Item = styled.li `

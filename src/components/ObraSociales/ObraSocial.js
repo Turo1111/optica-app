@@ -48,7 +48,7 @@ export default function ObraSocial() {
 
     useEffect(()=>{
       
-      const socket = io('http://localhost:3001')
+      const socket = io('http://localhost:3001/')
       socket.on('obraSocial', (obraSocial) => {
         setLoading(true)
         setData((prevData)=>{
@@ -95,7 +95,6 @@ export default function ObraSocial() {
           <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
             <InputSearch placeholder={'Buscar Obra Social'} {...search} />
             <Button text={'NUEVO'} onClick={()=>{
-                console.log("aca")
                 /* setSelected(null) */
                 setOpenNewEdit(true)
               }} />
@@ -104,10 +103,11 @@ export default function ObraSocial() {
             openNewEdit ? 
             <AnimatedContainer1>
               <NewEditObraSocial handleClose={()=>{
-                  /* setSelected(null)
-                  setOpenNewEdit(false) */
+                  setSelected(null)
+                  setOpenNewEdit(false) 
               }} 
               item={selected} edit={selected && true} 
+              token={user.token}
               />
             </AnimatedContainer1>
             :

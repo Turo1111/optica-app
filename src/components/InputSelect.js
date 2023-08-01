@@ -122,14 +122,9 @@ const InputSelect = ({type = 'text', label, value, onChange, name, edit = false,
     setIsFocused(false);
   };
 
-  const addValue = (item) => {
-    if (preData) {
-      onChange(item)
-    }
-    else{
-      onChange(item._id)
-    }
-    setInputValue(item.descripcion)
+  const addValue = (_id, value) => {
+    onChange(_id, value)
+    setInputValue(value)
     setOpenList(false)
     setIsActive(true);
     setIsFocused(true);
@@ -155,10 +150,6 @@ const InputSelect = ({type = 'text', label, value, onChange, name, edit = false,
       .catch(e=>console.log(e))
     }
   },[name])
-
-  useEffect(()=>{
-    console.log("data input select",data)
-  },[data])
 
   useEffect(()=>{
     if (value === '') {

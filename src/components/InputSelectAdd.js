@@ -4,10 +4,10 @@ import {IoIosArrowDown} from 'react-icons/io'
 import Button from './Button';
 import apiClient from '@/utils/client';
 import { useFormik } from 'formik';
-import { useAppSelector } from '@/redux/hook';
+import { useAppDispatch, useAppSelector } from '@/redux/hook';
 import { getUser } from '@/redux/userSlice';
+import { setAlert } from '@/redux/alertSlice';
 const io = require('socket.io-client')
-
 
 const InputWrapper = styled.div`
   position: relative;
@@ -50,13 +50,11 @@ const InputField = styled.input`
 
 const IconWrapper = styled.div`
     display: flex;
-    position: absolute;
     align-items: center;
     justify-content: center;
     font-size: 20px;
     color: ${props => props.color};
-    padding: 15px;
-    right: 0;
+    padding: 14px 0;
     cursor: pointer;
 `
 const Tag = styled.label `
@@ -108,6 +106,7 @@ const InputSelectAdd = ({type = 'text', label, value, onChange, name, edit = fal
   const [data, setData] = useState([])
   const [loading, setLoading] = useState(false)
   const user = useAppSelector(getUser);
+  const dispatch = useAppDispatch();
 
   const [inputValue, setInputValue] = useState(edit ? value : '')
 
@@ -126,7 +125,8 @@ const InputSelectAdd = ({type = 'text', label, value, onChange, name, edit = fal
   };
 
   const addValue = (_id, value) => {
-    onChange(_id)
+    console.log('value', value)
+    onChange(_id, value)
     setInputValue(value)
     setOpenList(false)
     setIsActive(true);
@@ -147,8 +147,40 @@ const InputSelectAdd = ({type = 'text', label, value, onChange, name, edit = fal
         Authorization: `Bearer ${user.token}` // Agregar el token en el encabezado como "Bearer {token}"
       }
     })
-    .then((r)=>onChange(r.data.body._id))
-    .catch(e=>console.log(e))
+    .then((r)=>{
+      onChange(r.data.body._id)
+      dispatch(setAlert({
+        message: `${label} creada correctamente`,
+        type: 'success'
+      }))
+    })
+    .catch(e=>dispatch(setAlert({
+      message: 'Hubo un error, revisa los datos',
+      type: 'error'
+    })))
+  }
+
+  const patchValue = () => {
+    apiClient.patch(`/${name}/${value}`, {_id: value, descripcion: inputValue},
+    {
+      headers: {
+        Authorization: `Bearer ${user.token}` // Agregar el token en el encabezado como "Bearer {token}"
+      }
+    })
+    .then((r)=>{
+      onChange(r.data.body._id)
+      dispatch(setAlert({
+        message: `${label} modificada correctamente`,
+        type: 'success'
+      }))
+    })
+    .catch(e=>{
+      console.log(e)
+      dispatch(setAlert({
+        message: 'Hubo un error, revisa los datos',
+        type: 'error'
+      }))
+    })
   }
 
   useEffect(()=>{
@@ -167,7 +199,7 @@ const InputSelectAdd = ({type = 'text', label, value, onChange, name, edit = fal
   },[name])
 
   useEffect(()=>{
-    const socket = io('http://localhost:3001')
+    const socket = io('http://localhost:3001/')
     socket.on(`${name}`, (socket) => {
       setData((prevData)=>{
         const exist = prevData.find(elem => elem._id === socket.res._id )
@@ -195,6 +227,12 @@ const InputSelectAdd = ({type = 'text', label, value, onChange, name, edit = fal
     }
   },[value])
 
+  useEffect(()=>{
+    if (inputValue !== '') {
+      setOpenList(false)
+    }
+  },[inputValue])
+
   return (
     <InputWrapper>
       <InputLabel active={isActive} color={process.env.TEXT_COLOR} >{type === 'date' ? '' : label}</InputLabel>
@@ -209,19 +247,28 @@ const InputSelectAdd = ({type = 'text', label, value, onChange, name, edit = fal
         focused={isFocused}
       />
       {
-        inputValue === '' ?                                
-        <IconWrapper color={process.env.TEXT_COLOR} onClick={()=>setOpenList(!openList)}>
+        inputValue === '' ?  
+        <div style={{display: 'flex', position: 'absolute', right: 15}}>
+          <IconWrapper color={process.env.TEXT_COLOR} onClick={()=>setOpenList(!openList)}>
             <IoIosArrowDown/>
-        </IconWrapper>
+          </IconWrapper>
+        </div>                              
         :
          value === '' ? 
-          <IconWrapper onClick={postValue}>
-              <Tag color={process.env.TEXT_COLOR}>Agregar</Tag>
-          </IconWrapper>
+          <div style={{display: 'flex', position: 'absolute', right: 0}}>
+            <IconWrapper onClick={postValue}>
+                <Tag color={process.env.TEXT_COLOR}>Agregar</Tag>
+            </IconWrapper>
+          </div>
           :
-          <IconWrapper onClick={cleanValue}>
-              <Tag color={process.env.TEXT_COLOR}>Quitar</Tag>
-          </IconWrapper>
+          <div style={{display: 'flex', position: 'absolute', right: 0}}>
+            <IconWrapper onClick={patchValue}>
+              <Tag color={process.env.TEXT_COLOR}>Modificar</Tag>
+            </IconWrapper>
+            <IconWrapper onClick={cleanValue}>
+                <Tag color={process.env.TEXT_COLOR}>Quitar</Tag>
+            </IconWrapper>
+          </div>
       }
       {
         openList && 

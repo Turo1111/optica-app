@@ -4,15 +4,18 @@ import React from 'react'
 import Input from '../Input'
 import InputSelectAdd from '../InputSelectAdd'
 import Button from '../Button'
+import { setAlert } from '@/redux/alertSlice'
+import { useAppDispatch } from '@/redux/hook'
 
 
 export default function EditProduct({token, eClose, item}) {
+
+  const dispatch = useAppDispatch();
   
     const formik = useFormik({
         initialValues: initialValues(item),
         validateOnChange: false,
         onSubmit: (formValue) => {
-          console.log("formvalue editproduct",formValue)
           apiClient.patch(`/producto/${item._id}`, formValue ,
           {
             headers: {
@@ -25,9 +28,15 @@ export default function EditProduct({token, eClose, item}) {
           })
           .then(r=>{
             eClose()
-            console.log("respuesta editproduct",r)
+            dispatch(setAlert({
+              message: 'Producto editado correctamente',
+              type: 'success'
+            }))
           })
-          .catch(e=>console.log(e))
+          .catch(e=>dispatch(setAlert({
+            message: 'Hubo un error, revisa los datos',
+            type: 'error'
+          }))  )
         }
     })
 
@@ -43,9 +52,18 @@ export default function EditProduct({token, eClose, item}) {
           <Input label={"Numeracion"} type='text' name='numeracion' value={formik.values.numeracion} onChange={formik.handleChange} />
           <Input label={"Alto"} type='text' name='alto' value={formik.values.alto} onChange={formik.handleChange} />
           <Input label={"Ancho"} type='text' name='ancho' value={formik.values.ancho} onChange={formik.handleChange} />
-          <InputSelectAdd label={"Categoria"} type='text' value={formik.values.categoria} onChange={(text)=>formik.setFieldValue('categoria', text)} name='categoria' edit={true} />
-          <InputSelectAdd label={"Marca"} type='text' value={formik.values.marca} onChange={(text)=>formik.setFieldValue('marca', text)} name='marca' edit={true}/>
-          <InputSelectAdd label={"Color"} type='text' value={formik.values.color} onChange={(text)=>formik.setFieldValue('color', text)} name='color' edit={true}/>
+          <InputSelectAdd label={"Categoria"} type='text' value={formik.values.categoria} onChange={(id, text)=>{
+            formik.setFieldValue('idCategoria', id)
+            formik.setFieldValue('categoria', text)
+          }}  name='categoria' edit={true} />
+          <InputSelectAdd label={"Marca"} type='text' value={formik.values.marca} onChange={(id, text)=>{
+            formik.setFieldValue('idMarca', id)
+            formik.setFieldValue('marca', text)
+          }} name='marca' edit={true}/>
+          <InputSelectAdd label={"Color"} type='text' value={formik.values.color} onChange={(id, text)=>{
+            formik.setFieldValue('idColor', id)
+            formik.setFieldValue('color', text)
+          }} name='color' edit={true}/>
           {formik.values.imagen && <Input label={"Imagen"} type='text' value={formik.values.imagen}/>}
           <Input type='file' name='newimagen'
             onChange={(event) => {
