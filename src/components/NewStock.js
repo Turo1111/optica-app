@@ -18,6 +18,7 @@ export default function NewStock({idProducto, item, eClose}) {
         validateOnChange: false,
         onSubmit: (formValue) => {
           if (item) {
+            console.log(formValue)
             apiClient.patch(`/stock/${item._id}`, formValue,
             {
               headers: {
@@ -64,7 +65,10 @@ export default function NewStock({idProducto, item, eClose}) {
     
     return (
         <div>
-            <InputSelect label={"Sucursal"} type='text' name='sucursal'  onChange={(text)=>formik.setFieldValue('idSucursal', text)} />
+            <InputSelect label={"Sucursal"} type='text' name='sucursal' value={formik.values.sucursal}  onChange={(id, item)=>{
+              formik.setFieldValue('idSucursal', id)
+              formik.setFieldValue('sucursal', item.descripcion)
+            }} />
             <Input label={"Stock"} type='number' name='cantidad' value={formik.values.cantidad} onChange={formik.handleChange} required={true}  />
             <Input label={"Precio efectivo"} type='number' name='precioEfectivo' value={formik.values.precioEfectivo} onChange={formik.handleChange} required={true}  />
             <Input label={"Precio lista"} type='number' name='precioLista' value={formik.values.precioLista} onChange={formik.handleChange} required={true}  />

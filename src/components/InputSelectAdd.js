@@ -14,7 +14,10 @@ const InputWrapper = styled.div`
   margin: 25px 0;
   text-align: center;
   display: flex;
-    flex-direction: column;
+  flex-direction: column;
+  @media only screen and (max-width: 1440px) {
+    margin: 20px 0;
+  }
 `;
 
 const InputLabel = styled.label`
@@ -124,17 +127,16 @@ const InputSelectAdd = ({type = 'text', label, value, onChange, name, edit = fal
     setIsFocused(false);
   };
 
-  const addValue = (_id, value) => {
-    console.log('value', value)
-    onChange(_id, value)
-    setInputValue(value)
+  const addValue = (item) => {
+    onChange(item._id, item)
+    setInputValue(item.descripcion)
     setOpenList(false)
     setIsActive(true);
     setIsFocused(true);
   }
 
   const cleanValue = () => {
-    onChange('')
+    onChange('', '')
     setInputValue('')
     setIsActive(false);
     setIsFocused(false);
@@ -148,7 +150,7 @@ const InputSelectAdd = ({type = 'text', label, value, onChange, name, edit = fal
       }
     })
     .then((r)=>{
-      onChange(r.data.body._id)
+      onChange(r.data.body._id, r.data.body.descripcion)
       dispatch(setAlert({
         message: `${label} creada correctamente`,
         type: 'success'
@@ -175,9 +177,8 @@ const InputSelectAdd = ({type = 'text', label, value, onChange, name, edit = fal
       }))
     })
     .catch(e=>{
-      console.log(e)
       dispatch(setAlert({
-        message: 'Hubo un error, revisa los datos',
+        message: `${e}`,
         type: 'error'
       }))
     })
@@ -195,7 +196,10 @@ const InputSelectAdd = ({type = 'text', label, value, onChange, name, edit = fal
       setLoading(false)
       setData(r.data.body)
     })
-    .catch(e=>console.log(e))
+    .catch(e=>dispatch(setAlert({
+      message: `${e}`,
+      type: 'error'
+    })))
   },[name])
 
   useEffect(()=>{
@@ -217,11 +221,13 @@ const InputSelectAdd = ({type = 'text', label, value, onChange, name, edit = fal
   },[data])
 
   useEffect(()=>{
-    if (value === '') {
+    if (value === '' || value === undefined) {
+      console.log('value vacio', value);
       setInputValue('')
       setIsActive(false);
       setIsFocused(false);
     }else {
+      console.log('value no vacio', value);
       setIsActive(true);
       setIsFocused(true);
     }
@@ -254,7 +260,7 @@ const InputSelectAdd = ({type = 'text', label, value, onChange, name, edit = fal
           </IconWrapper>
         </div>                              
         :
-         value === '' ? 
+         (value === '' || value === undefined ) ? 
           <div style={{display: 'flex', position: 'absolute', right: 0}}>
             <IconWrapper onClick={postValue}>
                 <Tag color={process.env.TEXT_COLOR}>Agregar</Tag>
@@ -280,7 +286,7 @@ const InputSelectAdd = ({type = 'text', label, value, onChange, name, edit = fal
             <>
               {
                   data.length === 0 ? 'Vacio' : 
-                  data.map((item, index)=> <ItemModal key={index} color={process.env.TEXT_COLOR} onClick={()=>addValue(item._id, item.descripcion)} >{item.descripcion}</ItemModal>)
+                  data.map((item, index)=> <ItemModal key={index} color={process.env.TEXT_COLOR} onClick={()=>addValue(item)} >{item.descripcion}</ItemModal>)
               }
             </>
           }

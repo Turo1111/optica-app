@@ -8,6 +8,9 @@ const InputWrapper = styled.div`
   text-align: center;
   display: flex;
   flex-direction: column;
+  @media only screen and (max-width: 1440px) {
+    margin: 20px 0;
+  }
 `;
 
 const InputLabel = styled.label`
@@ -79,8 +82,8 @@ const Input = ({ type = 'text', label, value, onChange, name, required, readOnly
   return (
     <InputWrapper>
       {prefix && <Prefix color={process.env.TEXT_COLOR}>{prefix}</Prefix>}
-      <InputLabel active={isActive} color={process.env.TEXT_COLOR}>
-        {type === 'date' ? '' : label}
+      <InputLabel active={type === 'date' ? true : isActive} color={process.env.TEXT_COLOR}>
+        {label}
         {required && ' - Campo requerido'}
       </InputLabel>
       <InputField

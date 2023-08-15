@@ -1,7 +1,10 @@
 import React from 'react'
 import styled from 'styled-components'
 
-export default function InputQty ({large, upQty, downQty, qty ,total}) {
+export default function InputQty ({large, upQty, downQty, qty ,total, oferta = false, descuento}) {
+
+    console.log(typeof total);
+
   return (
     <Container>
         <ContainerInput>
@@ -9,7 +12,10 @@ export default function InputQty ({large, upQty, downQty, qty ,total}) {
             <Qty style={{color: `${process.env.TEXT_COLOR}`}} large={large}>{qty}</Qty>
             <UpDown style={{color: `${process.env.TEXT_COLOR}`}} large={large} onClick={upQty} >+</UpDown>
         </ContainerInput>
-        <Total style={{color: `${process.env.TEXT_COLOR}`}} large={large}>$ {total}</Total>
+        <div style={{display: 'flex'}} >
+            {oferta && <Total style={{color: `${process.env.TEXT_COLOR}`}} oferta={true} large={large}>$ {total}</Total>}
+            <Total style={{color: `${process.env.TEXT_COLOR}`}} large={large}>$ {!oferta ? parseFloat(total).toFixed(2) : (total-(total*(descuento/100))).toFixed(2)}</Total>
+        </div>
     </Container>
   )
 }
@@ -17,7 +23,7 @@ export default function InputQty ({large, upQty, downQty, qty ,total}) {
 const Container = styled.div `
     display: block;
     padding: 5px;
-    max-width: 120px;
+    max-width: 250px;
     min-width: 100px;
 `
 
@@ -42,7 +48,7 @@ const Qty = styled.div `
 
 const ContainerInput = styled.div `
     display: flex;
-    justify-content: space-between;
+    justify-content: space-evenly;
     align-items: center;
 `
 
@@ -50,6 +56,7 @@ const Total = styled.h2 `
     font-size: ${props=>props.large ? '18px' : '16px'};
     text-align: center;
     margin: 5px;
+    text-decoration: ${props => (props.oferta ? 'line-through' : 'none')};
     @media only screen and (max-width: 1024px) {
         font-size: 12px;
     }

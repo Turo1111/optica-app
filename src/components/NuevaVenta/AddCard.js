@@ -7,7 +7,7 @@ import Button from '../Button'
 import { setAlert } from '@/redux/alertSlice'
 import { useAppDispatch } from '@/redux/hook'
 
-export default function AddCard({total, setDateCard, onClose}) {
+export default function AddCard({total, setDataCard, onClose}) {
 
     const dispatch = useAppDispatch();
 
@@ -21,7 +21,7 @@ export default function AddCard({total, setDateCard, onClose}) {
             console.log(formValue)
             if(total !== 0) {
                 onClose()
-                return setDateCard(formValue)
+                return setDataCard(formValue)
             }
             dispatch(setAlert({
                 message: 'Hubo un error inesperado, revisa los datos',
@@ -33,7 +33,7 @@ export default function AddCard({total, setDateCard, onClose}) {
   return (
     <Container>
         <Input label={"Banco"} type='text' name='banco' value={formik.values.banco} onChange={formik.handleChange} required={true}  />
-        <InputSelect label={'Cuotas'} name={'cuotas'} value={''} preData={cuotas(total)} onChange={(item)=>formik.setFieldValue('cuotas', item.cantidad)}/>
+        <InputSelect label={'Cuotas'} name={'cuotas'} value={''} preData={cuotas(total)} onChange={(id, item)=>formik.setFieldValue('cuotas', item.cantidad)}/>
 
         <div style={{display: 'flex', justifyContent: 'end', marginTop: 15}}>
             <Button text={'ACEPTAR'} onClick={formik.handleSubmit}/>
@@ -46,19 +46,19 @@ function cuotas (total) {
     return [
         {
             cantidad: 1,
-            descripcion:`1 x ${1*total}`
+            descripcion:`1 x ${(total/1).toFixed(2)}`
         },
         {
             cantidad: 3,
-            descripcion:`3 x ${3*total}`
+            descripcion:`3 x ${(total/3).toFixed(2)}`
         },
         {
             cantidad: 6,
-            descripcion:`6 x ${6*total}`
+            descripcion:`6 x ${(total/6).toFixed(2)}`
         },
         {
             cantidad: 12,
-            descripcion:`12 x ${12*total}`
+            descripcion:`12 x ${(total/12).toFixed(2)}`
         }
     ]
 }

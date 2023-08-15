@@ -59,7 +59,7 @@ export default function NewEditCliente({token, item , edit, handleClose}) {
   return (
     <div>
         <Input label={"Nombre completo"} type='text' name='nombreCompleto' value={formik.values.nombreCompleto} onChange={formik.handleChange} required={true}  />
-        <Input label={"Telefono"} type='text' name='telefono' value={formik.values.telefono} onChange={formik.handleChange} required={true}  />
+        <Input label={"Telefono"} type='text' name='telefono' value={formik.values.telefono} onChange={formik.handleChange}  />
         <Input label={"DNI"} type='text' name='dni' value={formik.values.dni} onChange={formik.handleChange} required={true}  />
         <div style={{display: 'flex', justifyContent: 'space-around', marginTop: 15}}>
             <Button text={'CANCELAR'} onClick={handleClose}/>

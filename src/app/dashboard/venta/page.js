@@ -2,12 +2,18 @@
 import EmptyList from '@/components/EmptyList';
 import InputSearch from '@/components/InputSearch';
 import Loading from '@/components/Loading';
+import Modal from '@/components/Modal';
+import NotPermissions from '@/components/NotPermissions';
+import InfoVenta from '@/components/Ventas/InfoVenta';
+import ItemVenta from '@/components/Ventas/ItemVenta';
+import PagarDeuda from '@/components/Ventas/PagarDeuda';
 import { useInputValue } from '@/hooks/useInputValue';
 import { useSearch } from '@/hooks/useSearch';
 import { useAppDispatch, useAppSelector } from '@/redux/hook';
 import { getUser } from '@/redux/userSlice';
 import apiClient from '@/utils/client';
 import React, { useEffect, useState } from 'react'
+import styled from 'styled-components';
 const io = require('socket.io-client')
 
 export default function Venta() {
@@ -17,12 +23,18 @@ export default function Venta() {
   const user = useAppSelector(getUser);
   const [permission, setPermission] = useState(false)
   const dispatch = useAppDispatch();
+  const [ventaSelected, setVentaSelected] = useState(undefined)
+  const [openInfo, setOpenInfo] = useState(false)
+  const [openSaldo, setOpenSaldo] = useState(false)
+  const [tagSearch, setTagSearch] = useState([])
 
   const search = useInputValue('','')
 
-  const tag = ["descripcion", "codigo"]
+  const tag = ["cliente", "sucursal", 'empleado']
 
-  const listVentas = useSearch(search.value, tag, data)
+  const listVentas = useSearch(search.value, tag, data, tagSearch)
+
+  console.log(listVentas)
 
   useEffect(()=>{
     if (user.usuario !== '') {  
@@ -53,7 +65,10 @@ export default function Venta() {
             return r.data.body
           })
         })
-        .catch(e => console.log(e))
+        .catch(e => dispatch(setAlert({
+          message: `${e}`,
+          type: 'error'
+        })))
     }
   }, [user.token])
 
@@ -75,9 +90,8 @@ export default function Venta() {
     }; 
   },[data])
 
-
   if (!permission) {
-    return <h2>no tiene permisos</h2>
+    return <NotPermissions/>
   }
 
 return (
@@ -90,24 +104,73 @@ return (
         :
         <>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <InputSearch placeholder={'Buscar Productos'} {...search} />
+            <InputSearch placeholder={'Buscar Ventas'} {...search} width='100%'
+              tags={tag}
+              tagSearch={tagSearch}
+              deleteTagSearch={(item) => setTagSearch((prevData) => prevData.filter((elem) => elem.tag !== item.tag))}
+              onSelectTag={(search, tag) =>
+                tag !== 'SIN ETIQUETA' &&
+                setTagSearch((prevData) =>
+                  !prevData.find((elem) => elem.tag === tag) ? [...prevData, { search, tag }] : prevData
+                )
+              }
+            />
           </div>
-          <ul style={{ flex: 1, backgroundColor: '#fff', borderRadius: 15, padding: 0, overflowY: scroll }}>
+          <List>
             {
               listVentas.length === 0 ?
               <EmptyList onClick={() => setOpenNewProduct(true)} />
               :
               listVentas.map((item, index) => (
-                <div
+                <ItemVenta
                   key={index}
-                >
-                  '1'
-                </div>
+                  {...item}
+                  handleOpenInfo={()=>{
+                    setOpenInfo(true)
+                    setVentaSelected(item)
+                  }}
+                  handleOpenSaldo={()=>{
+                    setOpenSaldo(true)
+                    setVentaSelected(item)
+                  }}
+                />
               ))
             }
-          </ul>
+          </List>
         </>
+      }
+      {
+        openInfo && 
+        <Modal 
+          open={openInfo} 
+          eClose={()=>setOpenInfo(false)} 
+          title={'INFO DE LA VENTA'} 
+          height='95%'
+          width='35%'
+        >
+          <InfoVenta {...ventaSelected} token={user.token}/>
+        </Modal>
+      }
+      {
+        openSaldo && 
+        <Modal 
+          open={openSaldo} 
+          eClose={()=>setOpenSaldo(false)} 
+          title={'PAGAR DEUDA'} 
+          height='auto'
+          width='35%'
+        >
+          <PagarDeuda venta={ventaSelected} handleClose={()=>setOpenSaldo(false)} token={user.token} />
+        </Modal>
       }
     </>
   )
 }
+
+const List = styled.ul `
+  flex: 1;
+  background-color: #fff; 
+  border-radius: 15px;
+  padding: 0;
+  overflow-y: scroll;
+`

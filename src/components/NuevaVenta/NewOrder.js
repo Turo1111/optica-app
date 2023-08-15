@@ -4,8 +4,9 @@ import styled from 'styled-components'
 import Input from '../Input'
 import Button from '../Button'
 import { useAppDispatch } from '@/redux/hook'
+import { setAlert } from '@/redux/alertSlice'
 
-export default function NewOrder({onClose, setDateCard}) {
+export default function NewOrder({onClose, setDataCard}) {
 
     const dispatch = useAppDispatch();
 
@@ -16,7 +17,15 @@ export default function NewOrder({onClose, setDateCard}) {
         },
         validateOnChange: false,
         onSubmit: (formValue) => {
-          setDateCard(formValue)
+          if (formValue.fecha === '') {
+            dispatch(setAlert({
+              message: 'Falto ingresar la fecha',
+              type: 'error'
+          }))
+          console.log('falta fecha');
+            return null
+          }
+          setDataCard(formValue)
           onClose()
         }
     })

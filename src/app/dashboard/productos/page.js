@@ -5,6 +5,7 @@ import InputSearch from '@/components/InputSearch'
 import ItemProducto from '@/components/ItemProducto'
 import Loading from '@/components/Loading'
 import Modal from '@/components/Modal'
+import NotPermissions from '@/components/NotPermissions'
 import EditProduct from '@/components/Productos/EditProduct'
 import InfoProduct from '@/components/Productos/InfoProduct'
 import NewProduct from '@/components/Productos/NewProduct'
@@ -16,6 +17,7 @@ import { useAppDispatch, useAppSelector } from '@/redux/hook'
 import { getUser } from '@/redux/userSlice'
 import apiClient from '@/utils/client'
 import React, { useEffect, useState } from 'react'
+import { MdClose } from 'react-icons/md'
 import styled from 'styled-components'
 const io = require('socket.io-client')
 
@@ -30,12 +32,13 @@ export default function Productos() {
   const [permission, setPermission] = useState(false)
   const dispatch = useAppDispatch();
   const [openNewTransfer, setOpenNewTransfer] = useState(false)
+  const [tagSearch, setTagSearch] = useState([])
 
   const search = useInputValue('','')
 
-  const tag = ["descripcion", "codigo"]
+  const tag = ["descripcion", "codigo", "categoria", "color", "alto", "ancho", "marca", "numeracion"]
 
-  const listProducto = useSearch(search.value, tag, data)
+  const listProducto = useSearch(search.value, tag, data, tagSearch)
 
   useEffect(()=>{
     if (user.usuario !== '') {  
@@ -60,12 +63,16 @@ export default function Productos() {
         }
       })
         .then(r => {
+          console.log(r.data.body);
           setData((prevData)=>{
             setLoading(false)
             return r.data.body
           })
         })
-        .catch(e => console.log(e))
+        .catch(e => dispatch(setAlert({
+          message: `${e}`,
+          type: 'error'
+        })))
     }
   }, [user.token])
 
@@ -91,7 +98,7 @@ export default function Productos() {
   useEffect(()=>{
     if (openNewProduct || openEditProduct) {
       user.roles.permisos.forEach((permiso) => {
-        if (permiso.screen.toLowerCase() === 'producto') {
+        if (permiso.screen.toLowerCase() === 'venta') {
           if (!permiso.escritura) {
             setOpenNewProduct(false)
             setOpenEditProduct(false)
@@ -129,7 +136,7 @@ export default function Productos() {
   }
 
   if (!permission) {
-    return <h2>no tiene permisos</h2>
+    return <NotPermissions/>
   }
 
   return (
@@ -141,10 +148,23 @@ export default function Productos() {
         </div> 
         :
         <>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <InputSearch placeholder={'Buscar Productos'} {...search} />
+          <ContainerSearch>
+            <InputSearch
+              placeholder={'Buscar Productos'}
+              {...search}
+              tags={tag}
+              tagSearch={tagSearch}
+              deleteTagSearch={(item) => setTagSearch((prevData) => prevData.filter((elem) => elem.tag !== item.tag))}
+              onSelectTag={(search, tag) =>
+                tag !== 'SIN ETIQUETA' &&
+                setTagSearch((prevData) =>
+                  !prevData.find((elem) => elem.tag === tag) ? [...prevData, { search, tag }] : prevData
+                )
+              }
+              width="80%"
+            />
             <Button text={'NUEVO'} onClick={() => setOpenNewProduct(true)} />
-          </div>
+          </ContainerSearch>
           <List>
             {
               listProducto.length === 0 ?
@@ -215,4 +235,12 @@ const List = styled.ul `
   border-radius: 15px;
   padding: 0;
   overflow-y: scroll;
+`
+const ContainerSearch = styled.div `
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  @media only screen and (max-width: 445px) {
+    flex-direction: column;
+  }
 `

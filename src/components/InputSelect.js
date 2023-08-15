@@ -11,7 +11,10 @@ const InputWrapper = styled.div`
   margin: 25px 0;
   text-align: center;
   display: flex;
-    flex-direction: column;
+  flex-direction: column;
+  @media only screen and (max-width: 1440px) {
+    margin: 20px 0;
+  }
 `;
 
 const InputLabel = styled.label`
@@ -98,7 +101,7 @@ const LoadingText = styled.p`
   color: #8294C4;
 `;
 
-const InputSelect = ({type = 'text', label, value, onChange, name, edit = false, preData}) => {
+const InputSelect = ({type = 'text', label, value, onChange, name, edit = false, preData, emptyOption}) => {
   const [isActive, setIsActive] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
   const [openList, setOpenList] = useState(false)
@@ -106,7 +109,7 @@ const InputSelect = ({type = 'text', label, value, onChange, name, edit = false,
   const [loading, setLoading] = useState(false)
   const user = useAppSelector(getUser);
 
-  const [inputValue, setInputValue] = useState(edit ? value : '')
+  const [inputValue, setInputValue] = useState(value ? value : '')
 
   const handleInputChange = (event) => {
     setInputValue(event.target.value);
@@ -122,9 +125,9 @@ const InputSelect = ({type = 'text', label, value, onChange, name, edit = false,
     setIsFocused(false);
   };
 
-  const addValue = (_id, value) => {
-    onChange(_id, value)
-    setInputValue(value)
+  const addValue = (item) => {
+    onChange(item._id, item)
+    setInputValue(item.descripcion)
     setOpenList(false)
     setIsActive(true);
     setIsFocused(true);
@@ -144,10 +147,18 @@ const InputSelect = ({type = 'text', label, value, onChange, name, edit = false,
         }
       })
       .then((r)=>{
+        if (emptyOption) {
+          setData([...emptyOption, ...r.data.body])
+          setLoading(false)
+          return
+        }
         setData(r.data.body)
         setLoading(false)
       })
-      .catch(e=>console.log(e))
+      .catch(e=>dispatch(setAlert({
+        message: `${e}`,
+        type: 'error'
+      })))
     }
   },[name])
 
@@ -161,6 +172,8 @@ const InputSelect = ({type = 'text', label, value, onChange, name, edit = false,
       setIsFocused(true);
     }
   },[value])
+
+  useEffect(()=>{console.log(data);},[data])
 
   return (
     <InputWrapper>

@@ -1,4 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import useOutsideClick from '@/hooks/useOutsideClick';
+import { useResize } from '@/hooks/useResize';
+import React, { useEffect, useRef, useState } from 'react';
+import { IoIosArrowDown } from 'react-icons/io';
+import { MdClose } from 'react-icons/md';
 import styled from 'styled-components';
 
 const InputField = styled.input`
@@ -13,6 +17,9 @@ const InputField = styled.input`
   &:focus {
     outline: none;
   }
+  @media only screen and (max-width: 445px) {
+    font-size: 12px;
+  }
 `;
 
 const InputWrapper = styled.div`
@@ -20,7 +27,10 @@ const InputWrapper = styled.div`
   width: ${props => props.width};
   text-align: center;
   display: flex;
-    flex-direction: column;
+  flex-direction: column;
+  @media only screen and (max-width: 445px) {
+    width: 100%;
+  }
 `;
 
 const ItemModal = styled.li `
@@ -36,13 +46,13 @@ const ItemModal = styled.li `
 
 const Modal = styled.ul`
     position: absolute; 
-    width: 97%; 
+    width: 99%; 
     min-height: 30px;
     max-height: 150px;
     overflow-y: scroll;
     background-color: #fff; 
-    left: 5px;
-    top: 40px;
+    left: px;
+    top: 35px;
     z-index: 2;
     /* box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25); */
     border: 1px solid #d9d9d9;
@@ -59,12 +69,69 @@ const LoadingText = styled.p`
   color: #8294C4;
 `;
 
-const InputSearch = ({placeholder, width = '80%', value, onChange, modal, onSelect, data, prop}) => {
+const IconWrapper = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    color: ${props => props.color};
+    padding: 15px 0px;
+    padding-right: 5px;
+    cursor: pointer;
+    @media only screen and (max-width: 445px) {
+      font-size: 15px;
+    }
+`
 
+const ContainerAdd = styled.h5`
+  margin: 0 5px; 
+  color: ${process.env.TEXT_COLOR}; 
+  cursor: pointer;
+  @media only screen and (max-width: 445px) {
+    font-size: 12px;
+  }
+`
+const ContainerTag = styled.li `
+  font-size: 18px;
+  font-weight: 500;
+  margin: 0px ; 
+  color: white;
+  padding: 5px 15px;
+  border-radius: 10px;
+  background-color: #d9d9d9; 
+  margin-right: 15px; 
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+`
+
+const ContainerTagSearch = styled.ul`
+  display: flex;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  margin-top: 10px;
+  overflow-x: auto;
+  flex: 1;
+  width: ${props => props.ancho <= 1000 ? `${props.ancho - 120}px`: `${props.ancho - 650}px`} ;
+`;
+
+
+const InputSearch = ({placeholder, width = '80%', deleteTagSearch, tagSearch = [], value, onChange, modal, onSelect, data, prop, tags = [], onSelectTag, customItemModal = undefined}) => {
+  
   const [openList, setOpenList] = useState(false)
+  const [openTagList, setOpenTagList] = useState(false)
+  const [tagSelected, setTagSelected] = useState('SIN ETIQUETA')
+  let {ancho, alto} = useResize()
 
+  console.log(data);
+
+  const modalRef = useRef(null);
+
+  useOutsideClick(modalRef, () => setOpenList(false));
+  
   useEffect(()=>{
-    /* console.log(modal, value !== '') */
     if (modal && value !== '') {
       console.log('entro')
       setOpenList(true)
@@ -83,16 +150,61 @@ const InputSearch = ({placeholder, width = '80%', value, onChange, modal, onSele
         value={value}
         onChange={onChange}
         placeholder={placeholder}
+        onFocus={()=>(data?.length !== 0 && data !== undefined) && setOpenList(true)}
       />
       {
+        tagSearch.length !==0 && (    
+          <ContainerTagSearch ancho={ancho} alto={alto} >
+            {
+              tagSearch.map((item)=> 
+                <ContainerTag onClick={()=>deleteTagSearch(item)} >
+                  {item.search} - {item.tag}
+                  <MdClose style={{marginLeft: 5}}/>
+                </ContainerTag>
+              )
+            }
+          </ContainerTagSearch>
+        )
+      }
+      {
+        tags.length !== 0 && (
+          <div style={{display: 'flex', position: 'absolute', right: 5, alignItems: 'center'}} >
+            <ContainerAdd
+              onClick={()=>onSelectTag(value, tagSelected)}  >AGREGAR</ContainerAdd>
+            <ContainerAdd>{tagSelected.toUpperCase()}</ContainerAdd>
+            <IconWrapper color={process.env.TEXT_COLOR} onClick={()=>setOpenTagList(!openTagList)}>
+                  <IoIosArrowDown/>
+            </IconWrapper>
+            {
+              openTagList && (
+                <Modal ref={modalRef}>
+                  {
+                    tags?.length === 0 ? 'Vacio' : 
+                    (tags.concat(['SIN ETIQUETA']))?.map((item, index)=> <ItemModal key={index} color={process.env.TEXT_COLOR} onClick={()=>{
+                      setTagSelected(item)
+                      setOpenTagList(false)
+                    }} >{item.toUpperCase()}</ItemModal>)
+                  }
+                </Modal>
+              )
+            }
+          </div>
+        )
+      }
+      {
           openList && (
-            <Modal>
+            <Modal ref={modalRef}>
               {
-                data.length === 0 ? 'Vacio' : 
-                data.map((item, index)=> <ItemModal key={index} color={process.env.TEXT_COLOR} onClick={()=>{
+                data?.length === 0 ? 'Vacio' : 
+                data?.map((item, index)=> <ItemModal key={index} color={process.env.TEXT_COLOR} onClick={()=>{
                   onSelect(item)
                   setOpenList(false)
-                }} >{item[prop]}</ItemModal>)
+                }} >{
+                  customItemModal ?
+                  customItemModal(item)
+                  : 
+                  item[prop]
+                }</ItemModal>)
               }
             </Modal>
           )

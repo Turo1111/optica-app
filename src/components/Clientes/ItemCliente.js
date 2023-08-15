@@ -4,15 +4,16 @@ import { MdEdit } from 'react-icons/md'
 import styled from 'styled-components'
 import { FaMoneyCheckAlt } from "react-icons/fa";
 
-export default function ItemCliente({_id, nombreCompleto, telefono, dni, senia, handleOpenInfoModal, handleOpenEditModal, handleOpenSeniaModal}) {
+export default function ItemCliente({_id, nombreCompleto, telefono, dni, senia, handleOpenInfoModal, handleOpenEditModal, handleOpenSeniaModal, cuentaCorriente}) {
 
   
   return (
     <Container>
         <div>
-            <Title color={process.env.TEXT_COLOR}>{nombreCompleto}</Title>
-            <Tag color={process.env.TEXT_COLOR}> Telefono : {telefono}</Tag>
-            <Tag color={process.env.TEXT_COLOR}> DNI : {dni}</Tag>
+            <Title color={process.env.TEXT_COLOR}>{nombreCompleto || "No definido"}</Title>
+            <Tag color={process.env.TEXT_COLOR}> Telefono : {telefono || "No definido"}</Tag>
+            <Tag color={process.env.TEXT_COLOR}> DNI : {dni || "No definido"}</Tag>
+            <Tag color={process.env.TEXT_COLOR}> Debe : {cuentaCorriente || "0"}</Tag>
             {/* <Tag color={process.env.TEXT_COLOR}> 16 COMPRAS</Tag>  */}
         </div>
         <div style={{display: 'flex'}}>

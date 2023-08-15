@@ -38,6 +38,9 @@ export default function NewTransfer({item, token, handleClose}) {
             }
             let stockDestino = listStock.find(stock => stock.idSucursal === formValue.idDestino)
             let stockSalida = listStock.find(stock => stock.idSucursal === formValue.idSalida)
+            console.log("List stock",listStock)
+            console.log("Stock destino",stockDestino)
+            console.log("Stock salida",stockSalida)
             if (stockSalida === undefined) {
                 dispatch(setAlert({
                     message: 'Sucursal salida no posee stock asociado',
@@ -179,9 +182,10 @@ export default function NewTransfer({item, token, handleClose}) {
 
   return (
     <div>
-        <InputSelect label={"Sucursal de salida"} type='text' name='sucursal'  onChange={(text)=>formik.setFieldValue('idSalida', text)} />
-        <InputSelect label={"Sucursal de destino"} type='text' name='sucursal'  onChange={(text)=>formik.setFieldValue('idDestino', text)} />
-        <Input label={"Cantidad"} type='number' name='cantidad' value={formik.values.cantidad} onChange={formik.handleChange} required={true}  />
+        <InputSelect label={"Sucursal de salida"} type='text' name='sucursal'  onChange={(id, item)=>formik.setFieldValue('idSalida', id)} />
+        <InputSelect label={"Sucursal de destino"} type='text' name='sucursal'  onChange={(id, item)=>formik.setFieldValue('idDestino', id)} />
+        {formik.values.idSalida !== '' && <label style={{marginBottom: 25, color: `${process.env.TEXT_COLOR}`}} >Stock disponible : {listStock.find(stock => stock.idSucursal === formik.values.idSalida).cantidad} unidades</label>}
+        <Input label={"Cantidad"} type='number' name='cantidad' value={formik.values.cantidad} onChange={formik.handleChange} required={true} />
         <Input label={"Precio efectivo"} type='number' name='precioEfectivo' value={formik.values.precioEfectivo} onChange={formik.handleChange} prefix={'$'} />
         <Input label={"Precio lista"} type='number' name='precioLista' value={formik.values.precioLista} onChange={formik.handleChange}  prefix={'$'} />
         <div style={{display: 'flex', justifyContent: 'space-around'}}>

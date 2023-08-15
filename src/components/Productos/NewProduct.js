@@ -22,17 +22,13 @@ export default function NewProduct({token, eClose}) {
     initialValues: initialValues,
     validateOnChange: false,
     onSubmit: (formValue) => {
-      console.log(formValue)
        apiClient.post('/producto', formValue,
        {
          headers: {
-           Authorization: `Bearer ${token}` // Agregar el token en el encabezado como "Bearer {token}"
+           Authorization: `Bearer ${token}`, // Agregar el token en el encabezado como "Bearer {token}"
+           'Content-Type': 'multipart/form-data'
          }
-       }, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      })
+       })
       .then(r=>{
         formik.resetForm(initialValues)
         eClose()
@@ -68,20 +64,21 @@ export default function NewProduct({token, eClose}) {
         <Input label={"Numeracion"} type='text' name='numeracion' value={formik.values.numeracion} onChange={formik.handleChange} />
         <Input label={"Alto"} type='text' name='alto' value={formik.values.alto} onChange={formik.handleChange} />
         <Input label={"Ancho"} type='text' name='ancho' value={formik.values.ancho} onChange={formik.handleChange} />
-        <InputSelectAdd label={"Categoria"} type='text' value={formik.values.idCategoria} onChange={(id, text)=>{
+        <InputSelectAdd label={"Categoria"} type='text' value={formik.values.idCategoria} onChange={(id, item)=>{
           formik.setFieldValue('idCategoria', id)
-          formik.setFieldValue('categoria', text)
+          formik.setFieldValue('categoria', item.descripcion)
         }} name='categoria' />
-        <InputSelectAdd label={"Marca"} type='text' value={formik.values.idMarca} onChange={(id, text)=>{
+        <InputSelectAdd label={"Marca"} type='text' value={formik.values.idMarca} onChange={(id, item)=>{
           formik.setFieldValue('idMarca', id)
-          formik.setFieldValue('marca', text)
+          formik.setFieldValue('marca', item.descripcion)
         }} name='marca'/>
-        <InputSelectAdd label={"Color"} type='text' value={formik.values.idColor} onChange={(id, text)=>{
+        <InputSelectAdd label={"Color"} type='text' value={formik.values.idColor} onChange={(id, item)=>{
           formik.setFieldValue('idColor', id)
-          formik.setFieldValue('color', text)
+          formik.setFieldValue('color', item.descripcion)
         }} name='color'/>
         <Input type='file' name='imagen'
           onChange={(event) => {
+            console.log("aca",event.currentTarget.files[0]);
             formik.setFieldValue('imagen', event.currentTarget.files[0]);
           }}
         /> 

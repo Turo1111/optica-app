@@ -2,16 +2,17 @@ import React from 'react'
 import styled from 'styled-components'
 import Table from '../Table'
 
-export default function InfoCliente({nombreCompleto, telefono, dni, senia}) {
+export default function InfoCliente({nombreCompleto, telefono, dni, senia, cuentaCorriente}) {
     console.log("senia",senia)
   return (
     <div style={{ padding: 5}}>
-        <Title color={process.env.TEXT_COLOR}>Nombre Completo : {nombreCompleto}</Title>
-        <Tag color={process.env.TEXT_COLOR}> Telefono : {telefono}</Tag>
-        <Tag color={process.env.TEXT_COLOR}> DNI : {dni}</Tag>
+        <Title color={process.env.TEXT_COLOR}>Nombre Completo : {nombreCompleto  || "No definido"}</Title>
+        <Tag color={process.env.TEXT_COLOR}> Telefono : {telefono || "No definido"}</Tag>
+        <Tag color={process.env.TEXT_COLOR}> DNI : {dni || "No definido"}</Tag>
         <Tag color={process.env.TEXT_COLOR}> Seña activa : </Tag>
+        <Tag color={process.env.TEXT_COLOR}> Cuenta corriente : {cuentaCorriente || "0"}</Tag>
         {
-            !senia ? <Title color={process.env.TEXT_COLOR}>NO TIENE SENIA ACTIVA</Title> :
+            !senia ? <Title color={process.env.TEXT_COLOR} style={{margin: '15px 0'}}>NO TIENE SENIA ACTIVA</Title> :
             <Table data={[{fecha: senia?.fecha, saldo: senia?.saldo}]} columns={columnsSenia} onClick={(item)=>console.log("")} 
             />
         }

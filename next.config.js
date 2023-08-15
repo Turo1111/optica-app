@@ -6,10 +6,10 @@ const nextConfig = {
         URL_BD: 'http://localhost:3001',
         RED_ALERT: '#F7A4A4',
         GREEN_ALERT: '#B6E2A1',
-        YELLOW_ALERT: '#FFFBC1'
+        YELLOW_ALERT: '#EA906C'
     },
     images: {
-        domains: ['optica-api.onrender.com'],
+        domains: ['localhost'],
     },
     compiler: {
         styledComponents: true

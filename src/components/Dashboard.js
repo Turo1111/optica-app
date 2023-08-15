@@ -12,8 +12,8 @@ import { AiOutlineMenu } from 'react-icons/ai';
 import { MdClose } from 'react-icons/md';
 import { CSSTransition } from 'react-transition-group'
 
-/* const itemsLi = ["GENERAR VENTA", "PRODUCTO", "CLIENTE", "COMPRA", "GESTION", "CONTABILIDAD"] */
-const itemsLi = ["NUEVA VENTA", "VENTA", "PRODUCTOS","GESTION", "CLIENTES", "COMPRA", "GESTION", "CONTABILIDAD"]
+/* const itemsLi = ["COMPRA", "CONTABILIDAD"] */
+const itemsLi = ["NUEVA VENTA", "VENTA", "PRODUCTOS","GESTION", "CLIENTES"]
 
 export default function Dashboard({children}) {
 

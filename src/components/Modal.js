@@ -119,8 +119,11 @@ const Content = styled.div`
     width: 80%;
   }
   @media only screen and (max-width: 768px) {
-    height: ${({height}) => height ? 'auto' : 'auto'};
+    height: ${({height}) => height ? height : 'auto'};
     width: 95%;
+  }
+  @media only screen and (min-width: 768px) {
+    min-width: 600px;
   }
 `;
 
@@ -135,6 +138,8 @@ const IconWrapper = styled.div`
 `;
 
 const ModalContent = styled.div`
+  display: flex;
+  flex-direction: column;
   flex: 1;
   padding: 0 20px;
   overflow-y: scroll;

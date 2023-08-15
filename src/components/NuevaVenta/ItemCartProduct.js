@@ -5,26 +5,47 @@ import {MdEdit} from 'react-icons/md'
 import { BsTrash } from 'react-icons/bs'
 import InputQty from '../InputQty'
 
-export default function ItemCartProduct({item, changeCart}) {
+export default function ItemCartProduct({item, changeCart, deleteItem, tipoPago}) {
 
   return (
     <Container >
-            <IconWrapper bg={process.env.RED_ALERT} onClick={()=>''}>
+            <IconWrapper bg={process.env.RED_ALERT} onClick={()=>deleteItem(item._id)}>
                 <BsTrash/>
             </IconWrapper>
             <Title color={process.env.TEXT_COLOR}>{item.descripcion}</Title>
             <InputQty 
                 qty={item.cantidad} 
-                total={item.totalEfectivo} 
+                total={tipoPago ? item.totalEfectivo : item.totalTarjeta} 
                 downQty={()=>changeCart({...item, 
                     cantidad: ((item.cantidad > 1) ? item.cantidad-1 : item.cantidad), 
-                    totalEfectivo: (item.cantidad > 1 ? (item.cantidad-1)*item.precioEfectivo : item.totalEfectivo), 
-                    totalTarjeta: (item.cantidad > 1 ? (item.cantidad-1)*item.precioLista : item.totalTarjeta)
+                    totalEfectivo: (item.cantidad > 1 ? 
+                            item.descuento !== undefined ? 
+                            ((item.cantidad-1)*item.precioEfectivo)-(((item.cantidad-1)*item.precioEfectivo)*(item.descuento/100)) 
+                            : 
+                            (item.cantidad-1)*item.precioEfectivo 
+                        : item.totalEfectivo
+                    ), 
+                    totalTarjeta: (item.cantidad > 1 ? 
+                            item.descuento !== undefined ? ((item.cantidad-1)*item.precioLista)-(((item.cantidad-1)*item.precioLista)*(item.descuento/100)) 
+                            : 
+                            (item.cantidad-1)*item.precioLista 
+                        : item.totalTarjeta
+                    )
                 })} 
                 upQty={()=>changeCart({...item, 
                     cantidad: item.stock >= item.cantidad+1 ? (item.cantidad+1) : item.cantidad, 
-                    totalEfectivo: item.stock >= item.cantidad+1 ? (item.cantidad+1)*item.precioEfectivo : (item.cantidad)*item.precioEfectivo, 
-                    totalTarjeta: item.stock >= item.cantidad+1 ? (item.cantidad+1)*item.precioLista : (item.cantidad)*item.precioLista,
+                    totalEfectivo: (item.stock >= item.cantidad+1 ? 
+                            item.descuento !== undefined ? 
+                            ((item.cantidad+1)*item.precioEfectivo)-(((item.cantidad+1)*item.precioEfectivo)*(item.descuento/100)) 
+                            : 
+                            (item.cantidad+1)*item.precioEfectivo 
+                        : (item.cantidad)*item.precioEfectivo
+                    ), 
+                    totalTarjeta: (item.stock >= item.cantidad+1 ? 
+                            item.descuento !== undefined ? ((item.cantidad+1)*item.precioLista)-(((item.cantidad+1)*item.precioLista)*(item.descuento/100)) 
+                            : 
+                            (item.cantidad+1)*item.precioLista 
+                        : (item.cantidad)*item.precioLista),
                 })} 
             />
     </Container>

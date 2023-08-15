@@ -8,15 +8,23 @@ import { setAlert } from '@/redux/alertSlice'
 import apiClient from '@/utils/client'
 import useBarcodeGenerator from '@/hooks/useBarcodeGenerator'
 import Loading from '../Loading'
+import useFormatArrayString from '@/hooks/useFormatArrayString'
+import Modal from '../Modal'
+import NewOferta from './NewOferta'
 const io = require('socket.io-client')
 
 export default function InfoProduct({token, item}) {
+    console.log(item)
 
     const [openNewStock, setOpenNewStock] = useState(false)
     const [data, setData] = useState([])
     const dispatch = useAppDispatch();
     const [loading, setLoading] = useState(false)
     const [stockSelected, setStockSelected] = useState(undefined)
+    let listObraSocial = useFormatArrayString(item?.obrasSocialesDescuento)
+    const [openNewSale, setOpenNewSale] = useState(false)
+    const [ofertaSelected, setOfertaSelected] = useState(undefined)
+    const [ofertas, setOfertas] = useState([])
 
     const { barcodeDataURL } = useBarcodeGenerator(item?.codigo);
 
@@ -41,7 +49,27 @@ export default function InfoProduct({token, item}) {
     },[item])
 
     useEffect(()=>{
-      
+      setLoading(true)
+      if (item) {
+          apiClient.get(`/oferta/${item?._id}` ,
+          {
+            headers: {
+              Authorization: `Bearer ${token}` // Agregar el token en el encabezado como "Bearer {token}"
+            }
+          })
+            .then(r=>{
+              setOfertas(r.data.body)
+              setLoading(false)
+            })
+            .catch(e=>dispatch(setAlert({
+              message: 'Hubo un error inesperado al cargar los stock',
+              type: 'error'
+            })))
+      }
+  },[item])
+
+    useEffect(()=>{
+        console.log(data)
         const socket = io('http://localhost:3001/')
         socket.on('stock', (stock) => {
           setLoading(true)
@@ -54,6 +82,19 @@ export default function InfoProduct({token, item}) {
             )
             }
             return [...prevData, stock.res]
+          })
+        })
+        socket.on('oferta', (oferta) => {
+          setLoading(true)
+          setOfertas((prevData)=>{
+            const exist = prevData.find(elem => elem._id === oferta.res._id )
+            setLoading(false)
+            if (exist) {
+              return prevData.map((item) =>
+              item._id === oferta.res._id ? oferta.res : item
+            )
+            }
+            return [...prevData, oferta.res]
           })
         })
         return () => {
@@ -91,6 +132,9 @@ export default function InfoProduct({token, item}) {
                 <Caracteristicas color={process.env.TEXT_COLOR}>
                     <label style={{fontWeight: 600}}>Codigo :</label> {item?.codigo || 'No definido'}
                 </Caracteristicas>  
+                <Caracteristicas color={process.env.TEXT_COLOR}>
+                    <label style={{fontWeight: 600}}>Descuento con :</label> {listObraSocial || 'No definido'}
+                </Caracteristicas>  
                 <div>
                     <img src={barcodeDataURL} alt="Barcode" />
                 </div>
@@ -109,18 +153,64 @@ export default function InfoProduct({token, item}) {
                 <Loading/>
               </div> 
             :
-            <>
-                <ButtonNewStock color={process.env.BLUE_COLOR} onClick={()=>setOpenNewStock(true)}>+ NUEVO STOCK</ButtonNewStock>
+            <>  
+                <div style={{display: 'flex'}} >
+                  <ButtonNewStock color={process.env.BLUE_COLOR} onClick={()=>setOpenNewStock(true)}>+ NUEVO STOCK</ButtonNewStock>
+                  <ButtonNewStock color={process.env.BLUE_COLOR} onClick={()=>setOpenNewSale(true)}>+ NUEVA OFERTA</ButtonNewStock>
+                </div>
                 {
-                    openNewStock ? 
-                        <NewStock eClose={()=>setOpenNewStock(false)} idProducto={item._id} item={stockSelected}/>
-                    :
-                        <Table columns={columns} data={data} onClick={(item)=>{
-                          setOpenNewStock(true)
-                          setStockSelected(item)
-                        }} />
+                  data.length === 0 ? 
+                  <div style={{color: `${process.env.TEXT_COLOR}`, textAlign: 'center', margin: '15px 0'}}>No hay stock creado</div>:
+                  <Table columns={columns} data={data} onClick={(item)=>{
+                    setOpenNewStock(true)
+                    setStockSelected(item)
+                  }} />
+                }
+                {
+                  ofertas.length === 0 ?
+                  <div style={{color: `${process.env.TEXT_COLOR}`, textAlign: 'center', margin: '15px 0'}}>No hay oferta creada</div>:
+                  <Table date={true} columns={columns1} data={ofertas} onClick={(item)=>{
+                    setOpenNewSale(true)
+                    setOfertaSelected(item)
+                  }} />
                 }
             </>
+        }
+        {
+          openNewSale && 
+          <Modal
+            open={openNewSale}
+            title={'Nueva oferta'}
+            height='auto'
+            width='50%'
+            eClose={()=>{
+              setStockSelected(undefined)
+              setOpenNewSale(false)
+            }}
+          >
+            <NewOferta token={token} item={ofertaSelected} producto={item} eClose={()=>{
+              setStockSelected(undefined)
+              setOpenNewSale(false)
+            }}/>
+          </Modal>
+        }
+        {
+          openNewStock && 
+          <Modal
+            open={openNewStock}
+            title={'Nueva oferta'}
+            height='auto'
+            width='50%'
+            eClose={()=>{
+              setStockSelected(undefined)
+              setOpenNewStock(false)
+            }}
+          >
+            <NewStock eClose={()=>{
+              setStockSelected(undefined)
+              setOpenNewStock(false)
+            }} idProducto={item._id} item={stockSelected}/>
+          </Modal>
         }
     </div>
   )
@@ -187,4 +277,10 @@ const columns = [
     { label: 'Stock', field: 'cantidad', width: '10%' },
     { label: 'Precio Efectivo', field: 'precioEfectivo', width: '25%', align: 'center' },
     { label: 'Precio Lista', field: 'precioLista', width: '25%', align: 'center' },
-  ];
+];
+
+const columns1 = [
+  { label: 'Inicio', field: 'fechaInicio', width: '40%', date: true},
+  { label: 'Final', field: 'fechaFinal', width: '40%', date: true},
+  { label: 'Descuento', field: 'descuento', width: '20%'}
+];

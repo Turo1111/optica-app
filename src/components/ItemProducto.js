@@ -68,7 +68,7 @@ const Tag = styled.label `
     font-size: 16px;
     padding: 0 15px;
     color: ${props=>props.color};
-    @media only screen and (max-width: 445px) {
+    @media only screen and (max-width: 700px) {
         display: none;
     }
 `

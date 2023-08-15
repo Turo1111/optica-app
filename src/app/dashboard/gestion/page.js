@@ -2,7 +2,9 @@
 import Dashboard from '@/components/Dashboard'
 import Empleados from '@/components/Empleados/Empleados'
 import Modal from '@/components/Modal'
+import NotPermissions from '@/components/NotPermissions'
 import ObraSocial from '@/components/ObraSociales/ObraSocial'
+import Registros from '@/components/Registros/Registros'
 import Roles from '@/components/Roles/Roles'
 import Sucursales from '@/components/Sucursales/Sucursales'
 import { useAppSelector } from '@/redux/hook'
@@ -20,6 +22,7 @@ export default function Gestion() {
     const [openRoles, setOpenRoles] = useState(false)
     const user = useAppSelector(getUser);
     const [permission, setPermission] = useState(false)
+    const [openReg, setOpenReg] = useState(false)
 
     useEffect(()=>{
         if (user.usuario !== '') {
@@ -35,7 +38,7 @@ export default function Gestion() {
     },[user])
 
     if (!permission) {
-        return <h2>no tiene permisos</h2>
+        return <NotPermissions/>
     }
 
   return (
@@ -65,6 +68,12 @@ export default function Gestion() {
                   <MdArrowForwardIos/>
               </IconWrapper>
           </ItemLista>
+          <ItemLista color={process.env.TEXT_COLOR} onClick={()=>setOpenReg(true)} >
+              REGISTROS
+              <IconWrapper color={process.env.TEXT_COLOR}>
+                  <MdArrowForwardIos/>
+              </IconWrapper>
+          </ItemLista>
         </Lista>
         <Modal eClose={()=>setOpenSucursal(false)} open={openSucursal} title={'SUCURSALES'} height='90%' width='40%' >
             <Sucursales/>
@@ -78,6 +87,12 @@ export default function Gestion() {
         <Modal eClose={()=>setOpenUsuarios(false)} open={openUsuarios} title={'EMPLEADOS'} height='90%' width='40%' >
             <Empleados/>
         </Modal>
+        {
+            openReg && 
+            <Modal eClose={()=>setOpenReg(false)} open={openReg} title={'REGISTROS'} height='90%' width='40%' >
+                <Registros/>
+            </Modal>
+        }
     </>
   )
 }

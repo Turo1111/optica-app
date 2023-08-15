@@ -8,8 +8,10 @@ import EmptyList from '@/components/EmptyList'
 import InputSearch from '@/components/InputSearch'
 import Loading from '@/components/Loading'
 import Modal from '@/components/Modal'
+import NotPermissions from '@/components/NotPermissions'
 import { useInputValue } from '@/hooks/useInputValue'
 import { useSearch } from '@/hooks/useSearch'
+import { setAlert } from '@/redux/alertSlice'
 import { useAppDispatch, useAppSelector } from '@/redux/hook'
 import { getUser } from '@/redux/userSlice'
 import apiClient from '@/utils/client'
@@ -29,12 +31,11 @@ export default function Clientes() {
   const [openNewEdit, setOpenNewEdit] = useState(false)
   const [openInfo, setOpenInfo] = useState(false)
   const [openNewSenia, setOpenNewSenia] = useState(false)
+  const [tagSearch, setTagSearch] = useState([])
 
   const tag = ["nombreCompleto", "telefono", "dni"]
 
-  const listCliente = useSearch(search.value, tag, data)   
-
-  console.log(listCliente)
+  const listCliente = useSearch(search.value, tag, data, tagSearch) 
 
   useEffect(()=>{
     if (user.usuario !== '') {  
@@ -79,7 +80,10 @@ export default function Clientes() {
             return r.data.body
           })
         })
-        .catch(e => console.log(e))
+        .catch(e => dispatch(setAlert({
+          message: `${e}`,
+          type: 'error'
+        })) )
     }
   }, [])
 
@@ -150,7 +154,7 @@ export default function Clientes() {
   }
 
   if (!permission) {
-    return <h2>no tiene permisos</h2>
+    return <NotPermissions/>
   }
 
   return (
@@ -162,13 +166,24 @@ export default function Clientes() {
             </div> 
             :
             <>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <InputSearch placeholder={'Buscar Clientes'} {...search} />
+              <ContainerSearch>
+                <InputSearch placeholder={'Buscar Clientes'} {...search}
+                  tags={tag}
+                  tagSearch={tagSearch}
+                  deleteTagSearch={(item) => setTagSearch((prevData) => prevData.filter((elem) => elem.tag !== item.tag))}
+                  onSelectTag={(search, tag) =>
+                    tag !== 'SIN ETIQUETA' &&
+                    setTagSearch((prevData) =>
+                      !prevData.find((elem) => elem.tag === tag) ? [...prevData, { search, tag }] : prevData
+                    )
+                  }
+                  width="80%"
+                />
                 <Button text={'NUEVO'} onClick={() => {
                   setOpenNewEdit(true)
                   setClientSelected(undefined)
                 }} />
-              </div>
+              </ContainerSearch>
               <List>
                 {
                   listCliente.length === 0 ?
@@ -254,3 +269,11 @@ const AnimatedContainer1 = styled.div`
 const AnimatedContainer2 = styled.div`
   animation: ${fadeAnimation} 0.5s ease-in-out;
 `;
+const ContainerSearch = styled.div `
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  @media only screen and (max-width: 445px) {
+    flex-direction: column;
+  }
+`

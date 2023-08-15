@@ -64,11 +64,11 @@ export default function NewEditEmpleado({token, item , edit, handleClose}) {
         <Input label={"Direccion"} type='text' name='direccion' value={formik.values.direccion} onChange={formik.handleChange} required={true}  />
         <Input label={"Usuario"} type='text' name='usuario' value={formik.values.usuario} onChange={formik.handleChange} required={true}  />
         <Input label={"Contraseña"} type='password' name='password' value={formik.values.password} onChange={formik.handleChange} required={true} />
-        <InputSelect label={"Sucursal"} type='text' name='sucursal' value={formik.values.sucursal}  onChange={(id, text)=>{
+        <InputSelect label={"Sucursal"} type='text' name='sucursal' value={formik.values.sucursal}  onChange={(id, item)=>{
             formik.setFieldValue('idSucursal', id)
-            formik.setFieldValue('sucursal', text)
+            formik.setFieldValue('sucursal', item.descripcion)
           }} edit={item && true}  />
-        <InputSelect label={"Rol"} type='text' name='roles' value={formik.values.roles}  onChange={(text)=>formik.setFieldValue('idRol', text)} edit={item && true} />
+        <InputSelect label={"Rol"} type='text' name='roles' value={formik.values.roles}  onChange={(id, item)=>formik.setFieldValue('idRol', item.descripcion)} edit={item && true} />
         <ToggleSwitch checked={formik.values.estado} onChange={(newValue)=>formik.setFieldValue(`estado`, newValue)} label={'Estado'} />
         <div style={{display: 'flex', justifyContent: 'space-around', marginTop: 15}}>
             <Button text={'CANCELAR'} onClick={handleClose}/>
