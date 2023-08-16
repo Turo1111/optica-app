@@ -112,7 +112,7 @@ export default function ObraSocial() {
             </AnimatedContainer1>
             :
             <AnimatedContainer2>
-              <Table data={listObras} columns={columns} onClick={(item)=>{
+              <Table data={listObras} columns={columns} maxHeight={false} onClick={(item)=>{
                   setSelected(item)
                   setOpenNewEdit(true)
               }} 

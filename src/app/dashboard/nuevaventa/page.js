@@ -52,6 +52,7 @@ export default function NuevaVenta() {
     const [dineroIngresado, setDineroIngresado] = useState(0)
     const [tagSearch, setTagSearch] = useState([])
     const [permission, setPermission] = useState(false)
+    const [useSenia, setUseSenia] = useState(false)
 
     const tag = ["descripcion", "codigo", "categoria", "color", "alto", "ancho", "marca", "numeracion"]
 
@@ -179,7 +180,15 @@ export default function NuevaVenta() {
           subTotal: subTotal,
           dineroIngresado :  pago.descripcion === 'TARJETA' ?  total : (dineroIngresado <= 0 ? total : dineroIngresado )
         }
-        console.log(venta)
+        if (useSenia) {
+          apiClient.patch(`/senia/${clientSelected.senia._id}`, {estado: false},{
+            headers: {
+              Authorization: `Bearer ${user.token}` // Agregar el token en el encabezado como "Bearer {token}"
+            }
+          })
+          .then(r=>console.log(r))
+          .catch(e=>console.log(e))
+        }
         if (dataOrder.idObraSocial !== '') {
           apiClient.post('/orden', dataOrder,{
             headers: {
@@ -318,6 +327,7 @@ export default function NuevaVenta() {
         }
       })
       .then((r)=>{
+        console.log(r.data.body);
         setClientes(r.data.body)
       })
       .catch((e)=>console.log('error',e))
@@ -468,61 +478,11 @@ export default function NuevaVenta() {
       }; 
     },[clientes])
 
-    /* useEffect(() => {
-      console.log('cambio');
-    
-      if (cart.length === 0) {
-        return;
+    useEffect(()=>{
+      if (!useSenia) {
+        setDineroIngresado(0)
       }
-    
-      const initialValue = 0;
-    
-      const sumEfectivo = cart.reduce((accumulator, currentValue) => {
-        return (parseFloat(accumulator) + parseFloat(currentValue.totalEfectivo)).toFixed(2);
-      }, initialValue);
-    
-      const sumTarjeta = cart.reduce((accumulator, currentValue) => {
-        return (parseFloat(accumulator) + parseFloat(currentValue.totalTarjeta)).toFixed(2);
-      }, initialValue);
-    
-      let descuentoTotal = 0;
-    
-      if (obraSocialSelected) {
-        if (obraSocialSelected.productosDescuento.length === 0) {
-          if (obraSocialSelected.tipoDescuento) {
-            descuentoTotal = parseFloat(obraSocialSelected.cantidadDescuento).toFixed(2);
-          } else {
-            descuentoTotal = parseFloat(
-              pago.descripcion === 'TARJETA'
-                ? obraSocialSelected.cantidadDescuento
-                : sumEfectivo * (obraSocialSelected.cantidadDescuento / 100)
-            ).toFixed(2);
-          }
-        } else {
-          cart.forEach((itemCart) => {
-            if (obraSocialSelected.productosDescuento.includes(itemCart._id)) {
-              descuentoTotal = parseFloat(
-                obraSocialSelected.tipoDescuento
-                  ? obraSocialSelected.cantidadDescuento
-                  : pago.descripcion === 'TARJETA'
-                  ? parseFloat(itemCart.totalTarjeta) * (obraSocialSelected.cantidadDescuento / 100)
-                  : parseFloat(itemCart.totalEfectivo) * (obraSocialSelected.cantidadDescuento / 100)
-              ).toFixed(2);
-            }
-          });
-        }
-      }
-    
-      const subTotal = pago.descripcion === 'TARJETA' ? sumTarjeta : sumEfectivo;
-      const total = (subTotal - descuentoTotal).toFixed(2);
-    
-      setDescuento(descuentoTotal);
-      setSubTotal(subTotal);
-      setTotal(total);
-    
-      console.log('Calculations done:', { descuentoTotal, subTotal, total });
-    
-    }, [cart, pago, obraSocialSelected]); */
+    },[useSenia])
 
     if (!permission) {
       return <NotPermissions/>
@@ -570,17 +530,30 @@ export default function NuevaVenta() {
             <div>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <InputSearch placeholder={'Buscar Cliente'} {...searchClient} width='95%' data={listCliente} modal={true} prop={'nombreCompleto'} onSelect={(item)=>{
+                      console.log(item);
                       setClientSelected(item)
+                      setUseSenia(false)
                     }}  
                   />
                   <Button text={'NUEVO'} onClick={() => setOpenNewClient(true)} />
                 </div>
                 <div style={{marginTop: 15, backgroundColor: '#fff', borderRadius: 15, padding: 15 }}>
-                    <ToggleSwitch checked={consumidorFinal} onChange={(value)=>setConsumidorFinal(value)} label={'Consumidor final'}/>
+                    <ToggleSwitch checked={consumidorFinal} onChange={(value)=>setConsumidorFinal(!consumidorFinal)} label={'Consumidor final'}/>
                     <Title color={process.env.TEXT_COLOR}>Nombre Completo : {clientSelected?.nombreCompleto || ''}</Title>
                     <Tag color={process.env.TEXT_COLOR}> Telefono : {clientSelected?.telefono || '-'}</Tag>
                     <Tag color={process.env.TEXT_COLOR}> DNI : {clientSelected?.dni || '-'}</Tag>
-                    <Tag color={process.env.TEXT_COLOR}> Seña activa : {clientSelected?.senia?.saldo || '-'}</Tag>
+                    <Tag color={process.env.TEXT_COLOR}> Seña activa : $ {clientSelected?.senia?.saldo || '-'}</Tag>
+                    {
+                      clientSelected?.senia &&
+                      <Tag color={process.env.TEXT_COLOR} style={{fontSize: 14}} > Observacion : {clientSelected?.senia?.observacion || '-'}</Tag>
+                    }
+                    <ToggleSwitch checked={useSenia} onChange={(value)=>{
+                        if (clientSelected?.senia) {
+                          setDineroIngresado(clientSelected?.senia?.saldo)
+                          setUseSenia(!useSenia)
+                        }
+                      }} label={'Utilizar seña en venta '}
+                    />
                 </div>
             </div>
             <ContainerInfo>
@@ -621,7 +594,7 @@ export default function NuevaVenta() {
                   <Tag color={process.env.TEXT_COLOR} > Descuento : $ {descuento} </Tag>   
                   <Tag color={process.env.TEXT_COLOR}> Sub-Total : $ {subTotal} </Tag>
                   <Tag color={process.env.TEXT_COLOR} > Total : $ {total} </Tag>
-                  <Input label={"Dinero ingresado"} type='text' name='dineroIngresado' value={dineroIngresado} onChange={(e)=>setDineroIngresado(e.target.value)}/>
+                  <Input label={"Dinero ingresado"} type='text' name='dineroIngresado' value={dineroIngresado} onChange={(e)=>setDineroIngresado(e.target.value)} prefix={'$'}/>
                 </div>
                 <div style={{display: 'flex', flex: 1, justifyContent: 'end', alignItems: 'end'}} >
                   <Button text={'CONTINUAR'} onClick={finishSale} />

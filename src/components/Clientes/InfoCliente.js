@@ -1,9 +1,32 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import Table from '../Table'
+import apiClient from '@/utils/client'
+import { useAppDispatch } from '@/redux/hook'
+import { setAlert } from '@/redux/alertSlice'
 
-export default function InfoCliente({nombreCompleto, telefono, dni, senia, cuentaCorriente}) {
-    console.log("senia",senia)
+export default function InfoCliente({_id, nombreCompleto, telefono, dni, cuentaCorriente, token}) {
+    const [senia, setSenia] = useState([])
+    const dispatch = useAppDispatch();
+
+    useEffect(()=>{
+        apiClient.get(`/senia/${_id}` ,
+        {
+          headers: {
+            Authorization: `Bearer ${token}` // Agregar el token en el encabezado como "Bearer {token}"
+          }
+        })
+          .then(r=>{
+            setSenia(r.data.body)
+          })
+          .catch(e=>{
+            console.log(e);
+            dispatch(setAlert({
+            message: `${e.response.data.error}`,
+            type: 'error'
+          }))})
+    },[])
+
   return (
     <div style={{ padding: 5}}>
         <Title color={process.env.TEXT_COLOR}>Nombre Completo : {nombreCompleto  || "No definido"}</Title>
@@ -13,7 +36,7 @@ export default function InfoCliente({nombreCompleto, telefono, dni, senia, cuent
         <Tag color={process.env.TEXT_COLOR}> Cuenta corriente : {cuentaCorriente || "0"}</Tag>
         {
             !senia ? <Title color={process.env.TEXT_COLOR} style={{margin: '15px 0'}}>NO TIENE SENIA ACTIVA</Title> :
-            <Table data={[{fecha: senia?.fecha, saldo: senia?.saldo}]} columns={columnsSenia} onClick={(item)=>console.log("")} 
+            <Table data={senia} columns={columnsSenia} onClick={(item)=>console.log("")} 
             />
         }
     </div>
@@ -21,8 +44,10 @@ export default function InfoCliente({nombreCompleto, telefono, dni, senia, cuent
 }
 
 const columnsSenia = [
-    { label: 'Fecha', field: 'fecha', width: '70%' },
-    { label: 'Saldo', field: 'saldo', width: '30%', align: 'center' },
+    { label: 'Fecha', field: 'fecha', width: '25%', date: true },
+    { label: 'Saldo', field: 'saldo', width: '25%', align: 'center' },
+    { label: 'Estado', field: 'estado', width: '25%', align: 'center' },
+    { label: 'Observacion', field: 'observacion', width: '25%', align: 'center' },
 ];
 
 

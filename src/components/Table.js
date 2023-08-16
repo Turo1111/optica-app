@@ -25,7 +25,7 @@ export default function Table({data = [], columns, onClick, date=false, maxHeigh
                         style={{ flexBasis: column.width, textAlign: column.align }}
                         data-label={column.label}
                       >
-                        {column.date ? item[column.field].substring(0, 10):item[column.field]}
+                        {column.date ? item[column.field].substring(0, 10):item[column.field].toString()}
                       </div>
                     ))}
                 </TableRow>
@@ -63,6 +63,9 @@ const TableRow = styled.li `
     :hover{
         background-color: ${props=>props.onClick && '#F9F5F6'};
     };
+    @media only screen and (max-width: 445px) {
+      font-size: 10px;
+    }
 `
 const List = styled.ul `
   max-height: ${props => !props.maxHeight ? 'none' : '300px' };

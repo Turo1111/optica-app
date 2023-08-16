@@ -17,8 +17,14 @@ export default function NewSenia({id, token, handleClose}) {
         initialValues: initialValues(),
         validateOnChange: false,
         onSubmit: (formValue) => {
+          if (id === '64c95db35ae46355b5f7df64') {
+            dispatch(setAlert({
+              message: 'No puede crear senia a Consumidor Final',
+              type: 'error'
+            }))
+            return
+          }
           if (formik.values.saldo > 0) {
-
             const senia = {
                 ...formValue,
                 fecha: new Date,
@@ -38,10 +44,13 @@ export default function NewSenia({id, token, handleClose}) {
                 type: 'success'
               }))
             })
-            .catch(e=>dispatch(setAlert({
-              message: 'Hubo un error inesperado, revisa los datos',
-              type: 'error'
-            }))) 
+            .catch(e=>{
+              console.log(e);
+                dispatch(setAlert({
+                message: `${e.response.data.error}`,
+                type: 'error'
+                }))
+            }) 
           }
           else{
             dispatch(setAlert({

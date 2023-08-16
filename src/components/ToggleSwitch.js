@@ -49,21 +49,13 @@ const ToggleSwitchInput = styled.input`
 
 const ToggleSwitch = ({ label, checked, onChange }) => {
 
-  const [isChecked, setIsChecked] = useState(checked);
-
-  const handleToggle = () => {
-    const newValue = !isChecked;
-    setIsChecked(newValue);
-    onChange(newValue);
-  };
-
   return (
     <ToggleSwitchContainer>
       {label && <Label style={{color: `${process.env.TEXT_COLOR}`}} >{label} :</Label>}
       <ToggleSwitchInput
         type="checkbox"
-        checked={isChecked}
-        onChange={handleToggle}
+        checked={checked}
+        onChange={onChange}
       />
       <ToggleSwitchSlider />
     </ToggleSwitchContainer>

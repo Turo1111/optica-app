@@ -234,7 +234,7 @@ export default function Clientes() {
                 open={openInfo}
                 title={'Info del Cliente'}
                 height='auto'
-                width='30%'
+                width='50%'
                 eClose={()=>setOpenInfo(false)}
               >
                 <InfoCliente {...clientSelected} handleClose={()=>setOpenInfo(false)} token={user.token} />
