@@ -150,7 +150,7 @@ const InputSelectAdd = ({type = 'text', label, value, onChange, name, edit = fal
       }
     })
     .then((r)=>{
-      onChange(r.data.body._id, r.data.body.descripcion)
+      onChange(r.data.body._id, r.data.body)
       dispatch(setAlert({
         message: `${label} creada correctamente`,
         type: 'success'
