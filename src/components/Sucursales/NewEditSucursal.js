@@ -15,6 +15,13 @@ export default function NewEditSucursal({token, item , edit, handleClose}) {
         initialValues: initialValues(item),
         validateOnChange: false,
         onSubmit: (formValue) => {
+          if (formValue.descripcion === '') {
+            dispatch(setAlert({
+              message: 'Debe ingresar una descripcion a la sucursal',
+              type: 'warning'
+            }))
+            return;
+          }
           if (item) {
             apiClient.patch(`/sucursal/${item._id}`, formValue ,
             {

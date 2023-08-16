@@ -16,7 +16,7 @@ export default function PagarDeuda({venta, handleClose, token}) {
         },
         validateOnChange: false,
         onSubmit: (formValue) => {
-          console.log(formValue.pago <= 0, formValue.pago > parseFloat(venta.total) - parseFloat(venta.dineroIngresado), parseFloat(venta.total) - parseFloat(venta.dineroIngresado));
+          
           if (formValue.pago <= 0 || formValue.pago > parseFloat(venta.total) - parseFloat(venta.dineroIngresado)) {
             dispatch(setAlert({
               message: 'Numero ingresado incorrecto',

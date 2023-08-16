@@ -16,7 +16,41 @@ export default function NewEditEmpleado({token, item , edit, handleClose}) {
         initialValues: initialValues(item),
         validateOnChange: false,
         onSubmit: (formValue) => {
-          console.log("editar empelado", formValue)
+          if (formValue.nombreCompleto === '') {
+            dispatch(setAlert({
+              message: 'Debe ingresar un nombre al empleado',
+              type: 'warning'
+            }))
+            return
+          }
+          if (formValue.usuario === '') {
+            dispatch(setAlert({
+              message: 'Debe ingresar un nombre de usuario al empleado',
+              type: 'warning'
+            }))
+            return
+          }
+          if (formValue.password  === '') {
+            dispatch(setAlert({
+              message: 'Debe ingresar una contraseña al empleado',
+              type: 'warning'
+            }))
+            return
+          }
+          if (formValue.idSucursal  === '') {
+            dispatch(setAlert({
+              message: 'Debe asignar una sucursal al empleado',
+              type: 'warning'
+            }))
+            return
+          }
+          if (formValue.idRol  === '') {
+            dispatch(setAlert({
+              message: 'Debe asignar un rol al empleado',
+              type: 'warning'
+            }))
+            return
+          }
           if (item) {
             apiClient.patch(`/empleado/${item._id}`, formValue ,
             {

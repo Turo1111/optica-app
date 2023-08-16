@@ -30,8 +30,6 @@ export default function NewOferta({item, token, eClose, producto}) {
         onSubmit: (formValue) => {
             formValue.sucursales = selectedItems;
             formValue.idProducto= producto._id
-            console.log(formValue.fechaFinal <= formValue.fechaInicio);
-            console.log(formValue.fechaFinal,formValue.fechaInicio);
             if (formValue.fechaFinal <= formValue.fechaInicio) {
                 dispatch(setAlert({
                     message: 'Fecha final debe ser posterior a la de inicio',

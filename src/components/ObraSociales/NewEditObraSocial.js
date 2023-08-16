@@ -28,6 +28,20 @@ export default function NewEditObraSocial({token, item , edit, handleClose}) {
         initialValues: initialValues(item),
         validateOnChange: false,
         onSubmit: (formValue) => {
+          if (formValue.descripcion  === '') {
+            dispatch(setAlert({
+              message: 'Debe ingresar una descripcion a la obra social',
+              type: 'warning'
+            }))
+            return
+          }
+          if (formValue.cantidadDescuento  < 0 || formValue.cantidadDevuelta < 0) {
+            dispatch(setAlert({
+              message: 'Debe ingresar una cantidades mayores a 0',
+              type: 'warning'
+            }))
+            return
+          }
           formValue.productosDescuento = selectedItems;
           if (item) {
             apiClient.patch(`/obrasocial/${item._id}`, formValue ,

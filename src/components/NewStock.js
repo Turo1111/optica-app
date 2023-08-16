@@ -17,6 +17,27 @@ export default function NewStock({idProducto, item, eClose}) {
         initialValues: initialValues(idProducto, item),
         validateOnChange: false,
         onSubmit: (formValue) => {
+          if (formValue.idSucursal === '') {
+            dispatch(setAlert({
+              message: 'Debe ingresar una sucursal',
+              type: 'warning'
+            }))
+            return;
+          }
+          if (formValue.cantidad < 0) {
+            dispatch(setAlert({
+              message: 'Debe ingresar una cantida mayor a 0',
+              type: 'warning'
+            }))
+            return;
+          }
+          if (formValue.precioEfectivo < 0 || formValue.precioLista < 0) {
+            dispatch(setAlert({
+              message: 'Debe ingresar precios mayores a 0',
+              type: 'warning'
+            }))
+            return;
+          }
           if (item) {
             apiClient.patch(`/stock/${item._id}`, formValue,
             {

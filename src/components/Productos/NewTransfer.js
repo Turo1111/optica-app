@@ -38,9 +38,6 @@ export default function NewTransfer({item, token, handleClose}) {
             }
             let stockDestino = listStock.find(stock => stock.idSucursal === formValue.idDestino)
             let stockSalida = listStock.find(stock => stock.idSucursal === formValue.idSalida)
-            console.log("List stock",listStock)
-            console.log("Stock destino",stockDestino)
-            console.log("Stock salida",stockSalida)
             if (stockSalida === undefined) {
                 dispatch(setAlert({
                     message: 'Sucursal salida no posee stock asociado',

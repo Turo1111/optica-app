@@ -22,6 +22,27 @@ export default function NewProduct({token, eClose}) {
     initialValues: initialValues,
     validateOnChange: false,
     onSubmit: (formValue) => {
+      if (formValue.descripcion === '') {
+        dispatch(setAlert({
+          message: 'Debe ingresar una descripcion al producto',
+          type: 'warning'
+        }))
+        return
+      }
+      if (formValue.idCategoria === '') {
+        dispatch(setAlert({
+          message: 'Debe ingresar una categoria al producto',
+          type: 'warning'
+        }))
+        return
+      }
+      if (formValue.codigo === '') {
+        dispatch(setAlert({
+          message: 'Debe ingresar un codigo al producto',
+          type: 'warning'
+        }))
+        return
+      }
        apiClient.post('/producto', formValue,
        {
          headers: {

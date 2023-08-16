@@ -16,6 +16,27 @@ export default function EditProduct({token, eClose, item}) {
         initialValues: initialValues(item),
         validateOnChange: false,
         onSubmit: (formValue) => {
+          if (formValue.descripcion === '') {
+            dispatch(setAlert({
+              message: 'Debe ingresar una descripcion al producto',
+              type: 'warning'
+            }))
+            return
+          }
+          if (formValue.idCategoria === '') {
+            dispatch(setAlert({
+              message: 'Debe ingresar una categoria al producto',
+              type: 'warning'
+            }))
+            return
+          }
+          if (formValue.codigo === '') {
+            dispatch(setAlert({
+              message: 'Debe ingresar un codigo al producto',
+              type: 'warning'
+            }))
+            return
+          }
           apiClient.patch(`/producto/${item._id}`, formValue ,
           {
             headers: {

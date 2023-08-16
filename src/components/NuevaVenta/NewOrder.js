@@ -22,7 +22,6 @@ export default function NewOrder({onClose, setDataCard}) {
               message: 'Falto ingresar la fecha',
               type: 'error'
           }))
-          console.log('falta fecha');
             return null
           }
           setDataCard(formValue)

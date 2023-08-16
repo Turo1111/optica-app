@@ -18,7 +18,13 @@ export default function AddCard({total, setDataCard, onClose}) {
         },
         validateOnChange: false,
         onSubmit: (formValue) => {
-            console.log(formValue)
+            if (formValue.banco  === '') {
+                dispatch(setAlert({
+                  message: 'Debe ingresar un nombre al banco',
+                  type: 'warning'
+                }))
+                return
+            }
             if(total !== 0) {
                 onClose()
                 return setDataCard(formValue)
