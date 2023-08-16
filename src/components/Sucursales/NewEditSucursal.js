@@ -60,7 +60,7 @@ export default function NewEditSucursal({token, item , edit, handleClose}) {
         <Input label={"Descripcion"} type='text' name='descripcion' value={formik.values.descripcion} onChange={formik.handleChange} required={true}  />
         <Input label={"Direccion"} type='text' name='direccion' value={formik.values.direccion} onChange={formik.handleChange}/>
         <Input label={"Telefono"} type='text' name='telefono' value={formik.values.telefono} onChange={formik.handleChange}/>
-        <ToggleSwitch checked={formik.values.estado} onChange={(newValue)=>formik.setFieldValue('estado', newValue)} label={'Estado'}/>
+        <ToggleSwitch checked={formik.values.estado} onChange={(newValue)=>formik.setFieldValue('estado', !formik.values.estado)} label={'Estado'}/>
         <div style={{display: 'flex', justifyContent: 'space-around', marginTop: 15}}>
             <Button text={'CANCELAR'} onClick={handleClose}/>
             <Button text={'ACEPTAR'} onClick={formik.handleSubmit}/>

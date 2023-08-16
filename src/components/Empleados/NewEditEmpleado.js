@@ -69,7 +69,7 @@ export default function NewEditEmpleado({token, item , edit, handleClose}) {
             formik.setFieldValue('sucursal', item.descripcion)
           }} edit={item && true}  />
         <InputSelect label={"Rol"} type='text' name='roles' value={formik.values.roles}  onChange={(id, item)=>formik.setFieldValue('idRol', item.descripcion)} edit={item && true} />
-        <ToggleSwitch checked={formik.values.estado} onChange={(newValue)=>formik.setFieldValue(`estado`, newValue)} label={'Estado'} />
+        <ToggleSwitch checked={formik.values.estado} onChange={(newValue)=>formik.setFieldValue(`estado`, !formik.values.estado)} label={'Estado'} />
         <div style={{display: 'flex', justifyContent: 'space-around', marginTop: 15}}>
             <Button text={'CANCELAR'} onClick={handleClose}/>
             <Button text={'ACEPTAR'} onClick={formik.handleSubmit}/>

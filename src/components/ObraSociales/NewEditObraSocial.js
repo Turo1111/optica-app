@@ -94,7 +94,7 @@ export default function NewEditObraSocial({token, item , edit, handleClose}) {
         <Input label={"Descripcion"} type='text' name='descripcion' value={formik.values.descripcion} onChange={formik.handleChange} required={true}  />
         <Input label={"Descuento"} type='number' name='cantidadDescuento' value={formik.values.cantidadDescuento} onChange={formik.handleChange}/>
         <Input label={"Devolucion"} type='number' name='cantidadDevuelta' value={formik.values.cantidadDevuelta} onChange={formik.handleChange}/>
-        <ToggleSwitch checked={formik.values.tipoDescuento} onChange={(newValue)=>formik.setFieldValue('tipoDescuento', newValue)} label={formik.values.tipoDescuento ? 'Efectivo' : 'Porcentaje'}/>
+        <ToggleSwitch checked={formik.values.tipoDescuento} onChange={(newValue)=>formik.setFieldValue('tipoDescuento', !formik.values.tipoDescuento)} label={formik.values.tipoDescuento ? 'Efectivo' : 'Porcentaje'}/>
         {
           loading ? 
           <div style={{ display: 'flex', flex: 1, justifyContent: 'center', alignItems: 'center'}}>
