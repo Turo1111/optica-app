@@ -18,7 +18,6 @@ export default function NewStock({idProducto, item, eClose}) {
         validateOnChange: false,
         onSubmit: (formValue) => {
           if (item) {
-            console.log(formValue)
             apiClient.patch(`/stock/${item._id}`, formValue,
             {
               headers: {

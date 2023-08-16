@@ -69,9 +69,9 @@ export default function InfoProduct({token, item}) {
   },[item])
 
     useEffect(()=>{
-        console.log(data)
         const socket = io(process.env.NEXT_PUBLIC_DB_HOST)
         socket.on('stock', (stock) => {
+          console.log("llego nuevo stock",stock);
           setLoading(true)
           setData((prevData)=>{
             const exist = prevData.find(elem => elem._id === stock.res._id )
@@ -180,7 +180,7 @@ export default function InfoProduct({token, item}) {
           openNewSale && 
           <Modal
             open={openNewSale}
-            title={'Nueva oferta'}
+            title={'Nuevo stock'}
             height='auto'
             width='50%'
             eClose={()=>{
