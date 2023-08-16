@@ -31,7 +31,7 @@ export default function NewEditCliente({token, item , edit, handleClose}) {
               }))
             })
             .catch(e=>dispatch(setAlert({
-              message: 'Hubo un error inesperado, revisa los datos',
+              message: `${e.response.data.error}`,
               type: 'error'
             })))
           }else{
@@ -49,7 +49,7 @@ export default function NewEditCliente({token, item , edit, handleClose}) {
               }))
             })
             .catch(e=>dispatch(setAlert({
-              message: 'Hubo un error inesperado, revisa los datos',
+              message: `${e.response.data.error}`,
               type: 'error'
             })))
           }

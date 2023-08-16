@@ -83,9 +83,9 @@ export default function Clientes() {
           })
         })
         .catch(e => dispatch(setAlert({
-          message: `${e}`,
+          message: `${e.response.data.error}`,
           type: 'error'
-        })) )
+        })))
     }
   }, [])
 

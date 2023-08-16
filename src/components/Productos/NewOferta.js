@@ -67,7 +67,10 @@ export default function NewOferta({item, token, eClose, producto}) {
                       type: 'success'
                   }))
               })
-              .catch(e => console.log("error",e))
+              .catch(e => dispatch(setAlert({
+                message: `${e.response.data.error}`,
+                type: 'error'
+              })))
             }else{
               apiClient.post(`/oferta`, formValue,
               {
@@ -104,7 +107,10 @@ export default function NewOferta({item, token, eClose, producto}) {
             return r.data.body
           })
         })
-        .catch(e => console.log("error",e))
+        .catch(e => dispatch(setAlert({
+          message: `${e.response.data.error}`,
+          type: 'error'
+        })))
     }, [])
 
   return (

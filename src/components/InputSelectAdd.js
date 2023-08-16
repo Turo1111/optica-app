@@ -157,7 +157,7 @@ const InputSelectAdd = ({type = 'text', label, value, onChange, name, edit = fal
       }))
     })
     .catch(e=>dispatch(setAlert({
-      message: 'Hubo un error, revisa los datos',
+      message: `${e.response.data.error}`,
       type: 'error'
     })))
   }
@@ -178,7 +178,7 @@ const InputSelectAdd = ({type = 'text', label, value, onChange, name, edit = fal
     })
     .catch(e=>{
       dispatch(setAlert({
-        message: `${e}`,
+        message: `${e.response.data.error}`,
         type: 'error'
       }))
     })
@@ -197,7 +197,7 @@ const InputSelectAdd = ({type = 'text', label, value, onChange, name, edit = fal
       setData(r.data.body)
     })
     .catch(e=>dispatch(setAlert({
-      message: `${e}`,
+      message: `${e.response.data.error}`,
       type: 'error'
     })))
   },[name])

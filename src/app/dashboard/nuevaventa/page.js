@@ -187,7 +187,10 @@ export default function NuevaVenta() {
             }
           })
           .then(r=>console.log(r))
-          .catch(e=>console.log(e))
+          .catch(e=>dispatch(setAlert({
+            message: `${e.response.data.error}`,
+            type: 'error'
+          })))
         }
         if (dataOrder.idObraSocial !== '') {
           apiClient.post('/orden', dataOrder,{
@@ -232,24 +235,24 @@ export default function NuevaVenta() {
                         }))
                       })
                       .catch(e=>dispatch(setAlert({
-                        message: 'Hubo un error inesperado al descontar stock',
+                        message: `${e.response.data.error}`,
                         type: 'error'
                       })))
                     
                   })
                   .catch(e=>dispatch(setAlert({
-                    message: `${e}`,
+                    message: `${e.response.data.error}`,
                     type: 'error'
                   }))) 
                 })
               })
               .catch(e=>dispatch(setAlert({
-                message: `${e}`,
+                message: `${e.response.data.error}`,
                 type: 'error'
               }))) 
           })
           .catch(e=>dispatch(setAlert({
-            message: `${e}`,
+            message: `${e.response.data.error}`,
             type: 'error'
           })))
         }else{
@@ -288,18 +291,18 @@ export default function NuevaVenta() {
                     }))
                   })
                   .catch(e=>dispatch(setAlert({
-                    message: 'Hubo un error inesperado al descontar stock',
+                    message: `${e.response.data.error}`,
                     type: 'error'
                   })))
                 })
                 .catch(e=>dispatch(setAlert({
-                  message: `${e}`,
+                  message: `${e.response.data.error}`,
                   type: 'error'
                 }))) 
               })
             })
             .catch(e=>dispatch(setAlert({
-              message: `${e}`,
+              message: `${e.response.data.error}`,
               type: 'error'
             }))) 
         } 

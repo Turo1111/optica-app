@@ -40,7 +40,7 @@ export default function Empleados() {
             setLoading(false)
           })
           .catch(e=>dispatch(setAlert({
-            message: 'Hubo un error inesperado al cargar los empleados',
+            message: `${e.response.data.error}`,
             type: 'error'
           })))
     },[])

@@ -156,7 +156,7 @@ const InputSelect = ({type = 'text', label, value, onChange, name, edit = false,
         setLoading(false)
       })
       .catch(e=>dispatch(setAlert({
-        message: `${e}`,
+        message: `${e.response.data.error}`,
         type: 'error'
       })))
     }

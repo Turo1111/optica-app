@@ -33,7 +33,7 @@ export default function NewStock({idProducto, item, eClose}) {
                 }))
               })
               .catch(e=>dispatch(setAlert({
-                message: 'Hubo un error inesperado, revisa los datos',
+                message: `${e.response.data.error}`,
                 type: 'error'
               })))
           }else{
@@ -51,7 +51,7 @@ export default function NewStock({idProducto, item, eClose}) {
                 }))
               })
               .catch(e=>dispatch(setAlert({
-                message: 'Hubo un error inesperado, revisa los datos',
+                message: `${e.response.data.error}`,
                 type: 'error'
               })))
           }

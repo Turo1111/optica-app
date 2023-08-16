@@ -39,9 +39,9 @@ export default function NewProduct({token, eClose}) {
       })
       .catch(e=>
         dispatch(setAlert({
-          message: 'Hubo un error, revisa los datos',
+          message: `${e.response.data.error}`,
           type: 'error'
-        }))  
+        }))
       ) 
     }
   })

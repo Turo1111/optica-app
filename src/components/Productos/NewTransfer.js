@@ -101,12 +101,12 @@ export default function NewTransfer({item, token, handleClose}) {
                       }))
                     })
                     .catch(e=>dispatch(setAlert({
-                      message: 'Hubo un error inesperado, revisa los datos',
+                      message: `${e.response.data.error}`,
                       type: 'error'
                     })))
                 })
                 .catch(e=>dispatch(setAlert({
-                  message: 'Hubo un error inesperado, revisa los datos',
+                  message: `${e.response.data.error}`,
                   type: 'error'
                 })))
                 return null
@@ -134,7 +134,7 @@ export default function NewTransfer({item, token, handleClose}) {
                   }))
                 })
                 .catch(e=>dispatch(setAlert({
-                  message: 'Hubo un error inesperado, revisa los datos',
+                  message: `${e.response.data.error}`,
                   type: 'error'
                 })))
                 apiClient.patch(`/stock/${stockSalida._id}`, {
@@ -155,7 +155,7 @@ export default function NewTransfer({item, token, handleClose}) {
                   }))
                 })
                 .catch(e=>dispatch(setAlert({
-                  message: 'Hubo un error inesperado, revisa los datos',
+                  message: `${e.response.data.error}`,
                   type: 'error'
                 })))
             }
@@ -174,7 +174,7 @@ export default function NewTransfer({item, token, handleClose}) {
                 setListStock(r.data.body)
               })
               .catch(e=>dispatch(setAlert({
-                message: 'Hubo un error inesperado al cargar los empleados',
+                message: `${e.response.data.error}`,
                 type: 'error'
               })))
         }

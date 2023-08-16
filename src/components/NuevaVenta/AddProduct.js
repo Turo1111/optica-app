@@ -55,7 +55,7 @@ export default function AddProduct({item, addCart, onClose, user}) {
           })
         .then((r)=>setStock(r.data.body.filter(item=>item.sucursal===user.sucursal)[0]))
         .catch(e=>dispatch(setAlert({
-            message: `${e}`,
+            message: `${e.response.data.error}`,
             type: 'error'
           })))
     },[item._id])
@@ -68,7 +68,7 @@ export default function AddProduct({item, addCart, onClose, user}) {
           })
         .then((r)=>setOferta(r.data.body.find(ofert=> ofert.fechaInicio.substring(0, 10) <= fechaHoy && ofert.fechaFinal.substring(0, 10) >= fechaHoy)))
         .catch(e=>dispatch(setAlert({
-            message: `${e}`,
+            message: `${e.response.data.error}`,
             type: 'error'
           })))
     },[item._id])

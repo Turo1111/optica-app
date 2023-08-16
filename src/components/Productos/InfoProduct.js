@@ -42,7 +42,7 @@ export default function InfoProduct({token, item}) {
                 setLoading(false)
               })
               .catch(e=>dispatch(setAlert({
-                message: 'Hubo un error inesperado al cargar los stock',
+                message: `${e.response.data.error}`,
                 type: 'error'
               })))
         }
@@ -62,7 +62,7 @@ export default function InfoProduct({token, item}) {
               setLoading(false)
             })
             .catch(e=>dispatch(setAlert({
-              message: 'Hubo un error inesperado al cargar los stock',
+              message: `${e.response.data.error}`,
               type: 'error'
             })))
       }

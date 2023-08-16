@@ -44,7 +44,7 @@ export default function NewEditObraSocial({token, item , edit, handleClose}) {
               }))
             })
             .catch(e=>dispatch(setAlert({
-              message: 'Hubo un error inesperado, revisa los datos',
+              message: `${e.response.data.error}`,
               type: 'error'
             })))
           }else{
@@ -62,7 +62,7 @@ export default function NewEditObraSocial({token, item , edit, handleClose}) {
               }))
             })
             .catch(e=>dispatch(setAlert({
-              message: 'Hubo un error inesperado, revisa los datos',
+              message: `${e.response.data.error}`,
               type: 'error'
             })))
           }
@@ -83,7 +83,10 @@ export default function NewEditObraSocial({token, item , edit, handleClose}) {
             return r.data.body
           })
         })
-        .catch(e => console.log("error",e))
+        .catch(e => dispatch(setAlert({
+          message: `${e.response.data.error}`,
+          type: 'error'
+        })))
     }, [])
 
   return (

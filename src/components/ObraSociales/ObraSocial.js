@@ -41,7 +41,7 @@ export default function ObraSocial() {
         setLoading(false)
       })
       .catch(e=>dispatch(setAlert({
-        message: 'Hubo un error inesperado al cargar las obras sociales',
+        message: `${e.response.data.error}`,
         type: 'error'
       })))
     },[])

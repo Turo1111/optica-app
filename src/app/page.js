@@ -49,9 +49,8 @@ export default function Home() {
         router.push('/dashboard/productos')
       })
       .catch(e=>{
-        console.log(e);
         dispatch(setAlert({
-          message: `${e}`,
+          message: `${e.response.data.error}`,
           type: 'error'
         })) } 
       )

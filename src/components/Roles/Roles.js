@@ -42,7 +42,7 @@ export default function Roles() {
             setLoading(false)
           })
           .catch(e=>dispatch(setAlert({
-            message: 'Hubo un error inesperado al cargar los roles',
+            message: `${e.response.data.error}`,
             type: 'error'
           })))
     },[])

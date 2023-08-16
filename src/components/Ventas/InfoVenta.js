@@ -20,7 +20,7 @@ export default function InfoVenta({_id, cliente, fecha, sucursal, tipoPago, tota
                 setProductos(r.data.body)
               })
               .catch(e=>dispatch(setAlert({
-                message: 'Hubo un error inesperado al cargar los stock',
+                message: `${e.response.data.error}`,
                 type: 'error'
               })))
         }

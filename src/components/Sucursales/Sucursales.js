@@ -49,7 +49,7 @@ export default function Sucursales() {
             setLoading(false)
           })
           .catch(e=>dispatch(setAlert({
-            message: 'Hubo un error inesperado al cargar las sucursales',
+            message: `${e.response.data.error}`,
             type: 'error'
           })))
     },[])
