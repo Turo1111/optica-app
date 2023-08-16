@@ -162,6 +162,13 @@ export default function NuevaVenta() {
         }))
         return;
       }
+      if ( user.idSucursal === '' || user.idSucursal === undefined) {
+        dispatch(setAlert({
+          message: 'Usuario sin sucursal asociada',
+          type: 'error'
+        }))
+        return;
+      }
       try {
         let venta = {
           fecha: new Date,
