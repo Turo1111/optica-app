@@ -70,7 +70,7 @@ export default function InfoProduct({token, item}) {
 
     useEffect(()=>{
         console.log(data)
-        const socket = io('http://localhost:3001/')
+        const socket = io(process.env.NEXT_PUBLIC_DB_HOST)
         socket.on('stock', (stock) => {
           setLoading(true)
           setData((prevData)=>{

@@ -15,6 +15,13 @@ export default function NewEditRol({token, item , edit, handleClose}) {
       initialValues: initialValues(item),
       validateOnChange: false,
       onSubmit: (formValue) => {
+        if (formValue.descripcion === '') {
+          dispatch(setAlert({
+            message: 'Falta colocar una descripcion al rol',
+            type: 'warning'
+          }))
+          return
+        }
         if (item) {
           apiClient.patch(`/roles/${item._id}`, formValue ,
           {
@@ -48,7 +55,7 @@ export default function NewEditRol({token, item , edit, handleClose}) {
             }))
           })
           .catch(e=>dispatch(setAlert({
-            message: 'Hubo un error inesperado, revisa los datos',
+            message: `${e.response.data.error}`,
             type: 'error'
           })))
         }
@@ -64,8 +71,8 @@ export default function NewEditRol({token, item , edit, handleClose}) {
                  formik.values.permisos.map((permiso, index) => (
                     <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 15}} key={index} >
                         <label>{permiso.screen}</label>
-                        <ToggleSwitch checked={permiso.lectura} onChange={(newValue)=>formik.setFieldValue(`permisos[${index}].lectura`, newValue)} label={'Lectura'} />
-                        <ToggleSwitch checked={permiso.escritura} onChange={(newValue)=>formik.setFieldValue(`permisos[${index}].escritura`, newValue)} label={'Escritura'} />
+                        <ToggleSwitch checked={permiso.lectura} onChange={(newValue)=>formik.setFieldValue(`permisos[${index}].lectura`, !permiso.lectura)} label={'Lectura'} />
+                        <ToggleSwitch checked={permiso.escritura} onChange={(newValue)=>formik.setFieldValue(`permisos[${index}].escritura`, !permiso.escritura)} label={'Escritura'} />
                     </div>
                 ))
             }

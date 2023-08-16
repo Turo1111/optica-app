@@ -77,7 +77,7 @@ export default function Productos() {
   }, [user.token])
 
   useEffect(()=>{
-    const socket = io('http://localhost:3001/')
+    const socket = io(process.env.NEXT_PUBLIC_DB_HOST)
     socket.on('producto', (producto) => {
       console.log(producto)
       setData((prevData)=>{

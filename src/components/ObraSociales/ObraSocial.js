@@ -48,7 +48,7 @@ export default function ObraSocial() {
 
     useEffect(()=>{
       
-      const socket = io('http://localhost:3001/')
+      const socket = io(process.env.NEXT_PUBLIC_DB_HOST)
       socket.on('obraSocial', (obraSocial) => {
         setLoading(true)
         setData((prevData)=>{

@@ -20,6 +20,7 @@ import styled, { keyframes } from 'styled-components'
 const io = require('socket.io-client')
 
 export default function Clientes() {
+  console.log(process.env.NEXT_PUBLIC_DB_HOST);
 
   const [clientSelected, setClientSelected] = useState(undefined)
   const [data, setData] = useState([])
@@ -75,6 +76,7 @@ export default function Clientes() {
         }
       })
         .then(r => {
+          console.log(r.data.body);
           setData((prevData)=>{
             setLoading(false)
             return r.data.body
@@ -88,7 +90,7 @@ export default function Clientes() {
   }, [])
 
   useEffect(()=>{
-    const socket = io('http://localhost:3001/')
+    const socket = io(process.env.NEXT_PUBLIC_DB_HOST)
     socket.on('cliente', (cliente) => {
       setData((prevData)=>{
         const exist = prevData.find(elem => elem._id === cliente.res._id )
@@ -106,7 +108,7 @@ export default function Clientes() {
   },[data])
 
   useEffect(()=>{
-    const socket = io('http://localhost:3001/')
+    const socket = io(process.env.NEXT_PUBLIC_DB_HOST)
     socket.on('senia', (senia) => {
       console.log('senia', senia)
       setData((prevData)=>{
