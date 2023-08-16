@@ -6,6 +6,7 @@ export const useSearch = (search, tags, list, tagSearch = []) => {
   let result = []
 
   if (tagSearch.length !== 0) {
+    console.log("entre en tag search")
     tagSearch.map(
       itemTag=>{
         newList = newList.filter(itemLista=>{
@@ -16,8 +17,38 @@ export const useSearch = (search, tags, list, tagSearch = []) => {
   }
 
   if(search !== '' ){
-      
-      newList.map(item=>{
+
+    const filteredList = newList.filter(item => {
+      for (const tag of tags) {
+        if (tag instanceof Object) {
+          const key = Object.keys(tag)[0];
+          if (Array.isArray(tag[key])) {
+            for (const i of tag[key]) {
+              if (item[key]?.[i]?.toString().toLowerCase().includes(search.toLowerCase())) {
+                return true;
+              }
+            }
+          }
+        } else {
+          if (item[tag]?.toString().toLowerCase().includes(search.toLowerCase())) {
+            return true;
+          }
+        }
+      }
+      return false;
+    });
+    
+    const resultMap = {};
+    
+    for (const item of filteredList) {
+      resultMap[item._id] = item;
+    }
+    
+    const uniqueResults = Object.values(resultMap);
+    
+    return uniqueResults;
+    
+      /* newList.map(item=>{
         tags.map(tag=>{
           if(tag instanceof Object){
             const key = Object.keys(tag)[0]
@@ -41,8 +72,9 @@ export const useSearch = (search, tags, list, tagSearch = []) => {
         return !busqueda[item._id];
       });
       duplicados.length !== 0 && result.push(duplicados[0])
-      return result
-      
+
+      return result */
+
   } else {
       return newList
   }

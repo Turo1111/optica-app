@@ -125,8 +125,6 @@ const InputSearch = ({placeholder, width = '80%', deleteTagSearch, tagSearch = [
   const [tagSelected, setTagSelected] = useState('SIN ETIQUETA')
   let {ancho, alto} = useResize()
 
-  console.log(data);
-
   const modalRef = useRef(null);
 
   useOutsideClick(modalRef, () => setOpenList(false));
