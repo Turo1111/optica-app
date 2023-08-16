@@ -1,16 +1,18 @@
 import apiClient from '@/utils/client'
 import { useFormik } from 'formik'
-import React from 'react'
+import React, { useState } from 'react'
 import Input from '../Input'
 import InputSelectAdd from '../InputSelectAdd'
 import Button from '../Button'
 import { setAlert } from '@/redux/alertSlice'
 import { useAppDispatch } from '@/redux/hook'
+import Loading from '../Loading'
 
 
 export default function EditProduct({token, eClose, item}) {
 
   const dispatch = useAppDispatch();
+  const [loading, setLoading] = useState(false)
   
     const formik = useFormik({
         initialValues: initialValues(item),
@@ -37,6 +39,7 @@ export default function EditProduct({token, eClose, item}) {
             }))
             return
           }
+          setLoading(true)
           apiClient.patch(`/producto/${item._id}`, formValue ,
           {
             headers: {
@@ -50,6 +53,7 @@ export default function EditProduct({token, eClose, item}) {
               message: 'Producto editado correctamente',
               type: 'success'
             }))
+            setLoading(false)
           })
           .catch(e=>dispatch(setAlert({
             message: `${e.response.data.error}`,
@@ -91,9 +95,15 @@ export default function EditProduct({token, eClose, item}) {
           />
           <Input label={"Precio general"} name='precioGeneral' type='text' value={formik.values.precioGeneral} onChange={formik.handleChange} />
           <div style={{display: 'flex', justifyContent: 'space-around'}}>
+          {
+            loading ? 
+            <Loading />:
+            <>
               <Button text={'CANCELAR'} onClick={handleClose}/>
               <Button text={'ACEPTAR'} onClick={formik.handleSubmit}/>
-          </div>
+            </>
+          }
+        </div>
       </div>
     )
     

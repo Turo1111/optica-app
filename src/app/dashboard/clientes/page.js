@@ -87,7 +87,7 @@ export default function Clientes() {
           type: 'error'
         })))
     }
-  }, [])
+  }, [user.token])
 
   useEffect(()=>{
     const socket = io(process.env.NEXT_PUBLIC_DB_HOST)

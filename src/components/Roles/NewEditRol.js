@@ -6,10 +6,12 @@ import Button from '../Button'
 import { useAppDispatch } from '@/redux/hook'
 import { setAlert } from '@/redux/alertSlice'
 import apiClient from '@/utils/client'
+import Loading from '../Loading'
 
 export default function NewEditRol({token, item , edit, handleClose}) {
 
   const dispatch = useAppDispatch();
+  const [loading, setLoading] = useState(false)
 
   const formik = useFormik({
       initialValues: initialValues(item),
@@ -22,6 +24,7 @@ export default function NewEditRol({token, item , edit, handleClose}) {
           }))
           return
         }
+        setLoading(true)
         if (item) {
           apiClient.patch(`/roles/${item._id}`, formValue ,
           {
@@ -35,6 +38,7 @@ export default function NewEditRol({token, item , edit, handleClose}) {
               message: 'Rol modificado correctamente',
               type: 'success'
             }))
+            setLoading(false)
           })
           .catch(e=>dispatch(setAlert({
             message: `${e.response.data.error}`,
@@ -53,6 +57,7 @@ export default function NewEditRol({token, item , edit, handleClose}) {
               message: 'Rol creado correctamente',
               type: 'success'
             }))
+            setLoading(false)
           })
           .catch(e=>dispatch(setAlert({
             message: `${e.response.data.error}`,
@@ -79,8 +84,14 @@ export default function NewEditRol({token, item , edit, handleClose}) {
             
         </div>
         <div style={{display: 'flex', justifyContent: 'space-around', marginTop: 15}}>
-            <Button text={'CANCELAR'} onClick={handleClose}/>
-            <Button text={'ACEPTAR'} onClick={formik.handleSubmit}/>
+          {
+            loading ? 
+            <Loading />:
+            <>
+              <Button text={'CANCELAR'} onClick={handleClose}/>
+              <Button text={'ACEPTAR'} onClick={formik.handleSubmit}/>
+            </>
+          }
         </div>
     </div>
   )

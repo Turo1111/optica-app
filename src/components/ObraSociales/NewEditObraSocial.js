@@ -23,6 +23,7 @@ export default function NewEditObraSocial({token, item , edit, handleClose}) {
     const search = useInputValue('','')
     const tag = ["descripcion", "codigo"]
     const listProducto = useSearch(search.value, tag, data)
+    const [loading2, setLoading2] = useState(false)
 
     const formik = useFormik({
         initialValues: initialValues(item),
@@ -43,6 +44,7 @@ export default function NewEditObraSocial({token, item , edit, handleClose}) {
             return
           }
           formValue.productosDescuento = selectedItems;
+          setLoading2(true)
           if (item) {
             apiClient.patch(`/obrasocial/${item._id}`, formValue ,
             {
@@ -56,6 +58,7 @@ export default function NewEditObraSocial({token, item , edit, handleClose}) {
                 message: 'Obra Social modificada correctamente',
                 type: 'success'
               }))
+              setLoading2(false)
             })
             .catch(e=>dispatch(setAlert({
               message: `${e.response.data.error}`,
@@ -74,6 +77,7 @@ export default function NewEditObraSocial({token, item , edit, handleClose}) {
                 message: 'Obra Social creada correctamente',
                 type: 'success'
               }))
+              setLoading2(false)
             })
             .catch(e=>dispatch(setAlert({
               message: `${e.response.data.error}`,
@@ -146,9 +150,15 @@ export default function NewEditObraSocial({token, item , edit, handleClose}) {
           </div>
         }
         <div style={{display: 'flex', justifyContent: 'space-around', marginTop: 15}}>
-            <Button text={'CANCELAR'} onClick={handleClose}/>
-            <Button text={'ACEPTAR'} onClick={formik.handleSubmit}/>
-        </div> 
+          {
+            loading2 ? 
+            <Loading />:
+            <>
+              <Button text={'CANCELAR'} onClick={handleClose}/>
+              <Button text={'ACEPTAR'} onClick={formik.handleSubmit}/>
+            </>
+          }
+        </div>
     </div>
   )
 }

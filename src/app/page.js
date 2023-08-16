@@ -1,6 +1,7 @@
   'use client'
 import Button from "@/components/Button";
 import Input from "@/components/Input";
+import Loading from "@/components/Loading";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { setAlert } from "@/redux/alertSlice"
 import { useAppDispatch } from "@/redux/hook"
@@ -8,6 +9,7 @@ import { setUser } from "@/redux/userSlice";
 import apiClient from "@/utils/client";
 import { useFormik } from "formik";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import styled from "styled-components"
 
 export default function Home() {
@@ -15,6 +17,7 @@ export default function Home() {
   const dispatch = useAppDispatch();
   const router = typeof window !== 'undefined' ? useRouter() : null;
   const [valueStorage , setValue] = useLocalStorage("user", "")
+  const [loading, setLoading] = useState(false)
 
   const formik = useFormik({
     initialValues: {
@@ -23,6 +26,7 @@ export default function Home() {
     },
     validateOnChange: false,
     onSubmit: (formValue) => {
+      setLoading(true)
       apiClient.post('/empleado/login', formValue)
       .then(r=>{
         if (!r.data.data[0].estado) {
@@ -47,6 +51,7 @@ export default function Home() {
         dispatch(setUser(user))
         setValue(user)
         router.push('/dashboard/productos')
+        setLoading(false)
       })
       .catch(e=>{
         dispatch(setAlert({
@@ -76,7 +81,11 @@ export default function Home() {
           <Input type="password" name={'password'} label={'Contraseña'} value={formik.values.password} onChange={formik.handleChange}/>
         </div>
         <div style={{display: "flex", justifyContent: "center"}} >
-          <Button text={'INGRESAR'} onClick={formik.handleSubmit} width="150px"/>
+          {
+            loading ? 
+            <Loading />:
+            <Button text={'INGRESAR'} onClick={formik.handleSubmit} width="150px"/>
+          }
         </div>
       </ContainerLogin>
     </Container>

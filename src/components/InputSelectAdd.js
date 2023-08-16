@@ -110,6 +110,7 @@ const InputSelectAdd = ({type = 'text', label, value, onChange, name, edit = fal
   const [loading, setLoading] = useState(false)
   const user = useAppSelector(getUser);
   const dispatch = useAppDispatch();
+  const [loading2, setLoading2] = useState(false)
 
   const [inputValue, setInputValue] = useState(edit ? value : '')
 
@@ -143,6 +144,7 @@ const InputSelectAdd = ({type = 'text', label, value, onChange, name, edit = fal
   }
 
   const postValue = () => {
+    setLoading2(true)
     apiClient.post(`/${name}`, {descripcion: inputValue},
     {
       headers: {
@@ -155,6 +157,7 @@ const InputSelectAdd = ({type = 'text', label, value, onChange, name, edit = fal
         message: `${label} creada correctamente`,
         type: 'success'
       }))
+      setLoading2(false)
     })
     .catch(e=>dispatch(setAlert({
       message: `${e.response.data.error}`,
@@ -163,6 +166,7 @@ const InputSelectAdd = ({type = 'text', label, value, onChange, name, edit = fal
   }
 
   const patchValue = () => {
+    setLoading2(true)
     apiClient.patch(`/${name}/${value}`, {_id: value, descripcion: inputValue},
     {
       headers: {
@@ -175,6 +179,7 @@ const InputSelectAdd = ({type = 'text', label, value, onChange, name, edit = fal
         message: `${label} modificada correctamente`,
         type: 'success'
       }))
+      setLoading2(false)
     })
     .catch(e=>{
       dispatch(setAlert({
@@ -262,18 +267,35 @@ const InputSelectAdd = ({type = 'text', label, value, onChange, name, edit = fal
         :
          (value === '' || value === undefined ) ? 
           <div style={{display: 'flex', position: 'absolute', right: 0}}>
-            <IconWrapper onClick={postValue}>
-                <Tag color={process.env.TEXT_COLOR}>Agregar</Tag>
-            </IconWrapper>
+            {
+              loading2 ?
+              <IconWrapper>
+                <Tag color={process.env.TEXT_COLOR}>Cargando..</Tag>
+              </IconWrapper>
+              :
+              <IconWrapper onClick={postValue}>
+                  <Tag color={process.env.TEXT_COLOR}>Agregar</Tag>
+              </IconWrapper>
+            }
           </div>
           :
           <div style={{display: 'flex', position: 'absolute', right: 0}}>
-            <IconWrapper onClick={patchValue}>
-              <Tag color={process.env.TEXT_COLOR}>Modificar</Tag>
-            </IconWrapper>
-            <IconWrapper onClick={cleanValue}>
-                <Tag color={process.env.TEXT_COLOR}>Quitar</Tag>
-            </IconWrapper>
+            {
+              loading2 ?
+              <IconWrapper>
+                <Tag color={process.env.TEXT_COLOR}>Cargando..</Tag>
+              </IconWrapper>
+              :
+              <>
+                <IconWrapper onClick={patchValue}>
+                  <Tag color={process.env.TEXT_COLOR}>Modificar</Tag>
+                </IconWrapper>
+                <IconWrapper onClick={cleanValue}>
+                    <Tag color={process.env.TEXT_COLOR}>Quitar</Tag>
+                </IconWrapper>
+              </>
+            }
+            
           </div>
       }
       {

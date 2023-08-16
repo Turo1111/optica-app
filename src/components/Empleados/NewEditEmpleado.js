@@ -7,10 +7,12 @@ import InputSelect from '../InputSelect'
 import apiClient from '@/utils/client'
 import { useAppDispatch } from '@/redux/hook'
 import { setAlert } from '@/redux/alertSlice'
+import Loading from '../Loading'
 
 export default function NewEditEmpleado({token, item , edit, handleClose}) {
 
     const dispatch = useAppDispatch();
+    const [loading, setLoading] = useState(false)
 
     const formik = useFormik({
         initialValues: initialValues(item),
@@ -51,6 +53,7 @@ export default function NewEditEmpleado({token, item , edit, handleClose}) {
             }))
             return
           }
+          setLoading(true)
           if (item) {
             apiClient.patch(`/empleado/${item._id}`, formValue ,
             {
@@ -64,6 +67,7 @@ export default function NewEditEmpleado({token, item , edit, handleClose}) {
                 message: 'Empleado modificado correctamente',
                 type: 'success'
               }))
+              setLoading(false)
             })
             .catch(e=>dispatch(setAlert({
               message: `${e.response.data.error}`,
@@ -82,6 +86,7 @@ export default function NewEditEmpleado({token, item , edit, handleClose}) {
                 message: 'Empleado creado correctamente',
                 type: 'success'
               }))
+              setLoading(false)
             })
             .catch(e=>dispatch(setAlert({
               message: `${e.response.data.error}`,
@@ -108,8 +113,14 @@ export default function NewEditEmpleado({token, item , edit, handleClose}) {
         }} edit={item && true} />
         <ToggleSwitch checked={formik.values.estado} onChange={(newValue)=>formik.setFieldValue(`estado`, !formik.values.estado)} label={'Estado'} />
         <div style={{display: 'flex', justifyContent: 'space-around', marginTop: 15}}>
-            <Button text={'CANCELAR'} onClick={handleClose}/>
-            <Button text={'ACEPTAR'} onClick={formik.handleSubmit}/>
+          {
+            loading ? 
+            <Loading />:
+            <>
+              <Button text={'CANCELAR'} onClick={handleClose}/>
+              <Button text={'ACEPTAR'} onClick={formik.handleSubmit}/>
+            </>
+          }
         </div>
     </div>
   )

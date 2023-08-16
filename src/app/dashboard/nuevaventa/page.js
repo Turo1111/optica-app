@@ -5,6 +5,7 @@ import EmptyList from '@/components/EmptyList'
 import Input from '@/components/Input'
 import InputSearch from '@/components/InputSearch'
 import InputSelect from '@/components/InputSelect'
+import Loading from '@/components/Loading'
 import Modal from '@/components/Modal'
 import NotPermissions from '@/components/NotPermissions'
 import AddCard from '@/components/NuevaVenta/AddCard'
@@ -53,6 +54,8 @@ export default function NuevaVenta() {
     const [tagSearch, setTagSearch] = useState([])
     const [permission, setPermission] = useState(false)
     const [useSenia, setUseSenia] = useState(false)
+    const [loading, setLoading] = useState(false)
+    const [loadingData, setLoadingData] = useState(false)
 
     const tag = ["descripcion", "codigo", "categoria", "color", "alto", "ancho", "marca", "numeracion"]
 
@@ -105,9 +108,11 @@ export default function NuevaVenta() {
       setDataOrder({idObraSocial: '', fecha: '', numero: ''})
       setDineroIngresado(0)
       setDescuento(0)
+      setLoading(false)
     }
 
     const finishSale = async () => {
+      
       user.roles.permisos.forEach((permiso) => {
         if (permiso.screen.toLowerCase() === 'venta') {
           if (!permiso.escritura) {
@@ -147,7 +152,6 @@ export default function NuevaVenta() {
         }))
         return;
       }
-      console.log(parseFloat(dineroIngresado) > parseFloat(total), parseFloat(dineroIngresado), parseFloat(total));
       if (parseFloat(dineroIngresado) > parseFloat(total)) {
         dispatch(setAlert({
           message: 'No se puede ingresar un valor mayor al total',
@@ -155,7 +159,7 @@ export default function NuevaVenta() {
         }))
         return;
       }
-      if ( clientSelected._id === '64c95db35ae46355b5f7df64' && dineroIngresado < total) {
+      if ( clientSelected._id === '64c95db35ae46355b5f7df64' && parseFloat(dineroIngresado).toFixed(2) < parseFloat(total).toFixed(2)) {
         dispatch(setAlert({
           message: 'Consumidor final tiene que ingresar el total de la venta',
           type: 'error'
@@ -187,6 +191,7 @@ export default function NuevaVenta() {
           subTotal: subTotal,
           dineroIngresado :  pago.descripcion === 'TARJETA' ?  total : (dineroIngresado <= 0 ? total : dineroIngresado )
         }
+        setLoading(true)
         if (useSenia) {
           apiClient.patch(`/senia/${clientSelected.senia._id}`, {estado: false},{
             headers: {
@@ -324,6 +329,7 @@ export default function NuevaVenta() {
     }
 
     useEffect(() => {
+      setLoadingData(true)
       apiClient.get(`/producto`,{
         headers: {
           Authorization: `Bearer ${user.token}` // Agregar el token en el encabezado como "Bearer {token}"
@@ -337,11 +343,11 @@ export default function NuevaVenta() {
         }
       })
       .then((r)=>{
-        console.log(r.data.body);
+        setLoadingData(false)
         setClientes(r.data.body)
       })
       .catch((e)=>console.log('error',e))
-    }, [])
+    }, [user.token])
 
     useEffect(()=>{
       console.log('cambio');
@@ -498,6 +504,10 @@ export default function NuevaVenta() {
       return <NotPermissions/>
     }
 
+    if (loadingData) {
+      return <Loading/>
+    }
+
   return (
     <Container>
         <ContainerCart>
@@ -607,7 +617,11 @@ export default function NuevaVenta() {
                   <Input label={"Dinero ingresado"} type='text' name='dineroIngresado' value={dineroIngresado} onChange={(e)=>setDineroIngresado(e.target.value)} prefix={'$'}/>
                 </div>
                 <div style={{display: 'flex', flex: 1, justifyContent: 'end', alignItems: 'end'}} >
-                  <Button text={'CONTINUAR'} onClick={finishSale} />
+                  {
+                    loading ? 
+                    <Loading />:
+                    <Button text={'CONTINUAR'} onClick={finishSale} />
+                  }
                 </div>
             </ContainerInfo>
         </ContainerClient>

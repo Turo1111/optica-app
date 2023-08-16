@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import ToggleSwitch from '../ToggleSwitch'
 import { useFormik } from 'formik'
 import Input from '../Input'
@@ -10,6 +10,7 @@ import { setAlert } from '@/redux/alertSlice'
 export default function NewEditSucursal({token, item , edit, handleClose}) {
 
     const dispatch = useAppDispatch();
+    const [loading, setLoading] = useState(false)
 
     const formik = useFormik({
         initialValues: initialValues(item),
@@ -22,6 +23,7 @@ export default function NewEditSucursal({token, item , edit, handleClose}) {
             }))
             return;
           }
+          setLoading(true)
           if (item) {
             apiClient.patch(`/sucursal/${item._id}`, formValue ,
             {
@@ -35,6 +37,7 @@ export default function NewEditSucursal({token, item , edit, handleClose}) {
                 type: 'success'
               }))
               handleClose()
+              setLoading(false)
             })
             .catch(e=>dispatch(setAlert({
               message: `${e.response.data.error}`,
@@ -53,6 +56,7 @@ export default function NewEditSucursal({token, item , edit, handleClose}) {
                 message: 'Sucursal creada correctamente',
                 type: 'success'
               }))
+              setLoading(false)
             })
             .catch(e=>dispatch(setAlert({
               message: `${e.response.data.error}`,
@@ -69,8 +73,14 @@ export default function NewEditSucursal({token, item , edit, handleClose}) {
         <Input label={"Telefono"} type='text' name='telefono' value={formik.values.telefono} onChange={formik.handleChange}/>
         <ToggleSwitch checked={formik.values.estado} onChange={(newValue)=>formik.setFieldValue('estado', !formik.values.estado)} label={'Estado'}/>
         <div style={{display: 'flex', justifyContent: 'space-around', marginTop: 15}}>
-            <Button text={'CANCELAR'} onClick={handleClose}/>
-            <Button text={'ACEPTAR'} onClick={formik.handleSubmit}/>
+          {
+            loading ? 
+            <Loading />:
+            <>
+              <Button text={'CANCELAR'} onClick={handleClose}/>
+              <Button text={'ACEPTAR'} onClick={formik.handleSubmit}/>
+            </>
+          }
         </div>
     </div>
   )

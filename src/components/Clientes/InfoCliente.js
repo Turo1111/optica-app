@@ -20,7 +20,6 @@ export default function InfoCliente({_id, nombreCompleto, telefono, dni, cuentaC
             setSenia(r.data.body)
           })
           .catch(e=>{
-            console.log(e);
             dispatch(setAlert({
             message: `${e.response.data.error}`,
             type: 'error'

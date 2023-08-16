@@ -6,11 +6,13 @@ import Button from '../Button'
 import { useAppDispatch } from '@/redux/hook'
 import { setAlert } from '@/redux/alertSlice'
 import apiClient from '@/utils/client'
+import Loading from '../Loading'
 
 export default function NewTransfer({item, token, handleClose}) {
 
     const dispatch = useAppDispatch();
     const [listStock, setListStock] = useState([])
+    const [loading, setLoading] = useState(false)
 
     const formik = useFormik({
         initialValues: {
@@ -52,6 +54,7 @@ export default function NewTransfer({item, token, handleClose}) {
                 }))
                 return null
             }
+            setLoading(true)
             if (stockDestino === undefined) {
                 
                 let newStock = {
@@ -96,6 +99,7 @@ export default function NewTransfer({item, token, handleClose}) {
                         message: 'Stock salida modificado correctamente',
                         type: 'success'
                       }))
+                      setLoading(false)
                     })
                     .catch(e=>dispatch(setAlert({
                       message: `${e.response.data.error}`,
@@ -129,6 +133,7 @@ export default function NewTransfer({item, token, handleClose}) {
                     message: 'Stock salida modificado correctamente',
                     type: 'success'
                   }))
+                  setLoading(false)
                 })
                 .catch(e=>dispatch(setAlert({
                   message: `${e.response.data.error}`,
@@ -150,6 +155,7 @@ export default function NewTransfer({item, token, handleClose}) {
                     message: 'Stock salida modificado correctamente',
                     type: 'success'
                   }))
+                  setLoading(false)
                 })
                 .catch(e=>dispatch(setAlert({
                   message: `${e.response.data.error}`,
@@ -186,8 +192,14 @@ export default function NewTransfer({item, token, handleClose}) {
         <Input label={"Precio efectivo"} type='number' name='precioEfectivo' value={formik.values.precioEfectivo} onChange={formik.handleChange} prefix={'$'} />
         <Input label={"Precio lista"} type='number' name='precioLista' value={formik.values.precioLista} onChange={formik.handleChange}  prefix={'$'} />
         <div style={{display: 'flex', justifyContent: 'space-around'}}>
-            <Button text={'CANCELAR'} onClick={handleClose}/>
-            <Button text={'ACEPTAR'} onClick={formik.handleSubmit}/>
+          {
+            loading ? 
+            <Loading />:
+            <>
+              <Button text={'CANCELAR'} onClick={handleClose}/>
+              <Button text={'ACEPTAR'} onClick={formik.handleSubmit}/>
+            </>
+          }
         </div>
     </div>
   )
