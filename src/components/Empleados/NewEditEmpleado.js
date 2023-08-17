@@ -105,8 +105,8 @@ export default function NewEditEmpleado({token, item , edit, handleClose}) {
   return (
     <div>
         <Input label={"Nombre completo"} type='text' name='nombreCompleto' value={formik.values.nombreCompleto} onChange={formik.handleChange} required={true}  />
-        <Input label={"Telefono"} type='text' name='telefono' value={formik.values.telefono} onChange={formik.handleChange} required={true}  />
-        <Input label={"Direccion"} type='text' name='direccion' value={formik.values.direccion} onChange={formik.handleChange} required={true}  />
+        <Input label={"Telefono"} type='text' name='telefono' value={formik.values.telefono} onChange={formik.handleChange} />
+        <Input label={"Direccion"} type='text' name='direccion' value={formik.values.direccion} onChange={formik.handleChange} />
         <Input label={"Usuario"} type='text' name='usuario' value={formik.values.usuario} onChange={formik.handleChange} required={true}  />
         <Input label={"Contraseña"} type='password' name='password' value={formik.values.password} onChange={formik.handleChange} required={true} />
         <InputSelect label={"Sucursal"} type='text' name='sucursal' value={formik.values.sucursal}  onChange={(id, item)=>{

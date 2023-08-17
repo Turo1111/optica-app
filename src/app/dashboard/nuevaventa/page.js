@@ -366,7 +366,6 @@ export default function NuevaVenta() {
     }, [user.token])
 
     useEffect(()=>{
-      console.log('cambio');
       if (cart.length === 0) {
         setSubTotal(0)
         setTotal(0)
@@ -579,6 +578,7 @@ export default function NuevaVenta() {
                     <Tag color={process.env.TEXT_COLOR}> Telefono : {clientSelected?.telefono || '-'}</Tag>
                     <Tag color={process.env.TEXT_COLOR}> DNI : {clientSelected?.dni || '-'}</Tag>
                     <Tag color={process.env.TEXT_COLOR}> Seña activa : $ {clientSelected?.senia?.saldo || '-'}</Tag>
+                    <Tag color={process.env.TEXT_COLOR}> Cuenta Corriente : Debe $ {clientSelected?.cuentaCorriente || '-'}</Tag>
                     {
                       clientSelected?.senia &&
                       <Tag color={process.env.TEXT_COLOR} style={{fontSize: 14}} > Observacion : {clientSelected?.senia?.observacion || '-'}</Tag>
