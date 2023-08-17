@@ -60,10 +60,12 @@ export default function NewEditObraSocial({token, item , edit, handleClose}) {
               }))
               setLoading2(false)
             })
-            .catch(e=>dispatch(setAlert({
+            .catch(e=>{
+              setLoading2(false)
+              dispatch(setAlert({
               message: `${e.response.data.error}`,
               type: 'error'
-            })))
+            }))})
           }else{
             apiClient.post(`/obrasocial`, formValue ,
             {
@@ -79,10 +81,12 @@ export default function NewEditObraSocial({token, item , edit, handleClose}) {
               }))
               setLoading2(false)
             })
-            .catch(e=>dispatch(setAlert({
+            .catch(e=>{
+              setLoading2(false)
+              dispatch(setAlert({
               message: `${e.response.data.error}`,
               type: 'error'
-            })))
+            }))})
           }
         }
     })

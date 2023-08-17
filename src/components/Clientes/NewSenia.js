@@ -49,7 +49,7 @@ export default function NewSenia({id, token, handleClose}) {
               setLoading(false)
             })
             .catch(e=>{
-              console.log(e);
+              setLoading(false)
                 dispatch(setAlert({
                 message: `${e.response.data.error}`,
                 type: 'error'

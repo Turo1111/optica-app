@@ -18,6 +18,7 @@ export default function NewEditEmpleado({token, item , edit, handleClose}) {
         initialValues: initialValues(item),
         validateOnChange: false,
         onSubmit: (formValue) => {
+          console.log("aca",formValue);
           if (formValue.nombreCompleto === '') {
             dispatch(setAlert({
               message: 'Debe ingresar un nombre al empleado',
@@ -69,10 +70,13 @@ export default function NewEditEmpleado({token, item , edit, handleClose}) {
               }))
               setLoading(false)
             })
-            .catch(e=>dispatch(setAlert({
+            .catch(e=>{
+              setLoading(false)
+              dispatch(setAlert({
               message: `${e.response.data.error}`,
               type: 'error'
-            })))
+            }))
+            })
           }else{
             apiClient.post(`/empleado`, formValue ,
             {
@@ -88,10 +92,12 @@ export default function NewEditEmpleado({token, item , edit, handleClose}) {
               }))
               setLoading(false)
             })
-            .catch(e=>dispatch(setAlert({
+            .catch(e=>{
+              setLoading(false)
+              dispatch(setAlert({
               message: `${e.response.data.error}`,
               type: 'error'
-            })))
+            }))})
           }
         }
     })

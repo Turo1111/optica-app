@@ -54,6 +54,7 @@ export default function Home() {
         setLoading(false)
       })
       .catch(e=>{
+        setLoading(false)
         dispatch(setAlert({
           message: `${e.response.data.error}`,
           type: 'error'

@@ -159,10 +159,12 @@ const InputSelectAdd = ({type = 'text', label, value, onChange, name, edit = fal
       }))
       setLoading2(false)
     })
-    .catch(e=>dispatch(setAlert({
+    .catch(e=>{
+      setLoading2(false)
+      dispatch(setAlert({
       message: `${e.response.data.error}`,
       type: 'error'
-    })))
+    }))})
   }
 
   const patchValue = () => {
@@ -182,6 +184,7 @@ const InputSelectAdd = ({type = 'text', label, value, onChange, name, edit = fal
       setLoading2(false)
     })
     .catch(e=>{
+      setLoading2(false)
       dispatch(setAlert({
         message: `${e.response.data.error}`,
         type: 'error'

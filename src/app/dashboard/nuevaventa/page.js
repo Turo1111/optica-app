@@ -199,10 +199,12 @@ export default function NuevaVenta() {
             }
           })
           .then(r=>console.log(r))
-          .catch(e=>dispatch(setAlert({
+          .catch(e=>{
+            setLoading(false)
+            dispatch(setAlert({
             message: `${e.response.data.error}`,
             type: 'error'
-          })))
+          }))})
         }
         if (dataOrder.idObraSocial !== '') {
           apiClient.post('/orden', dataOrder,{
@@ -246,27 +248,35 @@ export default function NuevaVenta() {
                           type: 'success'
                         }))
                       })
-                      .catch(e=>dispatch(setAlert({
+                      .catch(e=>{
+                        setLoading(false)
+                        dispatch(setAlert({
                         message: `${e.response.data.error}`,
                         type: 'error'
-                      })))
+                      }))})
                     
                   })
-                  .catch(e=>dispatch(setAlert({
+                  .catch(e=>{
+                    setLoading(false)
+                    dispatch(setAlert({
                     message: `${e.response.data.error}`,
                     type: 'error'
-                  }))) 
+                  }))}) 
                 })
               })
-              .catch(e=>dispatch(setAlert({
+              .catch(e=>{
+                setLoading(false)
+                dispatch(setAlert({
                 message: `${e.response.data.error}`,
                 type: 'error'
-              }))) 
+              }))}) 
           })
-          .catch(e=>dispatch(setAlert({
+          .catch(e=>{
+            setLoading(false)
+            dispatch(setAlert({
             message: `${e.response.data.error}`,
             type: 'error'
-          })))
+          }))})
         }else{
           apiClient.post('/venta', venta,{
             headers: {
@@ -302,24 +312,30 @@ export default function NuevaVenta() {
                       type: 'success'
                     }))
                   })
-                  .catch(e=>dispatch(setAlert({
+                  .catch(e=>{
+                    setLoading(false)
+                    dispatch(setAlert({
                     message: `${e.response.data.error}`,
                     type: 'error'
-                  })))
+                  }))})
                 })
-                .catch(e=>dispatch(setAlert({
+                .catch(e=>{
+                  setLoading(false)
+                  dispatch(setAlert({
                   message: `${e.response.data.error}`,
                   type: 'error'
-                }))) 
+                }))}) 
               })
             })
-            .catch(e=>dispatch(setAlert({
+            .catch(e=>{
+              setLoading(false)
+              dispatch(setAlert({
               message: `${e.response.data.error}`,
               type: 'error'
-            }))) 
+            }))}) 
         } 
       } catch (error) {
-        console.log(error, "error")
+        setLoading(false)
         dispatch(setAlert({
           message: 'Ocurrio un error, revise los datos',
           type: 'error'

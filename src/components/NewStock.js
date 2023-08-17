@@ -56,10 +56,12 @@ export default function NewStock({idProducto, item, eClose}) {
                 }))
                 setLoading(false)
               })
-              .catch(e=>dispatch(setAlert({
+              .catch(e=>{
+                setLoading(false)
+                dispatch(setAlert({
                 message: `${e.response.data.error}`,
                 type: 'error'
-              })))
+              }))})
           }else{
               apiClient.post('/stock', formValue,
               {
@@ -75,10 +77,12 @@ export default function NewStock({idProducto, item, eClose}) {
                 }))
                 setLoading(false)
               })
-              .catch(e=>dispatch(setAlert({
+              .catch(e=>{
+                setLoading(false)
+                dispatch(setAlert({
                 message: `${e.response.data.error}`,
                 type: 'error'
-              })))
+              }))})
           }
         }
     })

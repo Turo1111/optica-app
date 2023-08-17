@@ -55,10 +55,12 @@ export default function EditProduct({token, eClose, item}) {
             }))
             setLoading(false)
           })
-          .catch(e=>dispatch(setAlert({
+          .catch(e=>{
+            setLoading(false)
+            dispatch(setAlert({
             message: `${e.response.data.error}`,
             type: 'error'
-          })))
+          }))})
         }
     })
 

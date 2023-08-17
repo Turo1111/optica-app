@@ -62,12 +62,13 @@ export default function NewProduct({token, eClose}) {
         }))
         setLoading(false)
       })
-      .catch(e=>
+      .catch(e=>{
+        setLoading(false)
         dispatch(setAlert({
           message: `${e.response.data.error}`,
           type: 'error'
         }))
-      ) 
+      }) 
     }
   })
 

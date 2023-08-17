@@ -101,15 +101,19 @@ export default function NewTransfer({item, token, handleClose}) {
                       }))
                       setLoading(false)
                     })
-                    .catch(e=>dispatch(setAlert({
+                    .catch(e=>{
+                      setLoading(false)
+                      dispatch(setAlert({
                       message: `${e.response.data.error}`,
                       type: 'error'
-                    })))
+                    }))})
                 })
-                .catch(e=>dispatch(setAlert({
+                .catch(e=>{
+                  setLoading(false)
+                  dispatch(setAlert({
                   message: `${e.response.data.error}`,
                   type: 'error'
-                })))
+                }))})
                 return null
             }else{
                 let newStockDestino = {
@@ -135,10 +139,12 @@ export default function NewTransfer({item, token, handleClose}) {
                   }))
                   setLoading(false)
                 })
-                .catch(e=>dispatch(setAlert({
+                .catch(e=>{
+                  setLoading(false)
+                  dispatch(setAlert({
                   message: `${e.response.data.error}`,
                   type: 'error'
-                })))
+                }))})
                 apiClient.patch(`/stock/${stockSalida._id}`, {
                   idSucursal: formValue.idSalida, 
                   cantidad: parseFloat(stockSalida.cantidad)-parseFloat(formValue.cantidad),
@@ -157,10 +163,12 @@ export default function NewTransfer({item, token, handleClose}) {
                   }))
                   setLoading(false)
                 })
-                .catch(e=>dispatch(setAlert({
+                .catch(e=>{
+                  setLoading(false)
+                  dispatch(setAlert({
                   message: `${e.response.data.error}`,
                   type: 'error'
-                })))
+                }))})
             }
         }
     })

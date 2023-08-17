@@ -6,6 +6,7 @@ import Button from '../Button'
 import apiClient from '@/utils/client'
 import { useAppDispatch } from '@/redux/hook'
 import { setAlert } from '@/redux/alertSlice'
+import Loading from '../Loading'
 
 export default function NewEditSucursal({token, item , edit, handleClose}) {
 
@@ -39,10 +40,12 @@ export default function NewEditSucursal({token, item , edit, handleClose}) {
               handleClose()
               setLoading(false)
             })
-            .catch(e=>dispatch(setAlert({
+            .catch(e=>{
+              setLoading(false)
+              dispatch(setAlert({
               message: `${e.response.data.error}`,
               type: 'error'
-            })))
+            }))})
           }else{
             apiClient.post(`/sucursal`, formValue ,
             {
@@ -58,10 +61,12 @@ export default function NewEditSucursal({token, item , edit, handleClose}) {
               }))
               setLoading(false)
             })
-            .catch(e=>dispatch(setAlert({
+            .catch(e=>{
+              setLoading(false)
+              dispatch(setAlert({
               message: `${e.response.data.error}`,
               type: 'error'
-            })))
+            }))})
           }
         }
     })

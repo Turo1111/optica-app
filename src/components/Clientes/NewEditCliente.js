@@ -41,10 +41,12 @@ export default function NewEditCliente({token, item , edit, handleClose}) {
               }))
               setLoading(false)
             })
-            .catch(e=>dispatch(setAlert({
+            .catch(e=>{
+              setLoading(false)
+              dispatch(setAlert({
               message: `${e.response.data.error}`,
               type: 'error'
-            })))
+            }))})
           }else{
             apiClient.post(`/cliente`, formValue ,
             {
@@ -60,10 +62,12 @@ export default function NewEditCliente({token, item , edit, handleClose}) {
               }))
               setLoading(false)
             })
-            .catch(e=>dispatch(setAlert({
+            .catch(e=>{
+              setLoading(false)
+              dispatch(setAlert({
               message: `${e.response.data.error}`,
               type: 'error'
-            })))
+            }))})
           }
         }
     })

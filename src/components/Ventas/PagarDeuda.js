@@ -36,10 +36,12 @@ export default function PagarDeuda({venta, handleClose, token}) {
           .then(r=>{
             setLoading(false)
             handleClose()})
-          .catch(e=>dispatch(setAlert({
+          .catch(e=>{
+            setLoading(false)
+            dispatch(setAlert({
             message: `${e.response.data.error}`,
             type: 'error'
-          })))
+          }))})
         }
     })
 
