@@ -76,7 +76,7 @@ export default function Dashboard({children}) {
             <h2 style={{fontSize: 22, color: '#fff', textAlign: 'center', marginLeft: 25}} >{extractLastPart(pathname).toUpperCase()}</h2>
         </HeaderMobile>
         <Content>
-            <ContainerDashboard bg={process.env.BLUE_COLOR} open={openMenu} >
+            <ContainerDashboard bg={process.env.BLUE_COLOR} open={openMenu} ref={modalRef} >
                 <Logo>LOGOTIPO</Logo>
                 <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                     <UserContainer >
@@ -95,7 +95,7 @@ export default function Dashboard({children}) {
                         </div>
                     </UserContainer>
                 </div>
-                <ListaMenu ref={modalRef}>
+                <ListaMenu >
                     {itemsLi.map((item,index) => {
                         return(
                             <Link href={"/dashboard/"+(item.toLowerCase().split(' ').join(''))} style={{textDecoration: 'none'}}>
