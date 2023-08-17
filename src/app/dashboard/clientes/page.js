@@ -20,7 +20,6 @@ import styled, { keyframes } from 'styled-components'
 const io = require('socket.io-client')
 
 export default function Clientes() {
-  console.log(process.env.NEXT_PUBLIC_DB_HOST);
 
   const [clientSelected, setClientSelected] = useState(undefined)
   const [data, setData] = useState([])
@@ -37,6 +36,8 @@ export default function Clientes() {
   const tag = ["nombreCompleto", "telefono", "dni"]
 
   const listCliente = useSearch(search.value, tag, data, tagSearch) 
+
+  console.log(listCliente);
 
   useEffect(()=>{
     if (user.usuario !== '') {  

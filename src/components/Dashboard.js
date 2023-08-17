@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import styled, { keyframes } from 'styled-components'
 import {BsPersonSquare} from 'react-icons/bs'
 import { usePathname, useRouter } from 'next/navigation';
@@ -11,6 +11,7 @@ import useLocalStorage from '@/hooks/useLocalStorage';
 import { AiOutlineMenu } from 'react-icons/ai';
 import { MdClose } from 'react-icons/md';
 import { CSSTransition } from 'react-transition-group'
+import useOutsideClick from '@/hooks/useOutsideClick';
 
 /* const itemsLi = ["COMPRA", "CONTABILIDAD"] */
 const itemsLi = ["NUEVA VENTA", "VENTA", "PRODUCTOS","GESTION", "CLIENTES"]
@@ -23,6 +24,10 @@ export default function Dashboard({children}) {
    const router = typeof window !== 'undefined' ? useRouter() : null;
    const [valueStorage , setValue, clearValue] = useLocalStorage("user", "")
    const [openMenu, setOpenMenu] = useState(false)
+
+   const modalRef = useRef(null);
+
+    useOutsideClick(modalRef, ()=>setOpenMenu(false));
 
    function extractLastPart(pathname) {
     const parts = pathname.split('/');
@@ -90,7 +95,7 @@ export default function Dashboard({children}) {
                         </div>
                     </UserContainer>
                 </div>
-                <ListaMenu>
+                <ListaMenu ref={modalRef}>
                     {itemsLi.map((item,index) => {
                         return(
                             <Link href={"/dashboard/"+(item.toLowerCase().split(' ').join(''))} style={{textDecoration: 'none'}}>
