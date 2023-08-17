@@ -180,7 +180,7 @@ export default function InfoProduct({token, item}) {
           openNewSale && 
           <Modal
             open={openNewSale}
-            title={'Nuevo stock'}
+            title={'Nueva oferta'}
             height='auto'
             width='50%'
             eClose={()=>{
@@ -198,7 +198,7 @@ export default function InfoProduct({token, item}) {
           openNewStock && 
           <Modal
             open={openNewStock}
-            title={'Nueva oferta'}
+            title={'Nuevo stock'}
             height='auto'
             width='50%'
             eClose={()=>{

@@ -161,7 +161,7 @@ export default function NewOferta({item, token, eClose, producto}) {
             loading2 ? 
             <Loading />:
             <>
-              <Button text={'CANCELAR'} onClick={handleClose}/>
+              <Button text={'CANCELAR'} onClick={eClose}/>
               <Button text={'ACEPTAR'} onClick={formik.handleSubmit}/>
             </>
           }
