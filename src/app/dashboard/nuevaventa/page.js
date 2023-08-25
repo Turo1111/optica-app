@@ -9,8 +9,11 @@ import Modal from '@/components/Modal'
 import NotPermissions from '@/components/NotPermissions'
 import AddCard from '@/components/NuevaVenta/AddCard'
 import AddProduct from '@/components/NuevaVenta/AddProduct'
+import SelectClient from '@/components/NuevaVenta/ContainerClient'
+import DataSale from '@/components/NuevaVenta/DataSale'
 import ItemCartProduct from '@/components/NuevaVenta/ItemCartProduct'
 import NewOrder from '@/components/NuevaVenta/NewOrder'
+import SelectProduct from '@/components/NuevaVenta/SelectProduct'
 import TextArea from '@/components/TextArea'
 import ToggleSwitch from '@/components/ToggleSwitch'
 import { useInputValue } from '@/hooks/useInputValue'
@@ -22,8 +25,6 @@ import apiClient from '@/utils/client'
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 const io = require('socket.io-client')
-
-const preData = [{_id: 1, descripcion: 'EFECTIVO'}, {_id: 2, descripcion: 'TARJETA'}]
 
 export default function NuevaVenta() {
 
@@ -53,6 +54,7 @@ export default function NuevaVenta() {
     const [tagSearch, setTagSearch] = useState([])
     const [permission, setPermission] = useState(false)
     const [useSenia, setUseSenia] = useState(false)
+    const [cuotas, setCuotas] = useState(calculateCuotas(total, dineroIngresado))
 
     const tag = ["descripcion", "codigo", "categoria", "color", "alto", "ancho", "marca", "numeracion"]
 
@@ -73,6 +75,9 @@ export default function NuevaVenta() {
               type: 'success'
             }))
             setOpenAddProduct(false)
+            if (obraSocialSelected) {
+              setObraSocialSelected(obraSocialSelected)
+            }
             return [...prevData, item]
           })
         }
@@ -93,6 +98,15 @@ export default function NuevaVenta() {
       }
     },[user])
 
+    useEffect(()=>{
+      if (dineroIngresado <= 0) {
+        setCuotas(calculateCuotas(parseFloat(total), dineroIngresado))
+        return
+      }
+      setCuotas(calculateCuotas(total, dineroIngresado))
+      return;
+    },[total,dineroIngresado])
+
     const reset = () => {
       setCart([])
       setProductSelected(undefined)
@@ -108,6 +122,8 @@ export default function NuevaVenta() {
     }
 
     const finishSale = async () => {
+      console.log(dataCard);
+      return
       user.roles.permisos.forEach((permiso) => {
         if (permiso.screen.toLowerCase() === 'venta') {
           if (!permiso.escritura) {
@@ -319,7 +335,9 @@ export default function NuevaVenta() {
           Authorization: `Bearer ${user.token}` // Agregar el token en el encabezado como "Bearer {token}"
         }
       })
-      .then((r)=>setProductos(r.data.body))
+      .then((r)=>{
+        setProductos(r.data.body)
+      })
       .catch((e)=>console.log('error',e))
       apiClient.get(`/cliente`,{
         headers: {
@@ -331,10 +349,9 @@ export default function NuevaVenta() {
         setClientes(r.data.body)
       })
       .catch((e)=>console.log('error',e))
-    }, [])
+    }, [user.token])
 
-    useEffect(()=>{
-      console.log('cambio');
+    /* useEffect(()=>{
       if (cart.length === 0) {
         setSubTotal(0)
         setTotal(0)
@@ -437,7 +454,7 @@ export default function NuevaVenta() {
         }
       }
       
-    },[cart, pago, obraSocialSelected])
+    },[cart, pago, obraSocialSelected]) */
     
     useEffect(()=>{
       if (consumidorFinal) {
@@ -484,123 +501,148 @@ export default function NuevaVenta() {
       }
     },[useSenia])
 
+    useEffect(()=>{
+      console.log("carrito",cart, 'datacard', dataCard);
+      const initialValue = 0
+      const sumTotal = cart?.reduce( (accumulator, currentValue) => {
+          return (parseFloat(accumulator) + parseFloat(currentValue.total)).toFixed(2)
+      }, initialValue)
+      if(pago.descripcion === 'EFECTIVO' || pago.descripcion === 'CUENTA CORRIENTE' ){
+        console.log('EFECTIVO o CC');
+        setSubTotal(parseFloat(sumTotal))
+        setTotal(parseFloat(sumTotal)-descuento)
+        return;
+      }
+      if(pago.descripcion === 'TARJETA'){
+        console.log('TARJETA', sumTotal);
+        setSubTotal(parseFloat(sumTotal))
+        setTotal( (parseFloat(sumTotal)+(parseFloat(sumTotal)*(20/100)))-descuento)
+        return;
+      }
+      if(pago.descripcion === 'EFECTIVO Y TARJETA'){
+        console.log('eyt', sumTotal, ((sumTotal-dineroIngresado)+((sumTotal-dineroIngresado)*(20/100))));
+        setSubTotal((parseFloat(sumTotal)).toFixed(2))
+        setTotal( ((parseFloat(dineroIngresado) + ((sumTotal-dineroIngresado)+((sumTotal-dineroIngresado)*(20/100))))-descuento).toFixed(2))
+        return;
+      }
+    },[dataCard, dineroIngresado, cart, descuento, pago])
+
+    useEffect(()=>{
+      if (!obraSocialSelected) {
+        setCart(prevData=>prevData.map(itemCart=>{
+          return {...itemCart, total : itemCart.descuento !== undefined ? 
+            (parseFloat(itemCart.precioEfectivo)*parseFloat(itemCart.cantidad))-(parseFloat(itemCart.precioEfectivo)*parseFloat(itemCart.cantidad)*(itemCart.descuento/100)) :
+            parseFloat(itemCart.precioEfectivo)*parseFloat(itemCart.cantidad)
+          }
+        }))
+        setDescuento(0)
+        return
+      }
+      if (obraSocialSelected.productosDescuento.length === 0) {
+        let descuento = obraSocialSelected.tipoDescuento ? parseFloat(obraSocialSelected.cantidadDescuento) : total*parseFloat(obraSocialSelected.cantidadDescuento/100)
+        setDescuento(descuento)
+        return;
+      }
+      if (obraSocialSelected.productosDescuento.length !== 0) {
+        let descuentoTotal = 0
+          cart.forEach(itemCart=>{
+            if (obraSocialSelected.productosDescuento.includes(itemCart._id)) {
+              let descuento = obraSocialSelected.tipoDescuento ? 
+              parseFloat(obraSocialSelected.cantidadDescuento) : 
+              parseFloat(itemCart.precioEfectivo*itemCart.cantidad)*parseFloat(obraSocialSelected.cantidadDescuento/100)
+              descuentoTotal += descuento
+            }
+          })
+          setDescuento(descuentoTotal)
+      }
+      return
+    },[obraSocialSelected])
+
     if (!permission) {
       return <NotPermissions/>
     }
 
   return (
     <Container>
-        <ContainerCart>
-            <div style={{margin: '7px 0'}}>
-              <InputSearch placeholder={'Buscar Productos'} {...searchProduct} width='100%' data={listProducto} modal={true} prop={'descripcion'} onSelect={(item)=>{
-                setProductSelected(item)
-                setOpenAddProduct(true)
-              }} 
-              tags={tag}
-              tagSearch={tagSearch}
-              deleteTagSearch={(item) => setTagSearch((prevData) => prevData.filter((elem) => elem.tag !== item.tag))}
-              onSelectTag={(search, tag) =>
-                tag !== 'SIN ETIQUETA' &&
-                setTagSearch((prevData) =>
-                  !prevData.find((elem) => elem.tag === tag) ? [...prevData, { search, tag }] : prevData
-                )
+      <ContainerSelected>
+        <SelectProduct
+          searchProduct={searchProduct}
+          listProducto={listProducto}
+          tag={tag}
+          tagSearch={tagSearch}
+          deleteTagSearch={(item) => setTagSearch((prevData) => prevData.filter((elem) => elem.tag !== item.tag))}
+          onSelectTag={(search, tag) =>
+            tag !== 'SIN ETIQUETA' &&
+            setTagSearch((prevData) =>
+              !prevData.find((elem) => elem.tag === tag) ? [...prevData, { search, tag }] : prevData
+          )}
+          cart={cart}
+          pago={pago}
+          deleteItemCart={(id)=>setCart((prevData)=>prevData.filter(elem=>elem._id!==id))}
+          changeCart={(item)=>{
+            setCart((prevData)=>prevData.map(elem=>elem._id===item._id ? item : elem))
+          }}
+          onSelectProduct={(item)=>{
+            setProductSelected(item)
+            setOpenAddProduct(true)
+          }}
+        />
+        <SelectClient 
+          clientSelected={clientSelected}
+          searchClient={searchClient}
+          listCliente={listCliente}
+          onSelectClient={(item)=>{
+            setClientSelected(item)
+            setUseSenia(false)
+          }}
+          openNewClient={() => setOpenNewClient(true)}
+          onChangeConsumidorFinal={(value)=>setConsumidorFinal(!consumidorFinal)}
+          consumidorFinal={consumidorFinal}
+          useSenia={useSenia}
+          onChangeUseSenia={(value)=>{
+            if (clientSelected?.senia) {
+              setDineroIngresado(clientSelected?.senia?.saldo)
+              setUseSenia(!useSenia)
+            }
+          }}
+        />
+      </ContainerSelected>
+        <DataSale
+          pago={pago}
+          onChangeTipoPago={(_id, item)=>{
+            if (item.descripcion === 'TARJETA' || item.descripcion === 'EFECTIVO Y TARJETA' | item.descripcion === 'CUENTA CORRIENTE') {
+              setDineroIngresado(0)
+              setOpenAddCard(true)
+            }else{
+              setDataCard(undefined)
+            }
+            setPago(item)
+          }}
+          dataCard={dataCard}
+          onChangeObraSocial={(id, item)=>{
+            if (id!==undefined && id !== '') {
+              setOpenNewOrder(true)
+              setObraSocialSelected(item)
+            }
+            if (id == '') {
+              setObraSocialSelected(undefined)
+              setDataOrder({idObraSocial: '', fecha: '', numero: ''})
+              return;
+            }
+            setDataOrder(prevData=>{
+              return {
+                ...prevData,
+                idObraSocial: id
               }
-              />
-            </div>
-            <List>
-                {
-                  cart.length === 0 ?
-                  <EmptyList />
-                  :
-                  cart.map((item, index) => (
-                    <ItemCartProduct
-                        key={index}
-                        item={item}
-                        tipoPago={pago.descripcion === 'EFECTIVO' ? true : false}
-                        deleteItem={(id)=>setCart((prevData)=>prevData.filter(elem=>elem._id!==id))}
-                        changeCart={(item)=>{
-                          setCart((prevData)=>prevData.map(elem=>elem._id===item._id ? item : elem))
-                        }}
-                    />
-                  ))
-                }
-            </List>
-        </ContainerCart>
-        <ContainerClient >
-            <div>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <InputSearch placeholder={'Buscar Cliente'} {...searchClient} width='95%' data={listCliente} modal={true} prop={'nombreCompleto'} onSelect={(item)=>{
-                      console.log(item);
-                      setClientSelected(item)
-                      setUseSenia(false)
-                    }}  
-                  />
-                  <Button text={'NUEVO'} onClick={() => setOpenNewClient(true)} />
-                </div>
-                <div style={{marginTop: 15, backgroundColor: '#fff', borderRadius: 15, padding: 15 }}>
-                    <ToggleSwitch checked={consumidorFinal} onChange={(value)=>setConsumidorFinal(!consumidorFinal)} label={'Consumidor final'}/>
-                    <Title color={process.env.TEXT_COLOR}>Nombre Completo : {clientSelected?.nombreCompleto || ''}</Title>
-                    <Tag color={process.env.TEXT_COLOR}> Telefono : {clientSelected?.telefono || '-'}</Tag>
-                    <Tag color={process.env.TEXT_COLOR}> DNI : {clientSelected?.dni || '-'}</Tag>
-                    <Tag color={process.env.TEXT_COLOR}> Seña activa : $ {clientSelected?.senia?.saldo || '-'}</Tag>
-                    {
-                      clientSelected?.senia &&
-                      <Tag color={process.env.TEXT_COLOR} style={{fontSize: 14}} > Observacion : {clientSelected?.senia?.observacion || '-'}</Tag>
-                    }
-                    <ToggleSwitch checked={useSenia} onChange={(value)=>{
-                        if (clientSelected?.senia) {
-                          setDineroIngresado(clientSelected?.senia?.saldo)
-                          setUseSenia(!useSenia)
-                        }
-                      }} label={'Utilizar seña en venta '}
-                    />
-                </div>
-            </div>
-            <ContainerInfo>
-                <InputSelect label={'Tipo de pago'} name={'tipoPago'} value={pago.descripcion} preData={preData} onChange={(_id, item)=>{
-                  if (item.descripcion === 'TARJETA') {
-                    setOpenAddCard(true)
-                  }else{
-                    setDataCard(undefined)
-                  }
-                  setPago(item)
-                }} />
-                {
-                  dataCard && 
-                  <div style={{display: 'flex', justifyContent: 'space-between'}}>
-                    <Tag color={process.env.TEXT_COLOR} style={{margin: 0}}> Banco : {dataCard?.banco || ''}</Tag>
-                    <Tag color={process.env.TEXT_COLOR} style={{margin: 0}} > Cuotas : {dataCard?.cuotas+`x${(total/dataCard?.cuotas).toFixed(2)}` || ''}</Tag>
-                  </div>
-                }
-                <InputSelect label={'Obra social'} name={'obrasocial'} value={''} emptyOption={[{_id: '', descripcion: 'Sin obra social'}]} onChange={(id, item)=>{
-                  if (id!==undefined && id !== '') {
-                    setOpenNewOrder(true)
-                    setObraSocialSelected(item)
-                  }
-                  if (id == '') {
-                    setDataOrder({idObraSocial: '', fecha: '', numero: ''})
-                    return;
-                  }
-                  setDataOrder(prevData=>{
-                    console.log("aca",prevData)
-                    return {
-                      ...prevData,
-                      idObraSocial: id
-                    }
-                  })
-                }} />
-                <TextArea label={"Observacion"} name='observacion' value={observacion} onChange={(e)=>setObservacion(e.target.value)} />
-                <div style={{textAlign: 'end'}} >
-                  <Tag color={process.env.TEXT_COLOR} > Descuento : $ {descuento} </Tag>   
-                  <Tag color={process.env.TEXT_COLOR}> Sub-Total : $ {subTotal} </Tag>
-                  <Tag color={process.env.TEXT_COLOR} > Total : $ {total} </Tag>
-                  <Input label={"Dinero ingresado"} type='text' name='dineroIngresado' value={dineroIngresado} onChange={(e)=>setDineroIngresado(e.target.value)} prefix={'$'}/>
-                </div>
-                <div style={{display: 'flex', flex: 1, justifyContent: 'end', alignItems: 'end'}} >
-                  <Button text={'CONTINUAR'} onClick={finishSale} />
-                </div>
-            </ContainerInfo>
-        </ContainerClient>
+            })
+          }}
+          observacion={observacion}
+          onChangeObservacion={(e)=>setObservacion(e.target.value)}
+          descuento={descuento} subTotal={subTotal} total={total}
+          finishSale={finishSale}
+          dineroIngresado={dineroIngresado}
+          onChangeDineroIngresado={(e)=>setDineroIngresado(e.target.value)}
+        />
         {
           openAddProduct &&
           <Modal 
@@ -629,12 +671,33 @@ export default function NuevaVenta() {
           openAddCard && 
           <Modal 
             open={openAddCard} 
-            eClose={()=>setOpenAddCard(false)} 
-            title={'NUEVA TARJETA'} 
+            eClose={()=>{
+              if (dataCard) {
+                setOpenAddCard(false)
+              }
+            }} 
+            title={pago.descripcion === 'CUENTA CORRIENTE' ? 'CUENTA CORRIENTE' : 'NUEVA TARJETA'} 
             height='auto'
             width='35%'
           >
-            <AddCard total={total} setDataCard={(card) => setDataCard(card)} onClose={()=>setOpenAddCard(false)} />
+            <AddCard 
+              total={total} 
+              setDataCard={(card) => setDataCard(card)} 
+              onClose={()=>setOpenAddCard(false)} 
+              pago={pago}
+              dineroIngresado={dineroIngresado}
+              onChangeDineroIngresado={(e)=>{
+                if (parseFloat(e.target.value) >= parseFloat(total)) {
+                  dispatch(setAlert({
+                    message: 'Necesita completar los datos',
+                    type: 'warning'
+                  }))
+                  return
+                }
+                setDineroIngresado(e.target.value)
+              }}
+              cuota={cuotas}
+            />
           </Modal>
         }
         {
@@ -658,76 +721,38 @@ export default function NuevaVenta() {
   )
 }
 
+function calculateCuotas (total, dineroIngresado) {
+  console.log("cuotas", (total), (total-dineroIngresado)*(20/100));
+  return [
+      {
+          cantidad: 1,
+          descripcion:`1 x ${(((total-dineroIngresado))/1).toFixed(2)}`
+      },
+      {
+          cantidad: 3,
+          descripcion:`3 x ${(((total-dineroIngresado))/3).toFixed(2)}`
+      },
+      {
+          cantidad: 6,
+          descripcion:`6 x ${(((total-dineroIngresado))/6).toFixed(2)}`
+      },
+      {
+          cantidad: 12,
+          descripcion:`12 x ${(((total-dineroIngresado))/12).toFixed(2)}`
+      }
+  ]
+}
+
 const Container = styled.div `
   display:flex;
+  flex-direction: column;
   flex: 1;
-  @media only screen and (max-width: 650px) {
+`
+
+const ContainerSelected = styled.div `
+  display:flex;
+  flex: 1;
+  @media only screen and (max-width: 800px) {
     flex-direction: column;
   }
-`
-
-const ContainerCart = styled.div `
-  display: flex; 
-  flex-direction: column;
-  flex: 1; 
-  padding: 5px; 
-  width: 65%;
-  @media only screen and (max-width: 650px) {
-    width: auto;
-    display: block;
-    flex: 0;
-  }
-`
-
-const ContainerClient = styled.div `
-  display: flex; 
-  flex-direction: column;
-  flex: 1; 
-  padding: 5px; 
-  width: 35%;
-  @media only screen and (max-width: 650px) {
-    width: auto;
-  }
-`
-
-const List = styled.ul `
-  flex: 1;
-  background-color: #fff; 
-  border-radius: 15px;
-  padding: 0;
-  overflow-y: scroll;
-  @media only screen and (max-width: 650px) {
-    height: 350px
-  }
-`
-
-const Title = styled.h2 `
-    font-size: 18px;
-    font-weight: 600;
-    margin: 5px 0;
-    color: ${props=>props.color};
-    @media only screen and (max-width: 1440px) {
-        font-size: 16px;
-    }
-    @media only screen and (max-width: 650px) {
-        font-size: 14px;
-    }
-`
-
-const Tag = styled.h2 `
-    font-size: 16px;
-    font-weight: 500;
-    color: ${props=>props.color};
-    @media only screen and (max-width: 1440px) {
-        font-size: 14px;
-    }
-`
-const ContainerInfo = styled.div `
-  background-color: #fff;
-  border-radius: 15px;
-  padding: 0 15px; 
-  flex: 1; 
-  margin: 15px 0;
-  overflow-y: scroll;
-  flex: 1
 `

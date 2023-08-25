@@ -3,7 +3,8 @@ import styled from 'styled-components';
 import {IoIosArrowDown} from 'react-icons/io'
 import apiClient from '@/utils/client';
 import { getUser } from '@/redux/userSlice';
-import { useAppSelector } from '@/redux/hook';
+import { useAppDispatch, useAppSelector } from '@/redux/hook';
+import { setAlert } from '@/redux/alertSlice';
 
 
 const InputWrapper = styled.div`
@@ -101,13 +102,17 @@ const LoadingText = styled.p`
   color: #8294C4;
 `;
 
-const InputSelect = ({type = 'text', label, value, onChange, name, edit = false, preData, emptyOption}) => {
+const InputSelect = ({e='Hubo un problema',condicion=true ,type = 'text', label, value, onChange, name, edit = false, preData, emptyOption}) => {
+  
+
+  
   const [isActive, setIsActive] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
   const [openList, setOpenList] = useState(false)
   const [data, setData] = useState([])
   const [loading, setLoading] = useState(false)
   const user = useAppSelector(getUser);
+  const dispatch = useAppDispatch();
 
   const [inputValue, setInputValue] = useState(value ? value : '')
 
@@ -160,7 +165,7 @@ const InputSelect = ({type = 'text', label, value, onChange, name, edit = false,
         type: 'error'
       })))
     }
-  },[name])
+  },[name, preData])
 
   useEffect(()=>{
     if (value === '') {
@@ -188,7 +193,14 @@ const InputSelect = ({type = 'text', label, value, onChange, name, edit = false,
             onBlur={handleInputBlur}
             focused={isFocused}
         />                                
-        <IconWrapper color={process.env.TEXT_COLOR} onClick={()=>setOpenList(!openList)}>
+        <IconWrapper color={process.env.TEXT_COLOR} onClick={()=>{
+          condicion ? 
+          setOpenList(!openList):
+          dispatch(setAlert({
+            message: `${e}`,
+            type: 'warning'
+          }))
+        }}>
             <IoIosArrowDown/>
         </IconWrapper>
         {

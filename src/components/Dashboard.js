@@ -144,7 +144,7 @@ const ContainerDashboard = styled.div `
     display: flex;
     flex-direction: column;
     max-width: 225px;
-    @media only screen and (max-width: 768px) {
+    @media only screen and (max-width: 1100px) {
         position: absolute;
         border-top-right-radius: 0px;
         border-bottom-right-radius: 0px;
@@ -157,7 +157,7 @@ const ContainerDashboard = styled.div `
 
 const HeaderMobile = styled.nav `
     display: none;
-    @media only screen and (max-width: 768px) {
+    @media only screen and (max-width: 1100px) {
         display: flex;
         align-items: center;
         padding: 0 15px;
@@ -174,7 +174,7 @@ const Container1 = styled.main `
     display: flex;
     flex: 1;
     padding: 15px;
-    @media only screen and (max-width: 768px) {
+    @media only screen and (max-width: 1100px) {
         padding: 0
     }
 `
@@ -186,7 +186,7 @@ const Container2 = styled.main `
     background-color: #EEEEEE;
     padding: 25px;
     border-radius: 25px;
-    @media only screen and (max-width: 768px) {
+    @media only screen and (max-width: 1100px) {
         padding: 5px;
         border-radius: 0px;
     }
@@ -197,7 +197,7 @@ const Container = styled.div `
     height: 100vh;
     position: relative;
     height: 100vh;
-    @media only screen and (max-width: 768px) {
+    @media only screen and (max-width: 1100px) {
         flex-direction: column;
     }
 `
@@ -250,7 +250,7 @@ const ListaMenu = styled.ul`
     padding: 0;
     margin: 0;
     height: 50%;
-    @media only screen and (max-width: 768px) {
+    @media only screen and (max-width: 1100px) {
         overflow-y: scroll;
     }
 `

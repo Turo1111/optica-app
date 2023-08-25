@@ -15,37 +15,26 @@ export default function ItemCartProduct({item, changeCart, deleteItem, tipoPago}
             <Title color={process.env.TEXT_COLOR}>{item.descripcion}</Title>
             <InputQty 
                 qty={item.cantidad} 
-                total={tipoPago ? item.totalEfectivo : item.totalTarjeta} 
+                total={item.total} 
                 downQty={()=>changeCart({...item, 
                     cantidad: ((item.cantidad > 1) ? item.cantidad-1 : item.cantidad), 
-                    totalEfectivo: (item.cantidad > 1 ? 
+                    total: (item.cantidad > 1 ? 
                             item.descuento !== undefined ? 
                             ((item.cantidad-1)*item.precioEfectivo)-(((item.cantidad-1)*item.precioEfectivo)*(item.descuento/100)) 
                             : 
                             (item.cantidad-1)*item.precioEfectivo 
-                        : item.totalEfectivo
-                    ), 
-                    totalTarjeta: (item.cantidad > 1 ? 
-                            item.descuento !== undefined ? ((item.cantidad-1)*item.precioLista)-(((item.cantidad-1)*item.precioLista)*(item.descuento/100)) 
-                            : 
-                            (item.cantidad-1)*item.precioLista 
-                        : item.totalTarjeta
+                        : item.total
                     )
                 })} 
                 upQty={()=>changeCart({...item, 
                     cantidad: item.stock >= item.cantidad+1 ? (item.cantidad+1) : item.cantidad, 
-                    totalEfectivo: (item.stock >= item.cantidad+1 ? 
+                    total: (item.stock >= item.cantidad+1 ? 
                             item.descuento !== undefined ? 
                             ((item.cantidad+1)*item.precioEfectivo)-(((item.cantidad+1)*item.precioEfectivo)*(item.descuento/100)) 
                             : 
                             (item.cantidad+1)*item.precioEfectivo 
                         : (item.cantidad)*item.precioEfectivo
-                    ), 
-                    totalTarjeta: (item.stock >= item.cantidad+1 ? 
-                            item.descuento !== undefined ? ((item.cantidad+1)*item.precioLista)-(((item.cantidad+1)*item.precioLista)*(item.descuento/100)) 
-                            : 
-                            (item.cantidad+1)*item.precioLista 
-                        : (item.cantidad)*item.precioLista),
+                    )
                 })} 
             />
     </Container>

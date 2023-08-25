@@ -13,8 +13,8 @@ export default function AddProduct({item, addCart, onClose, user}) {
     const [qty, setQty] = useState(1)
     const [stock, setStock] = useState(undefined)
     const [oferta, setOferta] = useState(undefined)
-    const [totalEfectivo, setTotalEfectivo] = useState(0)
-    const [totalTarjeta, setTotalTarjeta] = useState(0)
+    const [total, setTotal] = useState(0)
+    /* const [totalTarjeta, setTotalTarjeta] = useState(0) */
     const dispatch = useAppDispatch();
     let listObraSocial = useFormatArrayString(item?.obrasSocialesDescuento)
     let {date: fechaHoy} = useDate()
@@ -22,8 +22,8 @@ export default function AddProduct({item, addCart, onClose, user}) {
     const addItemCart = () => {
         if ( stock !== undefined && stock.cantidad >= qty) {
             addCart({...item,cantidad: qty, 
-                totalEfectivo: oferta !== undefined ? totalEfectivo-(totalEfectivo*(oferta.descuento/100)) : totalEfectivo, 
-                totalTarjeta: oferta !== undefined ? totalTarjeta-(totalTarjeta*(oferta.descuento/100)) : totalTarjeta, 
+                total: oferta !== undefined ? total-(total*(oferta.descuento/100)) : total, 
+                /* totalTarjeta: oferta !== undefined ? totalTarjeta-(totalTarjeta*(oferta.descuento/100)) : totalTarjeta,  */
                 precioEfectivo:stock.precioEfectivo, precioLista:stock.precioLista, stock: stock.cantidad, idStock: stock._id, descuento: oferta ? oferta.descuento : undefined
             })
         }else{
@@ -38,11 +38,11 @@ export default function AddProduct({item, addCart, onClose, user}) {
     useEffect(()=>{
         if (stock) {
             if (qty===1) {
-                setTotalEfectivo((stock.precioEfectivo).toFixed(2))
-                setTotalTarjeta((stock.precioLista).toFixed(2))
+                setTotal((stock.precioEfectivo).toFixed(2))
+                /* setTotalTarjeta((stock.precioLista).toFixed(2)) */
             }else{
-                setTotalEfectivo((qty*stock.precioEfectivo).toFixed(2))
-                setTotalTarjeta((qty*stock.precioLista).toFixed(2))
+                setTotal((qty*stock.precioEfectivo).toFixed(2))
+                /* setTotalTarjeta((qty*stock.precioLista).toFixed(2)) */
             }
         }
     },[qty,stock])
@@ -86,7 +86,7 @@ export default function AddProduct({item, addCart, onClose, user}) {
                 qty={qty} 
                 upQty={()=> setQty(qty+1)}
                 downQty={()=> {qty > 1 && setQty(qty-1)}}
-                total={totalEfectivo}
+                total={total}
                 descuento={oferta?.descuento || 0}
                 oferta={oferta !== undefined ? true : false}
             />

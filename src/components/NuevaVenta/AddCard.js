@@ -1,5 +1,5 @@
 import { useFormik } from 'formik'
-import React from 'react'
+import React, { useEffect } from 'react'
 import styled from 'styled-components'
 import Input from '../Input'
 import InputSelect from '../InputSelect'
@@ -7,19 +7,25 @@ import Button from '../Button'
 import { setAlert } from '@/redux/alertSlice'
 import { useAppDispatch } from '@/redux/hook'
 
-export default function AddCard({total, setDataCard, onClose}) {
+export default function AddCard({
+    total, setDataCard, onClose,
+    pago, dineroIngresado, onChangeDineroIngresado,
+    cuota
+}) {
+
+    console.log(pago);
 
     const dispatch = useAppDispatch();
 
     const formik = useFormik({
         initialValues: {
-            banco: '',
+            banco: 'Ninguno',
             cuotas: 1
         },
         validateOnChange: false,
         onSubmit: (formValue) => {
             console.log(formValue)
-            if(total !== 0) {
+            if(total !== 0 && formValue.banco !== '') {
                 onClose()
                 return setDataCard(formValue)
             }
@@ -32,9 +38,13 @@ export default function AddCard({total, setDataCard, onClose}) {
 
   return (
     <Container>
-        <Input label={"Banco"} type='text' name='banco' value={formik.values.banco} onChange={formik.handleChange} required={true}  />
-        <InputSelect label={'Cuotas'} name={'cuotas'} value={''} preData={cuotas(total)} onChange={(id, item)=>formik.setFieldValue('cuotas', item.cantidad)}/>
-
+        {
+          (pago.descripcion === 'EFECTIVO Y TARJETA' || pago.descripcion === 'CUENTA CORRIENTE') && <Input label={"Dinero ingresado"} type='number' name='dineroIngresado' value={dineroIngresado} onChange={onChangeDineroIngresado} prefix={'$'}/>
+        }
+        {
+            pago.descripcion !== 'CUENTA CORRIENTE' && <Input label={"Banco"} type='text' name='banco' value={formik.values.banco} onChange={formik.handleChange} required={true}  />
+        }
+        <InputSelect label={'Cuotas'} name={'cuotas'} value={''} preData={cuota} onChange={(id, item)=>formik.setFieldValue('cuotas', item.cantidad)} condicion={ pago.descripcion === 'EFECTIVO Y TARJETA' ? dineroIngresado > 0 : true} e='Dinero ingresado tiene que ser mayor a 0'/>
         <div style={{display: 'flex', justifyContent: 'end', marginTop: 15}}>
             <Button text={'ACEPTAR'} onClick={formik.handleSubmit}/>
         </div>
@@ -42,26 +52,6 @@ export default function AddCard({total, setDataCard, onClose}) {
   )
 }
 
-function cuotas (total) {
-    return [
-        {
-            cantidad: 1,
-            descripcion:`1 x ${(total/1).toFixed(2)}`
-        },
-        {
-            cantidad: 3,
-            descripcion:`3 x ${(total/3).toFixed(2)}`
-        },
-        {
-            cantidad: 6,
-            descripcion:`6 x ${(total/6).toFixed(2)}`
-        },
-        {
-            cantidad: 12,
-            descripcion:`12 x ${(total/12).toFixed(2)}`
-        }
-    ]
-}
 
 const Container = styled.div `
     padding: 5px;

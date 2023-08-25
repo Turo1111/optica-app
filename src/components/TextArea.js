@@ -3,11 +3,11 @@ import styled from 'styled-components';
 
 const TextAreaWrapper = styled.div`
   position: relative;
-  margin: 25px 0;
-  width: -webkit-fill-available;
+  width: 100%;
   text-align: center;
   display: flex;
   flex-direction: column;
+  flex-grow: 1;
 `;
 
 const TextAreaLabel = styled.label`
@@ -19,7 +19,6 @@ const TextAreaLabel = styled.label`
   transition: transform 0.2s ease-in-out;
   transform-origin: top left;
   pointer-events: none;
-
   ${({ active }) =>
     active &&
     `
@@ -28,16 +27,19 @@ const TextAreaLabel = styled.label`
 `;
 
 const TextAreaField = styled.textarea`
-  height: 100px;
   padding: 5px 10px;
   font-size: 16px;
+  resize: none;
   color: ${props => props.color};
   border-radius: 10px;
   border: ${({ focused }) => (focused ? '2px solid #7286D3' : '1px solid #d9d9d9')};
   transition: border-color 0.2s ease-in-out;
-
+  flex-grow: 1;
   &:focus {
     outline: none;
+  }
+  @media only screen and (max-width: 800px) {
+    min-height: 100px
   }
 `;
 
