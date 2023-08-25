@@ -6,6 +6,7 @@ import { useAppDispatch } from '@/redux/hook'
 import { setAlert } from '@/redux/alertSlice'
 
 export default function InfoCliente({_id, nombreCompleto, telefono, dni, cuentaCorriente, token}) {
+
     const [senia, setSenia] = useState([])
     const dispatch = useAppDispatch();
 
@@ -20,7 +21,6 @@ export default function InfoCliente({_id, nombreCompleto, telefono, dni, cuentaC
             setSenia(r.data.body)
           })
           .catch(e=>{
-            console.log(e);
             dispatch(setAlert({
             message: `${e.response.data.error}`,
             type: 'error'
@@ -33,7 +33,7 @@ export default function InfoCliente({_id, nombreCompleto, telefono, dni, cuentaC
         <Tag color={process.env.TEXT_COLOR}> Telefono : {telefono || "No definido"}</Tag>
         <Tag color={process.env.TEXT_COLOR}> DNI : {dni || "No definido"}</Tag>
         <Tag color={process.env.TEXT_COLOR}> Seña activa : </Tag>
-        <Tag color={process.env.TEXT_COLOR}> Cuenta corriente : {cuentaCorriente || "0"}</Tag>
+        <Tag color={process.env.TEXT_COLOR}> Cuenta corriente : $ {cuentaCorriente || "0"}</Tag>
         {
             !senia ? <Title color={process.env.TEXT_COLOR} style={{margin: '15px 0'}}>NO TIENE SENIA ACTIVA</Title> :
             <Table data={senia} columns={columnsSenia} onClick={(item)=>console.log("")} 

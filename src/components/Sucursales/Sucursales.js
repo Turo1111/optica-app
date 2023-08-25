@@ -48,14 +48,15 @@ export default function Sucursales() {
             setData(r.data.body)
             setLoading(false)
           })
-          .catch(e=>dispatch(setAlert({
-            message: 'Hubo un error inesperado al cargar las sucursales',
+          .catch(e=>{
+            dispatch(setAlert({
+            message: `${e.response.data.error}`,
             type: 'error'
-          })))
+          }))})
     },[])
 
     useEffect(()=>{
-      const socket = io('http://localhost:3001/')
+      const socket = io(process.env.NEXT_PUBLIC_DB_HOST)
       socket.on('sucursal', (sucursal) => {
         setData((prevData)=>{
           const exist = prevData.find(elem => elem._id === sucursal.res._id )

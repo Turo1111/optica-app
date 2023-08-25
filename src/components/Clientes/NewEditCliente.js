@@ -7,15 +7,25 @@ import InputSelect from '../InputSelect'
 import apiClient from '@/utils/client'
 import { useAppDispatch } from '@/redux/hook'
 import { setAlert } from '@/redux/alertSlice'
+import Loading from '../Loading'
 
 export default function NewEditCliente({token, item , edit, handleClose}) {
   
     const dispatch = useAppDispatch();
+    const [loading, setLoading] = useState(false)
 
     const formik = useFormik({
         initialValues: initialValues(item),
         validateOnChange: false,
         onSubmit: (formValue) => {
+          if (formValue.nombreCompleto  === '') {
+            dispatch(setAlert({
+              message: 'Debe ingresar un nombre al cliente',
+              type: 'warning'
+            }))
+            return
+          }
+          setLoading(true)
           if (item) {
             apiClient.patch(`/cliente/${item._id}`, formValue ,
             {
@@ -29,11 +39,14 @@ export default function NewEditCliente({token, item , edit, handleClose}) {
                 message: 'Cliente modificado correctamente',
                 type: 'success'
               }))
+              setLoading(false)
             })
-            .catch(e=>dispatch(setAlert({
-              message: 'Hubo un error inesperado, revisa los datos',
+            .catch(e=>{
+              setLoading(false)
+              dispatch(setAlert({
+              message: `${e.response.data.error}`,
               type: 'error'
-            })))
+            }))})
           }else{
             apiClient.post(`/cliente`, formValue ,
             {
@@ -47,11 +60,14 @@ export default function NewEditCliente({token, item , edit, handleClose}) {
                 message: 'Cliente creado correctamente',
                 type: 'success'
               }))
+              setLoading(false)
             })
-            .catch(e=>dispatch(setAlert({
-              message: 'Hubo un error inesperado, revisa los datos',
+            .catch(e=>{
+              setLoading(false)
+              dispatch(setAlert({
+              message: `${e.response.data.error}`,
               type: 'error'
-            })))
+            }))})
           }
         }
     })
@@ -62,8 +78,14 @@ export default function NewEditCliente({token, item , edit, handleClose}) {
         <Input label={"Telefono"} type='text' name='telefono' value={formik.values.telefono} onChange={formik.handleChange}  />
         <Input label={"DNI"} type='text' name='dni' value={formik.values.dni} onChange={formik.handleChange} required={true}  />
         <div style={{display: 'flex', justifyContent: 'space-around', marginTop: 15}}>
-            <Button text={'CANCELAR'} onClick={handleClose}/>
-            <Button text={'ACEPTAR'} onClick={formik.handleSubmit}/>
+          {
+            loading ? 
+            <Loading />:
+            <>
+              <Button text={'CANCELAR'} onClick={handleClose}/>
+              <Button text={'ACEPTAR'} onClick={formik.handleSubmit}/>
+            </>
+          }
         </div>
     </div>
   )

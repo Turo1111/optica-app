@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Input from '../Input'
 import Button from '../Button'
 import InputSelectAdd from '../InputSelectAdd'
@@ -7,10 +7,12 @@ import apiClient from '@/utils/client'
 import useBarcodeGenerator from '@/hooks/useBarcodeGenerator'
 import { setAlert } from '@/redux/alertSlice'
 import { useAppDispatch } from '@/redux/hook'
+import Loading from '../Loading'
 
 export default function NewProduct({token, eClose}) {
 
   const dispatch = useAppDispatch();
+  const [loading, setLoading] = useState(false)
 
   const generateRandomBarcode = () => {
     const randomNumber = Math.floor(Math.random() * 100000);
@@ -22,6 +24,28 @@ export default function NewProduct({token, eClose}) {
     initialValues: initialValues,
     validateOnChange: false,
     onSubmit: (formValue) => {
+      if (formValue.descripcion === '') {
+        dispatch(setAlert({
+          message: 'Debe ingresar una descripcion al producto',
+          type: 'warning'
+        }))
+        return
+      }
+      if (formValue.idCategoria === '') {
+        dispatch(setAlert({
+          message: 'Debe ingresar una categoria al producto',
+          type: 'warning'
+        }))
+        return
+      }
+      if (formValue.codigo === '') {
+        dispatch(setAlert({
+          message: 'Debe ingresar un codigo al producto',
+          type: 'warning'
+        }))
+        return
+      }
+      setLoading(true)
        apiClient.post('/producto', formValue,
        {
          headers: {
@@ -36,13 +60,15 @@ export default function NewProduct({token, eClose}) {
           message: 'Producto creado correctamente',
           type: 'success'
         }))
+        setLoading(false)
       })
-      .catch(e=>
+      .catch(e=>{
+        setLoading(false)
         dispatch(setAlert({
-          message: 'Hubo un error, revisa los datos',
+          message: `${e.response.data.error}`,
           type: 'error'
-        }))  
-      ) 
+        }))
+      }) 
     }
   })
 
@@ -84,8 +110,14 @@ export default function NewProduct({token, eClose}) {
         /> 
         <Input label={"Precio general"} name='precioGeneral' type='text' value={formik.values.precioGeneral} onChange={formik.handleChange} />
         <div style={{display: 'flex', justifyContent: 'space-around'}}>
-            <Button text={'CANCELAR'} onClick={handleClose}/>
-            <Button text={'ACEPTAR'} onClick={formik.handleSubmit}/>
+          {
+            loading ? 
+            <Loading />:
+            <>
+              <Button text={'CANCELAR'} onClick={handleClose}/>
+              <Button text={'ACEPTAR'} onClick={formik.handleSubmit}/>
+            </>
+          }
         </div>
     </div>
   )

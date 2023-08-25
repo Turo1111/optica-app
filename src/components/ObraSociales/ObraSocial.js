@@ -41,14 +41,14 @@ export default function ObraSocial() {
         setLoading(false)
       })
       .catch(e=>dispatch(setAlert({
-        message: 'Hubo un error inesperado al cargar las obras sociales',
+        message: `${e.response.data.error}`,
         type: 'error'
       })))
     },[])
 
     useEffect(()=>{
       
-      const socket = io('http://localhost:3001/')
+      const socket = io(process.env.NEXT_PUBLIC_DB_HOST)
       socket.on('obraSocial', (obraSocial) => {
         setLoading(true)
         setData((prevData)=>{

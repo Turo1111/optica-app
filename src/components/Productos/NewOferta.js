@@ -23,6 +23,7 @@ export default function NewOferta({item, token, eClose, producto}) {
     const search = useInputValue('','')
     const tag = ["descripcion"]
     const listSucursales = useSearch(search.value, tag, data)
+    const [loading2, setLoading2] = useState(false)
 
     const formik = useFormik({
         initialValues: initialValues(item),
@@ -30,8 +31,6 @@ export default function NewOferta({item, token, eClose, producto}) {
         onSubmit: (formValue) => {
             formValue.sucursales = selectedItems;
             formValue.idProducto= producto._id
-            console.log(formValue.fechaFinal <= formValue.fechaInicio);
-            console.log(formValue.fechaFinal,formValue.fechaInicio);
             if (formValue.fechaFinal <= formValue.fechaInicio) {
                 dispatch(setAlert({
                     message: 'Fecha final debe ser posterior a la de inicio',
@@ -53,6 +52,7 @@ export default function NewOferta({item, token, eClose, producto}) {
                   }))
                   return
             }
+            setLoading2(true)
             if (item) {
               apiClient.patch(`/oferta/${item._id}`, formValue,
               {
@@ -66,8 +66,12 @@ export default function NewOferta({item, token, eClose, producto}) {
                       message: 'Oferta modificada con exito',
                       type: 'success'
                   }))
+                  setLoading2(false)
               })
-              .catch(e => console.log("error",e))
+              .catch(e => dispatch(setAlert({
+                message: `${e.response.data.error}`,
+                type: 'error'
+              })))
             }else{
               apiClient.post(`/oferta`, formValue,
               {
@@ -81,6 +85,7 @@ export default function NewOferta({item, token, eClose, producto}) {
                       message: 'Oferta creada con exito',
                       type: 'success'
                   }))
+                  setLoading2(false)
               })
               .catch(e => dispatch(setAlert({
                 message: `${e.response.data.error}`,
@@ -104,7 +109,10 @@ export default function NewOferta({item, token, eClose, producto}) {
             return r.data.body
           })
         })
-        .catch(e => console.log("error",e))
+        .catch(e => dispatch(setAlert({
+          message: `${e.response.data.error}`,
+          type: 'error'
+        })))
     }, [])
 
   return (
@@ -149,8 +157,14 @@ export default function NewOferta({item, token, eClose, producto}) {
           </div>
         }
         <div style={{display: 'flex', justifyContent: 'space-around', marginTop: 15}}>
-            <Button text={'CANCELAR'} onClick={eClose}/>
-            <Button text={'ACEPTAR'} onClick={formik.handleSubmit}/>
+          {
+            loading2 ? 
+            <Loading />:
+            <>
+              <Button text={'CANCELAR'} onClick={eClose}/>
+              <Button text={'ACEPTAR'} onClick={formik.handleSubmit}/>
+            </>
+          }
         </div>
     </div>
   )

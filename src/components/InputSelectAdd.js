@@ -110,6 +110,7 @@ const InputSelectAdd = ({type = 'text', label, value, onChange, name, edit = fal
   const [loading, setLoading] = useState(false)
   const user = useAppSelector(getUser);
   const dispatch = useAppDispatch();
+  const [loading2, setLoading2] = useState(false)
 
   const [inputValue, setInputValue] = useState(edit ? value : '')
 
@@ -143,6 +144,7 @@ const InputSelectAdd = ({type = 'text', label, value, onChange, name, edit = fal
   }
 
   const postValue = () => {
+    setLoading2(true)
     apiClient.post(`/${name}`, {descripcion: inputValue},
     {
       headers: {
@@ -150,19 +152,23 @@ const InputSelectAdd = ({type = 'text', label, value, onChange, name, edit = fal
       }
     })
     .then((r)=>{
-      onChange(r.data.body._id, r.data.body.descripcion)
+      onChange(r.data.body._id, r.data.body)
       dispatch(setAlert({
         message: `${label} creada correctamente`,
         type: 'success'
       }))
+      setLoading2(false)
     })
-    .catch(e=>dispatch(setAlert({
-      message: 'Hubo un error, revisa los datos',
+    .catch(e=>{
+      setLoading2(false)
+      dispatch(setAlert({
+      message: `${e.response.data.error}`,
       type: 'error'
-    })))
+    }))})
   }
 
   const patchValue = () => {
+    setLoading2(true)
     apiClient.patch(`/${name}/${value}`, {_id: value, descripcion: inputValue},
     {
       headers: {
@@ -175,10 +181,12 @@ const InputSelectAdd = ({type = 'text', label, value, onChange, name, edit = fal
         message: `${label} modificada correctamente`,
         type: 'success'
       }))
+      setLoading2(false)
     })
     .catch(e=>{
+      setLoading2(false)
       dispatch(setAlert({
-        message: `${e}`,
+        message: `${e.response.data.error}`,
         type: 'error'
       }))
     })
@@ -197,13 +205,13 @@ const InputSelectAdd = ({type = 'text', label, value, onChange, name, edit = fal
       setData(r.data.body)
     })
     .catch(e=>dispatch(setAlert({
-      message: `${e}`,
+      message: `${e.response.data.error}`,
       type: 'error'
     })))
   },[name])
 
   useEffect(()=>{
-    const socket = io('http://localhost:3001/')
+    const socket = io(process.env.NEXT_PUBLIC_DB_HOST)
     socket.on(`${name}`, (socket) => {
       setData((prevData)=>{
         const exist = prevData.find(elem => elem._id === socket.res._id )
@@ -262,18 +270,35 @@ const InputSelectAdd = ({type = 'text', label, value, onChange, name, edit = fal
         :
          (value === '' || value === undefined ) ? 
           <div style={{display: 'flex', position: 'absolute', right: 0}}>
-            <IconWrapper onClick={postValue}>
-                <Tag color={process.env.TEXT_COLOR}>Agregar</Tag>
-            </IconWrapper>
+            {
+              loading2 ?
+              <IconWrapper>
+                <Tag color={process.env.TEXT_COLOR}>Cargando..</Tag>
+              </IconWrapper>
+              :
+              <IconWrapper onClick={postValue}>
+                  <Tag color={process.env.TEXT_COLOR}>Agregar</Tag>
+              </IconWrapper>
+            }
           </div>
           :
           <div style={{display: 'flex', position: 'absolute', right: 0}}>
-            <IconWrapper onClick={patchValue}>
-              <Tag color={process.env.TEXT_COLOR}>Modificar</Tag>
-            </IconWrapper>
-            <IconWrapper onClick={cleanValue}>
-                <Tag color={process.env.TEXT_COLOR}>Quitar</Tag>
-            </IconWrapper>
+            {
+              loading2 ?
+              <IconWrapper>
+                <Tag color={process.env.TEXT_COLOR}>Cargando..</Tag>
+              </IconWrapper>
+              :
+              <>
+                <IconWrapper onClick={patchValue}>
+                  <Tag color={process.env.TEXT_COLOR}>Modificar</Tag>
+                </IconWrapper>
+                <IconWrapper onClick={cleanValue}>
+                    <Tag color={process.env.TEXT_COLOR}>Quitar</Tag>
+                </IconWrapper>
+              </>
+            }
+            
           </div>
       }
       {

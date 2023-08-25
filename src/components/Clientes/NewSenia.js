@@ -8,10 +8,12 @@ import apiClient from '@/utils/client'
 import { useAppDispatch } from '@/redux/hook'
 import { setAlert } from '@/redux/alertSlice'
 import TextArea from '../TextArea'
+import Loading from '../Loading'
 
 export default function NewSenia({id, token, handleClose}) {
   
     const dispatch = useAppDispatch();
+    const [loading, setLoading] = useState(false)
 
     const formik = useFormik({
         initialValues: initialValues(),
@@ -31,6 +33,7 @@ export default function NewSenia({id, token, handleClose}) {
                 idCliente: id,
                 estado: true
             }
+            setLoading(true)
             apiClient.post(`/senia`, senia ,
             {
               headers: {
@@ -43,9 +46,10 @@ export default function NewSenia({id, token, handleClose}) {
                 message: 'Seña creada correctamente',
                 type: 'success'
               }))
+              setLoading(false)
             })
             .catch(e=>{
-              console.log(e);
+              setLoading(false)
                 dispatch(setAlert({
                 message: `${e.response.data.error}`,
                 type: 'error'
@@ -66,8 +70,14 @@ export default function NewSenia({id, token, handleClose}) {
         <TextArea  label={"Observacion"} name='observacion' value={formik.values.observacion} onChange={formik.handleChange}/>
         <Input label={"Saldo Total"} type='number' name='saldo' prefix={'$'} value={formik.values.saldo} onChange={formik.handleChange} />
         <div style={{display: 'flex', justifyContent: 'space-around', marginTop: 15}}>
-            <Button text={'CANCELAR'} onClick={handleClose}/>
-            <Button text={'ACEPTAR'} onClick={formik.handleSubmit}/>
+          {
+            loading ? 
+            <Loading />:
+            <>
+              <Button text={'CANCELAR'} onClick={handleClose}/>
+              <Button text={'ACEPTAR'} onClick={formik.handleSubmit}/>
+            </>
+          }
         </div>
     </div>
   )

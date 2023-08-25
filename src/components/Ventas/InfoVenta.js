@@ -2,13 +2,16 @@ import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import EmptyList from '../EmptyList'
 import apiClient from '@/utils/client'
+import Loading from '../Loading'
 
 export default function InfoVenta({_id, cliente, fecha, sucursal, tipoPago, total, subTotal, descuento, empleado, orden, token, obraSocialDescripcion, dineroIngresado}) {
 
     const [productos, setProductos] = useState([])
+    const [loading, setLoading] = useState(false)
 
     useEffect(()=>{
         if (_id) {
+          setLoading(true)
             apiClient.get(`/lineaventa/${_id}` ,
             {
               headers: {
@@ -16,11 +19,11 @@ export default function InfoVenta({_id, cliente, fecha, sucursal, tipoPago, tota
               }
             })
               .then(r=>{
-                console.log(r.data.body);
+                setLoading(false)
                 setProductos(r.data.body)
               })
               .catch(e=>dispatch(setAlert({
-                message: 'Hubo un error inesperado al cargar los stock',
+                message: `${e.response.data.error}`,
                 type: 'error'
               })))
         }
@@ -43,6 +46,10 @@ export default function InfoVenta({_id, cliente, fecha, sucursal, tipoPago, tota
           <Container1>
             <Container2>
               <ul style={{margin: 0, flex: 1, backgroundColor: '#fff', borderRadius: 15, padding: 0, overflowY: scroll }}>
+                {
+                  loading ? 
+                  <Loading/>:
+                  <>
                   {
                     productos.length === 0 ?
                     <div>No hay productos</div>
@@ -57,6 +64,8 @@ export default function InfoVenta({_id, cliente, fecha, sucursal, tipoPago, tota
                       </div>
                     ))
                   }
+                  </>
+                }
                 </ul>
             </Container2>
           </Container1>

@@ -37,6 +37,8 @@ export default function Clientes() {
 
   const listCliente = useSearch(search.value, tag, data, tagSearch) 
 
+  console.log(listCliente);
+
   useEffect(()=>{
     if (user.usuario !== '') {  
       user.roles.permisos.forEach((permiso) => {
@@ -75,20 +77,21 @@ export default function Clientes() {
         }
       })
         .then(r => {
+          console.log(r.data.body);
           setData((prevData)=>{
             setLoading(false)
             return r.data.body
           })
         })
         .catch(e => dispatch(setAlert({
-          message: `${e}`,
+          message: `${e.response.data.error}`,
           type: 'error'
-        })) )
+        })))
     }
-  }, [])
+  }, [user.token])
 
   useEffect(()=>{
-    const socket = io('http://localhost:3001/')
+    const socket = io(process.env.NEXT_PUBLIC_DB_HOST)
     socket.on('cliente', (cliente) => {
       setData((prevData)=>{
         const exist = prevData.find(elem => elem._id === cliente.res._id )
@@ -106,7 +109,7 @@ export default function Clientes() {
   },[data])
 
   useEffect(()=>{
-    const socket = io('http://localhost:3001/')
+    const socket = io(process.env.NEXT_PUBLIC_DB_HOST)
     socket.on('senia', (senia) => {
       console.log('senia', senia)
       setData((prevData)=>{

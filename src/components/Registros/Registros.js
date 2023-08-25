@@ -35,7 +35,7 @@ export default function Registros() {
               setLoading(false)
             })
             .catch(e=>dispatch(setAlert({
-              message: 'Hubo un error inesperado al cargar los Registros',
+              message: `${e.response.data.error}`,
               type: 'error'
             })))
       },[])

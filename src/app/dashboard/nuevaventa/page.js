@@ -5,6 +5,7 @@ import EmptyList from '@/components/EmptyList'
 import Input from '@/components/Input'
 import InputSearch from '@/components/InputSearch'
 import InputSelect from '@/components/InputSelect'
+import Loading from '@/components/Loading'
 import Modal from '@/components/Modal'
 import NotPermissions from '@/components/NotPermissions'
 import AddCard from '@/components/NuevaVenta/AddCard'
@@ -55,6 +56,8 @@ export default function NuevaVenta() {
     const [permission, setPermission] = useState(false)
     const [useSenia, setUseSenia] = useState(false)
     const [cuotas, setCuotas] = useState(calculateCuotas(total, dineroIngresado))
+    const [loading, setLoading] = useState(false)
+    const [loadingData, setLoadingData] = useState(false)
 
     const tag = ["descripcion", "codigo", "categoria", "color", "alto", "ancho", "marca", "numeracion"]
 
@@ -119,11 +122,10 @@ export default function NuevaVenta() {
       setDataOrder({idObraSocial: '', fecha: '', numero: ''})
       setDineroIngresado(0)
       setDescuento(0)
+      setLoading(false)
     }
 
     const finishSale = async () => {
-      console.log(dataCard);
-      return
       user.roles.permisos.forEach((permiso) => {
         if (permiso.screen.toLowerCase() === 'venta') {
           if (!permiso.escritura) {
@@ -163,7 +165,6 @@ export default function NuevaVenta() {
         }))
         return;
       }
-      console.log(parseFloat(dineroIngresado) > parseFloat(total), parseFloat(dineroIngresado), parseFloat(total));
       if (parseFloat(dineroIngresado) > parseFloat(total)) {
         dispatch(setAlert({
           message: 'No se puede ingresar un valor mayor al total',
@@ -171,9 +172,16 @@ export default function NuevaVenta() {
         }))
         return;
       }
-      if ( clientSelected._id === '64c95db35ae46355b5f7df64' && dineroIngresado < total) {
+      if ( clientSelected._id === '64c95db35ae46355b5f7df64' && parseFloat(dineroIngresado).toFixed(2) < parseFloat(total).toFixed(2)) {
         dispatch(setAlert({
           message: 'Consumidor final tiene que ingresar el total de la venta',
+          type: 'error'
+        }))
+        return;
+      }
+      if ( user.idSucursal === '' || user.idSucursal === undefined) {
+        dispatch(setAlert({
+          message: 'Usuario sin sucursal asociada',
           type: 'error'
         }))
         return;
@@ -196,6 +204,7 @@ export default function NuevaVenta() {
           subTotal: subTotal,
           dineroIngresado :  pago.descripcion === 'TARJETA' ?  total : (dineroIngresado <= 0 ? total : dineroIngresado )
         }
+        setLoading(true)
         if (useSenia) {
           apiClient.patch(`/senia/${clientSelected.senia._id}`, {estado: false},{
             headers: {
@@ -203,7 +212,12 @@ export default function NuevaVenta() {
             }
           })
           .then(r=>console.log(r))
-          .catch(e=>console.log(e))
+          .catch(e=>{
+            setLoading(false)
+            dispatch(setAlert({
+            message: `${e.response.data.error}`,
+            type: 'error'
+          }))})
         }
         if (dataOrder.idObraSocial !== '') {
           apiClient.post('/orden', dataOrder,{
@@ -247,27 +261,35 @@ export default function NuevaVenta() {
                           type: 'success'
                         }))
                       })
-                      .catch(e=>dispatch(setAlert({
-                        message: 'Hubo un error inesperado al descontar stock',
+                      .catch(e=>{
+                        setLoading(false)
+                        dispatch(setAlert({
+                        message: `${e.response.data.error}`,
                         type: 'error'
-                      })))
+                      }))})
                     
                   })
-                  .catch(e=>dispatch(setAlert({
-                    message: `${e}`,
+                  .catch(e=>{
+                    setLoading(false)
+                    dispatch(setAlert({
+                    message: `${e.response.data.error}`,
                     type: 'error'
-                  }))) 
+                  }))}) 
                 })
               })
-              .catch(e=>dispatch(setAlert({
-                message: `${e}`,
+              .catch(e=>{
+                setLoading(false)
+                dispatch(setAlert({
+                message: `${e.response.data.error}`,
                 type: 'error'
-              }))) 
+              }))}) 
           })
-          .catch(e=>dispatch(setAlert({
-            message: `${e}`,
+          .catch(e=>{
+            setLoading(false)
+            dispatch(setAlert({
+            message: `${e.response.data.error}`,
             type: 'error'
-          })))
+          }))})
         }else{
           apiClient.post('/venta', venta,{
             headers: {
@@ -303,24 +325,30 @@ export default function NuevaVenta() {
                       type: 'success'
                     }))
                   })
-                  .catch(e=>dispatch(setAlert({
-                    message: 'Hubo un error inesperado al descontar stock',
+                  .catch(e=>{
+                    setLoading(false)
+                    dispatch(setAlert({
+                    message: `${e.response.data.error}`,
                     type: 'error'
-                  })))
+                  }))})
                 })
-                .catch(e=>dispatch(setAlert({
-                  message: `${e}`,
+                .catch(e=>{
+                  setLoading(false)
+                  dispatch(setAlert({
+                  message: `${e.response.data.error}`,
                   type: 'error'
-                }))) 
+                }))}) 
               })
             })
-            .catch(e=>dispatch(setAlert({
-              message: `${e}`,
+            .catch(e=>{
+              setLoading(false)
+              dispatch(setAlert({
+              message: `${e.response.data.error}`,
               type: 'error'
-            }))) 
+            }))}) 
         } 
       } catch (error) {
-        console.log(error, "error")
+        setLoading(false)
         dispatch(setAlert({
           message: 'Ocurrio un error, revise los datos',
           type: 'error'
@@ -330,6 +358,7 @@ export default function NuevaVenta() {
     }
 
     useEffect(() => {
+      setLoadingData(true)
       apiClient.get(`/producto`,{
         headers: {
           Authorization: `Bearer ${user.token}` // Agregar el token en el encabezado como "Bearer {token}"
@@ -345,7 +374,7 @@ export default function NuevaVenta() {
         }
       })
       .then((r)=>{
-        console.log(r.data.body);
+        setLoadingData(false)
         setClientes(r.data.body)
       })
       .catch((e)=>console.log('error',e))
@@ -478,7 +507,7 @@ export default function NuevaVenta() {
     },[openNewOrder])
 
     useEffect(()=>{
-      const socket = io('http://localhost:3001/')
+      const socket = io(process.env.NEXT_PUBLIC_DB_HOST)
       socket.on('cliente', (cliente) => {
         setClientes((prevData)=>{
           const exist = prevData.find(elem => elem._id === cliente.res._id )
@@ -560,6 +589,10 @@ export default function NuevaVenta() {
 
     if (!permission) {
       return <NotPermissions/>
+    }
+
+    if (loadingData) {
+      return <Loading/>
     }
 
   return (

@@ -7,6 +7,7 @@ import { useAppDispatch } from '@/redux/hook'
 import { setAlert } from '@/redux/alertSlice'
 import useFormatArrayString from '@/hooks/useFormatArrayString'
 import { useDate } from '@/hooks/useDate'
+import Loading from '../Loading'
 
 export default function AddProduct({item, addCart, onClose, user}) {
 
@@ -18,6 +19,7 @@ export default function AddProduct({item, addCart, onClose, user}) {
     const dispatch = useAppDispatch();
     let listObraSocial = useFormatArrayString(item?.obrasSocialesDescuento)
     let {date: fechaHoy} = useDate()
+    const [loading, setLoading] = useState(false)
 
     const addItemCart = () => {
         if ( stock !== undefined && stock.cantidad >= qty) {
@@ -48,30 +50,40 @@ export default function AddProduct({item, addCart, onClose, user}) {
     },[qty,stock])
 
     useEffect(()=>{
+        setLoading(true)
         apiClient.get(`/stock/${item._id}`,{
             headers: {
               Authorization: `Bearer ${user.token}` // Agregar el token en el encabezado como "Bearer {token}"
             }
           })
-        .then((r)=>setStock(r.data.body.filter(item=>item.sucursal===user.sucursal)[0]))
+        .then((r)=>{
+            setLoading(false)
+            setStock(r.data.body.filter(item=>item.sucursal===user.sucursal)[0])})
         .catch(e=>dispatch(setAlert({
-            message: `${e}`,
+            message: `${e.response.data.error}`,
             type: 'error'
           })))
     },[item._id])
 
     useEffect(()=>{
+        setLoading(true)
         apiClient.get(`/oferta/${item._id}`,{
             headers: {
               Authorization: `Bearer ${user.token}` // Agregar el token en el encabezado como "Bearer {token}"
             }
           })
-        .then((r)=>setOferta(r.data.body.find(ofert=> ofert.fechaInicio.substring(0, 10) <= fechaHoy && ofert.fechaFinal.substring(0, 10) >= fechaHoy)))
+        .then((r)=>{
+            setLoading(false)
+            setOferta(r.data.body.find(ofert=> ofert.fechaInicio.substring(0, 10) <= fechaHoy && ofert.fechaFinal.substring(0, 10) >= fechaHoy))})
         .catch(e=>dispatch(setAlert({
-            message: `${e}`,
+            message: `${e.response.data.error}`,
             type: 'error'
           })))
     },[item._id])
+
+    if (loading) {
+        return <Loading/>
+    }
 
   return (
     <div>

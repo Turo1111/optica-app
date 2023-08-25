@@ -9,7 +9,7 @@ const nextConfig = {
         YELLOW_ALERT: '#EA906C'
     },
     images: {
-        domains: ['localhost'],
+        domains: [process.env.NEXT_PUBLIC_DB_DOMAIN],
     },
     compiler: {
         styledComponents: true

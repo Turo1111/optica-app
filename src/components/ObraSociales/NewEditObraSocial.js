@@ -23,12 +23,28 @@ export default function NewEditObraSocial({token, item , edit, handleClose}) {
     const search = useInputValue('','')
     const tag = ["descripcion", "codigo"]
     const listProducto = useSearch(search.value, tag, data)
+    const [loading2, setLoading2] = useState(false)
 
     const formik = useFormik({
         initialValues: initialValues(item),
         validateOnChange: false,
         onSubmit: (formValue) => {
+          if (formValue.descripcion  === '') {
+            dispatch(setAlert({
+              message: 'Debe ingresar una descripcion a la obra social',
+              type: 'warning'
+            }))
+            return
+          }
+          if (formValue.cantidadDescuento  < 0 || formValue.cantidadDevuelta < 0) {
+            dispatch(setAlert({
+              message: 'Debe ingresar una cantidades mayores a 0',
+              type: 'warning'
+            }))
+            return
+          }
           formValue.productosDescuento = selectedItems;
+          setLoading2(true)
           if (item) {
             apiClient.patch(`/obrasocial/${item._id}`, formValue ,
             {
@@ -42,11 +58,14 @@ export default function NewEditObraSocial({token, item , edit, handleClose}) {
                 message: 'Obra Social modificada correctamente',
                 type: 'success'
               }))
+              setLoading2(false)
             })
-            .catch(e=>dispatch(setAlert({
-              message: 'Hubo un error inesperado, revisa los datos',
+            .catch(e=>{
+              setLoading2(false)
+              dispatch(setAlert({
+              message: `${e.response.data.error}`,
               type: 'error'
-            })))
+            }))})
           }else{
             apiClient.post(`/obrasocial`, formValue ,
             {
@@ -60,11 +79,14 @@ export default function NewEditObraSocial({token, item , edit, handleClose}) {
                 message: 'Obra Social creada correctamente',
                 type: 'success'
               }))
+              setLoading2(false)
             })
-            .catch(e=>dispatch(setAlert({
-              message: 'Hubo un error inesperado, revisa los datos',
+            .catch(e=>{
+              setLoading2(false)
+              dispatch(setAlert({
+              message: `${e.response.data.error}`,
               type: 'error'
-            })))
+            }))})
           }
         }
     })
@@ -83,7 +105,10 @@ export default function NewEditObraSocial({token, item , edit, handleClose}) {
             return r.data.body
           })
         })
-        .catch(e => console.log("error",e))
+        .catch(e => dispatch(setAlert({
+          message: `${e.response.data.error}`,
+          type: 'error'
+        })))
     }, [])
 
   return (
@@ -91,7 +116,7 @@ export default function NewEditObraSocial({token, item , edit, handleClose}) {
         <Input label={"Descripcion"} type='text' name='descripcion' value={formik.values.descripcion} onChange={formik.handleChange} required={true}  />
         <Input label={"Descuento"} type='number' name='cantidadDescuento' value={formik.values.cantidadDescuento} onChange={formik.handleChange}/>
         <Input label={"Devolucion"} type='number' name='cantidadDevuelta' value={formik.values.cantidadDevuelta} onChange={formik.handleChange}/>
-        <ToggleSwitch checked={formik.values.tipoDescuento} onChange={(newValue)=>formik.setFieldValue('tipoDescuento', newValue)} label={formik.values.tipoDescuento ? 'Efectivo' : 'Porcentaje'}/>
+        <ToggleSwitch checked={formik.values.tipoDescuento} onChange={(newValue)=>formik.setFieldValue('tipoDescuento', !formik.values.tipoDescuento)} label={formik.values.tipoDescuento ? 'Efectivo' : 'Porcentaje'}/>
         {
           loading ? 
           <div style={{ display: 'flex', flex: 1, justifyContent: 'center', alignItems: 'center'}}>
@@ -129,9 +154,15 @@ export default function NewEditObraSocial({token, item , edit, handleClose}) {
           </div>
         }
         <div style={{display: 'flex', justifyContent: 'space-around', marginTop: 15}}>
-            <Button text={'CANCELAR'} onClick={handleClose}/>
-            <Button text={'ACEPTAR'} onClick={formik.handleSubmit}/>
-        </div> 
+          {
+            loading2 ? 
+            <Loading />:
+            <>
+              <Button text={'CANCELAR'} onClick={handleClose}/>
+              <Button text={'ACEPTAR'} onClick={formik.handleSubmit}/>
+            </>
+          }
+        </div>
     </div>
   )
 }

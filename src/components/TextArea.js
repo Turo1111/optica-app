@@ -27,6 +27,7 @@ const TextAreaLabel = styled.label`
 `;
 
 const TextAreaField = styled.textarea`
+  height: 75px;
   padding: 5px 10px;
   font-size: 16px;
   resize: none;

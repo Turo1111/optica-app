@@ -42,7 +42,7 @@ export default function InfoProduct({token, item}) {
                 setLoading(false)
               })
               .catch(e=>dispatch(setAlert({
-                message: 'Hubo un error inesperado al cargar los stock',
+                message: `${e.response.data.error}`,
                 type: 'error'
               })))
         }
@@ -62,16 +62,16 @@ export default function InfoProduct({token, item}) {
               setLoading(false)
             })
             .catch(e=>dispatch(setAlert({
-              message: 'Hubo un error inesperado al cargar los stock',
+              message: `${e.response.data.error}`,
               type: 'error'
             })))
       }
   },[item])
 
     useEffect(()=>{
-        console.log(data)
-        const socket = io('http://localhost:3001/')
+        const socket = io(process.env.NEXT_PUBLIC_DB_HOST)
         socket.on('stock', (stock) => {
+          console.log("llego nuevo stock",stock);
           setLoading(true)
           setData((prevData)=>{
             const exist = prevData.find(elem => elem._id === stock.res._id )
@@ -198,7 +198,7 @@ export default function InfoProduct({token, item}) {
           openNewStock && 
           <Modal
             open={openNewStock}
-            title={'Nueva oferta'}
+            title={'Nuevo stock'}
             height='auto'
             width='50%'
             eClose={()=>{

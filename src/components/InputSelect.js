@@ -38,7 +38,7 @@ const InputLabel = styled.label`
 const InputField = styled.input`
   height: 35px;
   padding: 5px 10px;
-  font-size: 16px;
+  font-size: 14px;
   color: ${props => props.color};
   border-radius: 10px;
   border: ${({ focused }) => (focused ? '2px solid #7286D3' : '1px solid #d9d9d9')};
@@ -160,10 +160,11 @@ const InputSelect = ({e='Hubo un problema',condicion=true ,type = 'text', label,
         setData(r.data.body)
         setLoading(false)
       })
-      .catch(e=>dispatch(setAlert({
-        message: `${e}`,
+      .catch(e=>{
+        dispatch(setAlert({
+        message: `${e.response.data.error}`,
         type: 'error'
-      })))
+      }))})
     }
   },[name, preData])
 

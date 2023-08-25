@@ -66,7 +66,7 @@ export default function Venta() {
           })
         })
         .catch(e => dispatch(setAlert({
-          message: `${e}`,
+          message: `${e.response.data.error}`,
           type: 'error'
         })))
     }

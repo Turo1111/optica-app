@@ -6,11 +6,13 @@ import Button from '../Button'
 import { useAppDispatch } from '@/redux/hook'
 import { setAlert } from '@/redux/alertSlice'
 import apiClient from '@/utils/client'
+import Loading from '../Loading'
 
 export default function NewTransfer({item, token, handleClose}) {
 
     const dispatch = useAppDispatch();
     const [listStock, setListStock] = useState([])
+    const [loading, setLoading] = useState(false)
 
     const formik = useFormik({
         initialValues: {
@@ -38,9 +40,6 @@ export default function NewTransfer({item, token, handleClose}) {
             }
             let stockDestino = listStock.find(stock => stock.idSucursal === formValue.idDestino)
             let stockSalida = listStock.find(stock => stock.idSucursal === formValue.idSalida)
-            console.log("List stock",listStock)
-            console.log("Stock destino",stockDestino)
-            console.log("Stock salida",stockSalida)
             if (stockSalida === undefined) {
                 dispatch(setAlert({
                     message: 'Sucursal salida no posee stock asociado',
@@ -55,6 +54,7 @@ export default function NewTransfer({item, token, handleClose}) {
                 }))
                 return null
             }
+            setLoading(true)
             if (stockDestino === undefined) {
                 
                 let newStock = {
@@ -99,16 +99,21 @@ export default function NewTransfer({item, token, handleClose}) {
                         message: 'Stock salida modificado correctamente',
                         type: 'success'
                       }))
+                      setLoading(false)
                     })
-                    .catch(e=>dispatch(setAlert({
-                      message: 'Hubo un error inesperado, revisa los datos',
+                    .catch(e=>{
+                      setLoading(false)
+                      dispatch(setAlert({
+                      message: `${e.response.data.error}`,
                       type: 'error'
-                    })))
+                    }))})
                 })
-                .catch(e=>dispatch(setAlert({
-                  message: 'Hubo un error inesperado, revisa los datos',
+                .catch(e=>{
+                  setLoading(false)
+                  dispatch(setAlert({
+                  message: `${e.response.data.error}`,
                   type: 'error'
-                })))
+                }))})
                 return null
             }else{
                 let newStockDestino = {
@@ -132,11 +137,14 @@ export default function NewTransfer({item, token, handleClose}) {
                     message: 'Stock salida modificado correctamente',
                     type: 'success'
                   }))
+                  setLoading(false)
                 })
-                .catch(e=>dispatch(setAlert({
-                  message: 'Hubo un error inesperado, revisa los datos',
+                .catch(e=>{
+                  setLoading(false)
+                  dispatch(setAlert({
+                  message: `${e.response.data.error}`,
                   type: 'error'
-                })))
+                }))})
                 apiClient.patch(`/stock/${stockSalida._id}`, {
                   idSucursal: formValue.idSalida, 
                   cantidad: parseFloat(stockSalida.cantidad)-parseFloat(formValue.cantidad),
@@ -153,11 +161,14 @@ export default function NewTransfer({item, token, handleClose}) {
                     message: 'Stock salida modificado correctamente',
                     type: 'success'
                   }))
+                  setLoading(false)
                 })
-                .catch(e=>dispatch(setAlert({
-                  message: 'Hubo un error inesperado, revisa los datos',
+                .catch(e=>{
+                  setLoading(false)
+                  dispatch(setAlert({
+                  message: `${e.response.data.error}`,
                   type: 'error'
-                })))
+                }))})
             }
         }
     })
@@ -174,7 +185,7 @@ export default function NewTransfer({item, token, handleClose}) {
                 setListStock(r.data.body)
               })
               .catch(e=>dispatch(setAlert({
-                message: 'Hubo un error inesperado al cargar los empleados',
+                message: `${e.response.data.error}`,
                 type: 'error'
               })))
         }
@@ -189,8 +200,14 @@ export default function NewTransfer({item, token, handleClose}) {
         <Input label={"Precio efectivo"} type='number' name='precioEfectivo' value={formik.values.precioEfectivo} onChange={formik.handleChange} prefix={'$'} />
         <Input label={"Precio lista"} type='number' name='precioLista' value={formik.values.precioLista} onChange={formik.handleChange}  prefix={'$'} />
         <div style={{display: 'flex', justifyContent: 'space-around'}}>
-            <Button text={'CANCELAR'} onClick={handleClose}/>
-            <Button text={'ACEPTAR'} onClick={formik.handleSubmit}/>
+          {
+            loading ? 
+            <Loading />:
+            <>
+              <Button text={'CANCELAR'} onClick={handleClose}/>
+              <Button text={'ACEPTAR'} onClick={formik.handleSubmit}/>
+            </>
+          }
         </div>
     </div>
   )
