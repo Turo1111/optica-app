@@ -30,8 +30,7 @@ export default function Venta() {
   const [openSaldo, setOpenSaldo] = useState(false)
   const [tagSearch, setTagSearch] = useState([])
   const [openPrint, setOpenPrint] = useState(false)
-  
-  
+  const self = window;
 
   const search = useInputValue('','')
 
