@@ -63,7 +63,7 @@ export default function Clientes() {
         }
       });
     }
-  },[openNewEdit])
+  },[openNewEdit, user])
 
   const getCliente = () => {
     setLoading(true)
