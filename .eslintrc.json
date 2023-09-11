@@ -1,5 +1,3 @@
 {
-  "extends": ["next/babel","next/core-web-vitals"],
-  "plugins": ["next/babel", "next/core-web-vitals"],
-  "rules": {}
+  "extends": ["next/babel","next/core-web-vitals"]
 }
