@@ -411,7 +411,7 @@ export default function NuevaVenta() {
         message: 'Error en el servidor, revise el estado',
         type: 'error'
       })))
-    }, [user.token])
+    }, [user.token, dispatch])
     
     useEffect(()=>{
       if (consumidorFinal) {
@@ -431,7 +431,7 @@ export default function NuevaVenta() {
         setOpenNewOrder(true)
         return;
       }
-    },[openNewOrder])
+    },[openNewOrder, dataOrder, dispatch])
 
     useEffect(()=>{
       const socket = io(process.env.NEXT_PUBLIC_DB_HOST)

@@ -1,5 +1,10 @@
 {
   "extends": [
     "next"
-  ]
+  ],
+  "rules": {
+    "react-hooks/exhaustive-deps": "off",
+    "react/no-unescaped-entities": "off"
+    // Agrega más reglas y configuraciones según sea necesario
+  }
 }

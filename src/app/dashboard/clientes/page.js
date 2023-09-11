@@ -63,34 +63,37 @@ export default function Clientes() {
         }
       });
     }
-  },[openNewEdit, user])
-
-  const getCliente = () => {
-    setLoading(true)
-    if (user.token) {
-      apiClient.get('/cliente',
-      {
-        headers: {
-          Authorization: `Bearer ${user.token}` // Agregar el token en el encabezado como "Bearer {token}"
-        }
-      })
-        .then(r => {
-          setData((prevData)=>{
-            console.log(r.data.body);
-            setLoading(false)
-            return r.data.body
-          })
-        })
-        .catch(e => dispatch(setAlert({
-          message: `${e.response.data.error || 'Ocurrio un error'}`,
-          type: 'error'
-        })))
-    }
-  }
+  },[openNewEdit, user.roles.permisos, user.usuario, dispatch])
 
   useEffect(() => {
-    getCliente()
-  }, [user.token])
+    const getCliente = () => {
+      setLoading(true);
+      if (user.token) {
+        apiClient.get('/cliente', {
+          headers: {
+            Authorization: `Bearer ${user.token}` // Agregar el token en el encabezado como "Bearer {token}"
+          }
+        })
+          .then((r) => {
+            setData((prevData) => {
+              console.log(r.data.body);
+              setLoading(false);
+              return r.data.body;
+            });
+          })
+          .catch((e) =>
+            dispatch(
+              setAlert({
+                message: `${e.response.data.error || 'Ocurrió un error'}`,
+                type: 'error',
+              })
+            )
+          );
+      }
+    };
+  
+    getCliente();
+  }, [user.token, dispatch]);
 
   useEffect(()=>{
     const socket = io(process.env.NEXT_PUBLIC_DB_HOST)
