@@ -7,17 +7,33 @@ import Button from '../Button'
 import { setAlert } from '@/redux/alertSlice'
 import { useAppDispatch } from '@/redux/hook'
 import Loading from '../Loading'
+import Confirm from '../Confirm'
 
 
 export default function EditProduct({token, eClose, item}) {
 
   const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(false)
+  const [openConfirm, setOpenConfirm] = useState(false)
   
     const formik = useFormik({
         initialValues: initialValues(item),
         validateOnChange: false,
         onSubmit: (formValue) => {
+          if (item._id === '64f0c9e9ae80e2477accbc14' || item._id === '64f0ca05ae80e2477accbc24') {
+            dispatch(setAlert({
+              message: 'No se puede modificar este producto',
+              type: 'error'
+            }))
+            return
+          }
+          if (formValue.idProveedor === '') {
+            dispatch(setAlert({
+              message: 'Debe ingresar un proveedor al producto',
+              type: 'warning'
+            }))
+            return
+          }
           if (formValue.descripcion === '') {
             dispatch(setAlert({
               message: 'Debe ingresar una descripcion al producto',
@@ -58,7 +74,7 @@ export default function EditProduct({token, eClose, item}) {
           .catch(e=>{
             setLoading(false)
             dispatch(setAlert({
-            message: `${e.response.data.error}`,
+            message: `${e.response.data.error || 'Ocurrio un error'}`,
             type: 'error'
           }))})
         }
@@ -77,10 +93,13 @@ export default function EditProduct({token, eClose, item}) {
           <Input label={"Alto"} type='text' name='alto' value={formik.values.alto} onChange={formik.handleChange} />
           <Input label={"Ancho"} type='text' name='ancho' value={formik.values.ancho} onChange={formik.handleChange} />
           <InputSelectAdd label={"Categoria"} type='text' value={formik.values.categoria} onChange={(id, item)=>{
-            console.log(id, item.descripcion);
             formik.setFieldValue('idCategoria', id)
             formik.setFieldValue('categoria', item.descripcion)
           }}  name='categoria' edit={true} />
+          <InputSelectAdd label={"Proveedor"} type='text' value={formik.values.idProveedor} onChange={(id, item)=>{
+          formik.setFieldValue('idProveedor', id)
+          formik.setFieldValue('proveedor', item.descripcion)
+        }} name='proveedor' />
           <InputSelectAdd label={"Marca"} type='text' value={formik.values.marca} onChange={(id, item)=>{
             formik.setFieldValue('idMarca', id)
             formik.setFieldValue('marca', item.descripcion)
@@ -95,17 +114,26 @@ export default function EditProduct({token, eClose, item}) {
               formik.setFieldValue('newimagen', event.currentTarget.files[0]);
             }}
           />
-          <Input label={"Precio general"} name='precioGeneral' type='text' value={formik.values.precioGeneral} onChange={formik.handleChange} />
+          <Input label={"Precio general"} name='precioGeneral' type='text' value={formik.values.precioGeneral} onChange={formik.handleChange} prefix={'$'} />
           <div style={{display: 'flex', justifyContent: 'space-around'}}>
           {
             loading ? 
             <Loading />:
             <>
               <Button text={'CANCELAR'} onClick={handleClose}/>
-              <Button text={'ACEPTAR'} onClick={formik.handleSubmit}/>
+              <Button text={'ACEPTAR'} onClick={()=>setOpenConfirm(true)}/>
             </>
           }
         </div>
+        {
+          openConfirm &&
+          <Confirm
+            confirmAction={formik.handleSubmit}
+            handleClose={()=>setOpenConfirm(false)}
+            loading={loading}
+            open={openConfirm}
+          />
+        }
       </div>
     )
     
@@ -121,11 +149,16 @@ function  initialValues (item) {
     numeracion: '',
     ancho: '',
     alto: '',
+    idCategoria: '',
+    idProveedor: '',
+    proveedor: '',
+    idMarca: '',
+    idColor: '',
     categoria: '',
     marca: '',
     color: '',
     imagen: null,
-    precioGeneral: '',
-    newimagen: ''
-  }
+    precioGeneral: 0
+  
+}
 }

@@ -1,15 +1,18 @@
 export const useDate = (dateConvert) => {
-    var today = new Date();
+    const fecha = dateConvert ? new Date(dateConvert) : new Date();
 
-    var day = dateConvert ? dateConvert.getDate() : today.getDate();
-    var formattedDay = day < 10 ? `0${day}` : day;
+    // Obtener componentes de la fecha
+    const dia = fecha.getDate().toString().padStart(2, '0'); // Agregar cero inicial si es necesario
+    const mes = (fecha.getMonth() + 1).toString().padStart(2, '0'); // Los meses comienzan en 0
+    const anio = fecha.getFullYear();
+    const horas = fecha.getHours().toString().padStart(2, '0');
+    const minutos = fecha.getMinutes().toString().padStart(2, '0');
+    const segundos = fecha.getSeconds().toString().padStart(2, '0');
+    const ampm = horas >= 12 ? 'PM' : 'AM';
+    const zonaHoraria = 'GMT-3';
 
-    var month = dateConvert ? dateConvert.getMonth() + 1 : today.getMonth() + 1;
-    var formattedMonth = month < 10 ? `0${month}` : month;
+    // Formatear la fecha en tu formato personalizado
+    const fechaFormateada = `${mes}/${dia}/${anio}, ${horas}:${minutos}:${segundos}`;
 
-    var year = dateConvert ? dateConvert.getFullYear() : today.getFullYear();
-
-    const date = `${year}-${formattedMonth}-${formattedDay}`;
-
-    return { date };
+    return  {date: fechaFormateada} ;
 };

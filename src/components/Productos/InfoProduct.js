@@ -2,7 +2,7 @@ import Image from 'next/image'
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import Table from '../Table'
-import NewStock from '../NewStock'
+import NewStock from './NewStock'
 import { useAppDispatch } from '@/redux/hook'
 import { setAlert } from '@/redux/alertSlice'
 import apiClient from '@/utils/client'
@@ -11,10 +11,12 @@ import Loading from '../Loading'
 import useFormatArrayString from '@/hooks/useFormatArrayString'
 import Modal from '../Modal'
 import NewOferta from './NewOferta'
+import { MdEdit } from 'react-icons/md'
+import { BiTransfer } from 'react-icons/bi'
+import Button from '../Button'
 const io = require('socket.io-client')
 
-export default function InfoProduct({token, item}) {
-    console.log(item)
+export default function InfoProduct({token, item, handleOpenEditModal, handleOpenTransferModal}) {
 
     const [openNewStock, setOpenNewStock] = useState(false)
     const [data, setData] = useState([])
@@ -26,10 +28,10 @@ export default function InfoProduct({token, item}) {
     const [ofertaSelected, setOfertaSelected] = useState(undefined)
     const [ofertas, setOfertas] = useState([])
 
-    const { barcodeDataURL } = useBarcodeGenerator(item?.codigo);
+    const { barcodeDataURL, downloadBarcodeImage  } = useBarcodeGenerator(item?.codigo);
 
-    useEffect(()=>{
-        setLoading(true)
+    function getStockOferta() {
+      setLoading(true)
         if (item) {
             apiClient.get(`/stock/${item?._id}` ,
             {
@@ -37,21 +39,15 @@ export default function InfoProduct({token, item}) {
                 Authorization: `Bearer ${token}` // Agregar el token en el encabezado como "Bearer {token}"
               }
             })
-              .then(r=>{
-                setData(r.data.body)
-                setLoading(false)
-              })
-              .catch(e=>dispatch(setAlert({
-                message: `${e.response.data.error}`,
-                type: 'error'
-              })))
-        }
-    },[item])
-
-    useEffect(()=>{
-      setLoading(true)
-      if (item) {
-          apiClient.get(`/oferta/${item?._id}` ,
+            .then(r=>{
+              setData(r.data.body)
+              setLoading(false)
+            })
+            .catch(e=>dispatch(setAlert({
+              message: `${e.response.data.error || 'Ocurrio un error'}`,
+              type: 'error'
+            })))
+            apiClient.get(`/oferta/${item?._id}` ,
           {
             headers: {
               Authorization: `Bearer ${token}` // Agregar el token en el encabezado como "Bearer {token}"
@@ -62,16 +58,19 @@ export default function InfoProduct({token, item}) {
               setLoading(false)
             })
             .catch(e=>dispatch(setAlert({
-              message: `${e.response.data.error}`,
+              message: `${e.response.data.error || 'Ocurrio un error'}`,
               type: 'error'
             })))
-      }
-  },[item])
+        }
+    }
+
+    useEffect(()=>{
+      getStockOferta()
+    },[item])
 
     useEffect(()=>{
         const socket = io(process.env.NEXT_PUBLIC_DB_HOST)
         socket.on('stock', (stock) => {
-          console.log("llego nuevo stock",stock);
           setLoading(true)
           setData((prevData)=>{
             const exist = prevData.find(elem => elem._id === stock.res._id )
@@ -105,7 +104,17 @@ export default function InfoProduct({token, item}) {
 
   return (
     <div>
-        <Descripcion color={process.env.TEXT_COLOR}>{item?.descripcion}</Descripcion>
+        <div style={{display: 'flex', margin: '15px 0', justifyContent: 'space-between'}} >
+          <Descripcion color={process.env.TEXT_COLOR}>{item?.descripcion}</Descripcion>
+          <div style={{display: 'flex'}}>
+            <IconWrapper bg={'#FCDDB0'} hover={'#E1BA82'} onClick={()=>handleOpenEditModal(item)}>
+                <MdEdit/>
+            </IconWrapper>
+            <IconWrapper bg={'#A2CDB0'} hover={'#85A389'} onClick={()=>handleOpenTransferModal(item)}>
+                <BiTransfer/>
+            </IconWrapper>
+          </div>
+        </div>
         <ContainerInfo>
             <div>
                 <Caracteristicas color={process.env.TEXT_COLOR}>
@@ -119,6 +128,9 @@ export default function InfoProduct({token, item}) {
                 </Caracteristicas>
                 <Caracteristicas color={process.env.TEXT_COLOR}>
                     <label style={{fontWeight: 600}}>Ancho :</label> {item?.ancho || 'No definido'}
+                </Caracteristicas>
+                <Caracteristicas color={process.env.TEXT_COLOR}>
+                    <label style={{fontWeight: 600}}>Proveedor :</label> {item?.proveedor || 'No definido'}
                 </Caracteristicas>
                 <Caracteristicas color={process.env.TEXT_COLOR}>
                     <label style={{fontWeight: 600}}>Marca :</label> {item?.marca || 'No definido'}
@@ -135,8 +147,9 @@ export default function InfoProduct({token, item}) {
                 <Caracteristicas color={process.env.TEXT_COLOR}>
                     <label style={{fontWeight: 600}}>Descuento con :</label> {listObraSocial || 'No definido'}
                 </Caracteristicas>  
-                <div>
+                <div style={{display: 'flex', justifyContent: 'space-around', alignItems: 'center'}}>
                     <img src={barcodeDataURL} alt="Barcode" />
+                    <Button text={'Descargar Barcode'} onClick={downloadBarcodeImage}/>
                 </div>
             </div>
             <div style={{display: 'flex', justifyContent: 'center', width: 250, height: 250, padding: 15, backgroundColor: '#d9d9d9', position: 'relative', overflow: 'hidden', borderRadius: 15}} >
@@ -155,8 +168,26 @@ export default function InfoProduct({token, item}) {
             :
             <>  
                 <div style={{display: 'flex'}} >
-                  <ButtonNewStock color={process.env.BLUE_COLOR} onClick={()=>setOpenNewStock(true)}>+ NUEVO STOCK</ButtonNewStock>
-                  <ButtonNewStock color={process.env.BLUE_COLOR} onClick={()=>setOpenNewSale(true)}>+ NUEVA OFERTA</ButtonNewStock>
+                  <ButtonNewStock color={process.env.BLUE_COLOR} onClick={()=>{
+                    if (item._id === '64f0ca05ae80e2477accbc24' || item._id === '64f0c9e9ae80e2477accbc14') {
+                      dispatch(setAlert({
+                        message: `No puede crear stock del producto`,
+                        type: 'error'
+                      }))
+                      return
+                    }
+                    setOpenNewStock(true)
+                  }}>+ NUEVO STOCK</ButtonNewStock>
+                  <ButtonNewStock color={process.env.BLUE_COLOR} onClick={()=>{
+                    if (item._id === '64f0ca05ae80e2477accbc24' || item._id === '64f0c9e9ae80e2477accbc14') {
+                      dispatch(setAlert({
+                        message: `No puede crear oferta del producto`,
+                        type: 'error'
+                      }))
+                      return
+                    }
+                    setOpenNewSale(true)
+                  }}>+ NUEVA OFERTA</ButtonNewStock>
                 </div>
                 {
                   data.length === 0 ? 
@@ -209,7 +240,7 @@ export default function InfoProduct({token, item}) {
             <NewStock eClose={()=>{
               setStockSelected(undefined)
               setOpenNewStock(false)
-            }} idProducto={item._id} item={stockSelected}/>
+            }} idProducto={item._id} item={stockSelected} precioGeneral={item.precioGeneral}/>
           </Modal>
         }
     </div>
@@ -270,6 +301,22 @@ const ButtonNewStock = styled.h6 `
     margin: 15px 5px;
     color: ${props=>props.color};
     cursor: pointer;
+`
+
+const IconWrapper = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 35px;
+    color: #fff;
+    background-color: ${props=>props.bg || '#fff'};
+    padding: 15px;
+    :hover{
+        background-color: ${props=>props.hover || '#d9d9d9'};
+    }
+    @media only screen and (max-width: 445px) {
+        font-size: 18px;
+    }
 `
 
 const columns = [

@@ -162,24 +162,32 @@ const InputSelect = ({e='Hubo un problema',condicion=true ,type = 'text', label,
       })
       .catch(e=>{
         dispatch(setAlert({
-        message: `${e.response.data.error}`,
+        message: `${e.response.data.error || 'Ocurrio un error'}`,
         type: 'error'
       }))})
     }
   },[name, preData])
 
   useEffect(()=>{
-    if (value === '') {
+    if (value === '' || value === undefined) {
       setInputValue('')
       setIsActive(false);
       setIsFocused(false);
     }else {
+      
       setIsActive(true);
       setIsFocused(true);
     }
   },[value])
+  
 
-  useEffect(()=>{console.log(data);},[data])
+  useEffect(()=>{
+    if (value !== '') {
+      if (value !== inputValue){
+        setInputValue(value)
+      }
+    }
+  },[inputValue])
 
   return (
     <InputWrapper>

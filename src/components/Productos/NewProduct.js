@@ -8,11 +8,13 @@ import useBarcodeGenerator from '@/hooks/useBarcodeGenerator'
 import { setAlert } from '@/redux/alertSlice'
 import { useAppDispatch } from '@/redux/hook'
 import Loading from '../Loading'
+import Confirm from '../Confirm'
 
 export default function NewProduct({token, eClose}) {
 
   const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(false)
+  const [openConfirm, setOpenConfirm] = useState(false)
 
   const generateRandomBarcode = () => {
     const randomNumber = Math.floor(Math.random() * 100000);
@@ -27,6 +29,20 @@ export default function NewProduct({token, eClose}) {
       if (formValue.descripcion === '') {
         dispatch(setAlert({
           message: 'Debe ingresar una descripcion al producto',
+          type: 'warning'
+        }))
+        return
+      }
+      if (formValue.idProveedor === '') {
+        dispatch(setAlert({
+          message: 'Debe ingresar un proveedor al producto',
+          type: 'warning'
+        }))
+        return
+      }
+      if (formValue.precioGeneral === '' || formValue.precioGeneral <= 0) {
+        dispatch(setAlert({
+          message: 'Debe ingresar un precio general al producto',
           type: 'warning'
         }))
         return
@@ -65,7 +81,7 @@ export default function NewProduct({token, eClose}) {
       .catch(e=>{
         setLoading(false)
         dispatch(setAlert({
-          message: `${e.response.data.error}`,
+          message: `${e.response.data.error || 'Ocurrio un error'}`,
           type: 'error'
         }))
       }) 
@@ -94,6 +110,10 @@ export default function NewProduct({token, eClose}) {
           formik.setFieldValue('idCategoria', id)
           formik.setFieldValue('categoria', item.descripcion)
         }} name='categoria' />
+         <InputSelectAdd label={"Proveedor"} type='text' value={formik.values.idProveedor} onChange={(id, item)=>{
+          formik.setFieldValue('idProveedor', id)
+          formik.setFieldValue('proveedor', item.descripcion)
+        }} name='proveedor' />
         <InputSelectAdd label={"Marca"} type='text' value={formik.values.idMarca} onChange={(id, item)=>{
           formik.setFieldValue('idMarca', id)
           formik.setFieldValue('marca', item.descripcion)
@@ -104,21 +124,29 @@ export default function NewProduct({token, eClose}) {
         }} name='color'/>
         <Input type='file' name='imagen'
           onChange={(event) => {
-            console.log("aca",event.currentTarget.files[0]);
             formik.setFieldValue('imagen', event.currentTarget.files[0]);
           }}
         /> 
-        <Input label={"Precio general"} name='precioGeneral' type='text' value={formik.values.precioGeneral} onChange={formik.handleChange} />
+        <Input label={"Precio general"} name='precioGeneral' type='number' value={formik.values.precioGeneral} onChange={formik.handleChange} prefix={'$'} />
         <div style={{display: 'flex', justifyContent: 'space-around'}}>
           {
             loading ? 
             <Loading />:
             <>
               <Button text={'CANCELAR'} onClick={handleClose}/>
-              <Button text={'ACEPTAR'} onClick={formik.handleSubmit}/>
+              <Button text={'ACEPTAR'} onClick={()=>setOpenConfirm(true)}/>
             </>
           }
         </div>
+        {
+          openConfirm &&
+          <Confirm
+            confirmAction={formik.handleSubmit}
+            handleClose={()=>setOpenConfirm(false)}
+            loading={loading}
+            open={openConfirm}
+          />
+        }
     </div>
   )
   
@@ -131,12 +159,14 @@ const initialValues = {
     ancho: '',
     alto: '',
     idCategoria: '',
+    idProveedor: '',
+    proveedor: '',
     idMarca: '',
     idColor: '',
     categoria: '',
     marca: '',
     color: '',
     imagen: null,
-    precioGeneral: ''
+    precioGeneral: 0
   
 }

@@ -3,8 +3,6 @@ import styled from 'styled-components'
 
 export default function InputQty ({large, upQty, downQty, qty ,total, oferta = false, descuento}) {
 
-    console.log(typeof total);
-
   return (
     <Container>
         <ContainerInput>

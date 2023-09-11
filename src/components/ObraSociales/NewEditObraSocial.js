@@ -13,6 +13,7 @@ import Loading from '../Loading'
 import styled from 'styled-components'
 import { useInputValue } from '@/hooks/useInputValue'
 import { useSearch } from '@/hooks/useSearch'
+import Confirm from '../Confirm'
 
 export default function NewEditObraSocial({token, item , edit, handleClose}) {
 
@@ -24,6 +25,7 @@ export default function NewEditObraSocial({token, item , edit, handleClose}) {
     const tag = ["descripcion", "codigo"]
     const listProducto = useSearch(search.value, tag, data)
     const [loading2, setLoading2] = useState(false)
+    const [openConfirm, setOpenConfirm] = useState(false)
 
     const formik = useFormik({
         initialValues: initialValues(item),
@@ -63,7 +65,7 @@ export default function NewEditObraSocial({token, item , edit, handleClose}) {
             .catch(e=>{
               setLoading2(false)
               dispatch(setAlert({
-              message: `${e.response.data.error}`,
+              message: `${e.response.data.error || 'Ocurrio un error'}`,
               type: 'error'
             }))})
           }else{
@@ -84,14 +86,14 @@ export default function NewEditObraSocial({token, item , edit, handleClose}) {
             .catch(e=>{
               setLoading2(false)
               dispatch(setAlert({
-              message: `${e.response.data.error}`,
+              message: `${e.response.data.error || 'Ocurrio un error'}`,
               type: 'error'
             }))})
           }
         }
     })
 
-    useEffect(() => {
+    const getProducto = () => {
       setLoading(true)
       apiClient.get('/producto' ,
       {
@@ -106,10 +108,14 @@ export default function NewEditObraSocial({token, item , edit, handleClose}) {
           })
         })
         .catch(e => dispatch(setAlert({
-          message: `${e.response.data.error}`,
+          message: `${e.response.data.error || 'Ocurrio un error'}`,
           type: 'error'
         })))
-    }, [])
+    }
+
+    useEffect(() => {
+      getProducto()
+    }, [token])
 
   return (
     <div>
@@ -159,10 +165,19 @@ export default function NewEditObraSocial({token, item , edit, handleClose}) {
             <Loading />:
             <>
               <Button text={'CANCELAR'} onClick={handleClose}/>
-              <Button text={'ACEPTAR'} onClick={formik.handleSubmit}/>
+              <Button text={'ACEPTAR'} onClick={()=>setOpenConfirm(true)}/>
             </>
           }
         </div>
+        {
+              openConfirm &&
+              <Confirm
+                confirmAction={formik.handleSubmit}
+                handleClose={()=>setOpenConfirm(false)}
+                loading={loading2}
+                open={openConfirm}
+              />
+            }
     </div>
   )
 }

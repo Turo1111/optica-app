@@ -50,7 +50,7 @@ export default function Sucursales() {
           })
           .catch(e=>{
             dispatch(setAlert({
-            message: `${e.response.data.error}`,
+            message: `${e.response.data.error || 'Ocurrio un error'}`,
             type: 'error'
           }))})
     },[])

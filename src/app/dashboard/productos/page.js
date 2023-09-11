@@ -10,6 +10,8 @@ import EditProduct from '@/components/Productos/EditProduct'
 import InfoProduct from '@/components/Productos/InfoProduct'
 import NewProduct from '@/components/Productos/NewProduct'
 import NewTransfer from '@/components/Productos/NewTransfer'
+import UpdateProduct from '@/components/Productos/UpdateProduct'
+import Table from '@/components/Table'
 import { useInputValue } from '@/hooks/useInputValue'
 import { useSearch } from '@/hooks/useSearch'
 import { setAlert } from '@/redux/alertSlice'
@@ -20,6 +22,10 @@ import React, { useEffect, useState } from 'react'
 import { MdClose } from 'react-icons/md'
 import styled from 'styled-components'
 const io = require('socket.io-client')
+
+const getProducto = () => {
+
+}
 
 export default function Productos() {
   const [openNewProduct, setOpenNewProduct] = useState(false)
@@ -33,12 +39,35 @@ export default function Productos() {
   const dispatch = useAppDispatch();
   const [openNewTransfer, setOpenNewTransfer] = useState(false)
   const [tagSearch, setTagSearch] = useState([])
+  const [openUpdate, setOpenUpdate] = useState(false)
 
   const search = useInputValue('','')
 
-  const tag = ["descripcion", "codigo", "categoria", "color", "alto", "ancho", "marca", "numeracion"]
+  const tag = ["descripcion", "codigo", "categoria", 'proveedor', "color", "alto", "ancho", "marca", "numeracion"]
 
   const listProducto = useSearch(search.value, tag, data, tagSearch)
+
+  const getProducto = () => {
+    setLoading(true)
+    if (user.token) {
+      apiClient.get('/producto' ,
+      {
+        headers: {
+          Authorization: `Bearer ${user.token}` // Agregar el token en el encabezado como "Bearer {token}"
+        }
+      })
+        .then(r => {
+          setData((prevData)=>{
+            setLoading(false)
+            return r.data.body
+          })
+        })
+        .catch(e => dispatch(setAlert({
+          message: `${e.response.data.error || 'Ocurrio un error'}`,
+          type: 'error'
+        })))
+    }
+  }
 
   useEffect(()=>{
     if (user.usuario !== '') {  
@@ -54,33 +83,15 @@ export default function Productos() {
   },[user])
 
   useEffect(() => {
-    setLoading(true)
-    if (user.token) {
-      apiClient.get('/producto' ,
-      {
-        headers: {
-          Authorization: `Bearer ${user.token}` // Agregar el token en el encabezado como "Bearer {token}"
-        }
-      })
-        .then(r => {
-          console.log(r.data.body);
-          setData((prevData)=>{
-            setLoading(false)
-            return r.data.body
-          })
-        })
-        .catch(e => dispatch(setAlert({
-          message: `${e.response.data.error}`,
-          type: 'error'
-        })))
-    }
+    getProducto()
+    return
   }, [user.token])
 
   useEffect(()=>{
     const socket = io(process.env.NEXT_PUBLIC_DB_HOST)
     socket.on('producto', (producto) => {
-      console.log(producto)
-      setData((prevData)=>{
+      getProducto()
+      /* setData((prevData)=>{
         const exist = prevData.find(elem => elem._id === producto.res._id )
         if (exist) {
           return prevData.map((item) =>
@@ -88,12 +99,12 @@ export default function Productos() {
         )
         }
         return [...prevData, producto.res]
-      })
+      }) */
     })
     return () => {
       socket.disconnect();
     }; 
-  },[data])
+  }, [data])
 
   useEffect(()=>{
     if (openNewProduct || openEditProduct) {
@@ -120,11 +131,13 @@ export default function Productos() {
   const handleOpenEditModal = (item) => {
     setProductSelected(item)
     setOpenEditProduct(true)
+    setOpenInfoProduct(false)
   }
 
   const handleOpenTransferModal = (item) => {
     setProductSelected(item)
     setOpenNewTransfer(true)
+    setOpenInfoProduct(false)
   }
 
   const handleCloseModals = () => {
@@ -133,7 +146,14 @@ export default function Productos() {
     setOpenInfoProduct(false)
     setOpenEditProduct(false)
     setOpenNewTransfer(false)
+    setOpenUpdate(false)
   }
+
+  /* useEffect(()=>{
+    if (!openUpdate) {
+      getProducto()
+    }
+  }, [openUpdate]) */
 
   if (!permission) {
     return <NotPermissions/>
@@ -163,9 +183,10 @@ export default function Productos() {
               }
               width="80%"
             />
+            <Button text={'ACTUALIZAR'} onClick={() => setOpenUpdate(true)} />
             <Button text={'NUEVO'} onClick={() => setOpenNewProduct(true)} />
           </ContainerSearch>
-          <List>
+          {/* <List>
             {
               listProducto.length === 0 ?
               <EmptyList onClick={() => setOpenNewProduct(true)} />
@@ -182,18 +203,34 @@ export default function Productos() {
                 </ItemProducto>
               ))
             }
-          </List>
+          </List> */}
+          <Table data={listProducto} columns={columns} maxHeight={false} onClick={(item) => handleOpenInfoModal(item)}/>
         </>
       }
-      <Modal
-        open={openNewProduct}
-        title={'Nuevo Producto'}
-        height='90%'
-        width='50%'
-        eClose={handleCloseModals}
-      >
-        <NewProduct eClose={handleCloseModals} token={user.token}/>
-      </Modal>
+      {
+        openNewProduct &&
+        <Modal
+          open={openNewProduct}
+          title={'Nuevo Producto'}
+          height='90%'
+          width='50%'
+          eClose={handleCloseModals}
+        >
+          <NewProduct eClose={handleCloseModals} token={user.token}/>
+        </Modal>
+      }
+      {
+        openUpdate && 
+        <Modal
+          open={openUpdate}
+          title={'Actualizacion de precios'}
+          height='auto'
+          width='50%'
+          eClose={handleCloseModals}
+        >
+          <UpdateProduct data={data} eClose={handleCloseModals} token={user.token}/>
+        </Modal>
+      }
       {productSelected && (
         <>
           <Modal
@@ -212,7 +249,10 @@ export default function Productos() {
             width='50%'
             eClose={handleCloseModals}
           >
-            <InfoProduct item={productSelected} token={user.token} />
+            <InfoProduct item={productSelected} token={user.token} 
+              handleOpenEditModal={(item) => handleOpenEditModal(item)}
+              handleOpenTransferModal={(item) => handleOpenTransferModal(item)} 
+            />
           </Modal>
           <Modal
             open={openNewTransfer}
@@ -228,6 +268,13 @@ export default function Productos() {
     </>
   )
 }
+
+const columns = [
+  { label: 'Producto', field: 'descripcion', width: '35%' },
+  { label: 'Codigo', field: 'codigo', width: '25%', align: 'center' },
+  { label: 'Categoria', field: 'categoria', width: '20%', align: 'center' },
+  { label: 'Precio', field: 'precioGeneral', width: '20%', align: 'center', price: true },
+];
 
 const List = styled.ul `
   flex: 1;

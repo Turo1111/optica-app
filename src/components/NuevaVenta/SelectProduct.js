@@ -69,6 +69,7 @@ const ContainerCart = styled.div `
   margin:0;
   margin-top: 8px;
   overflow-y: scroll;
+  max-height: 350px;
   @media only screen and (max-width: 800px) {
     height: 350px
   }

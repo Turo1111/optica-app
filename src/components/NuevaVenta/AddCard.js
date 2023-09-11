@@ -13,8 +13,6 @@ export default function AddCard({
     cuota
 }) {
 
-    console.log(pago);
-
     const dispatch = useAppDispatch();
 
     const formik = useFormik({
@@ -30,6 +28,15 @@ export default function AddCard({
                   type: 'warning'
                 }))
                 return
+            }
+            if (pago.descripcion === 'EFECTIVO Y TARJETA' || pago.descripcion === 'CUENTA CORRIENTE') {
+                if (dineroIngresado  <= 0 || dineroIngresado  === '') {
+                    dispatch(setAlert({
+                      message: 'Dinero ingresado tiene que ser mayor a 0',
+                      type: 'warning'
+                    }))
+                    return
+                }
             }
             if(total !== 0) {
                 onClose()

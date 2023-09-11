@@ -11,10 +11,9 @@ import styled from 'styled-components';
 import InputSearch from '../InputSearch';
 import apiClient from '@/utils/client';
 import Loading from '../Loading';
+import Confirm from '../Confirm';
 
 export default function NewOferta({item, token, eClose, producto}) {
-
-    console.log(item)
 
     const dispatch = useAppDispatch();
     const [loading, setLoading] = useState(false)
@@ -24,6 +23,7 @@ export default function NewOferta({item, token, eClose, producto}) {
     const tag = ["descripcion"]
     const listSucursales = useSearch(search.value, tag, data)
     const [loading2, setLoading2] = useState(false)
+    const [openConfirm, setOpenConfirm] = useState(false)
 
     const formik = useFormik({
         initialValues: initialValues(item),
@@ -69,7 +69,7 @@ export default function NewOferta({item, token, eClose, producto}) {
                   setLoading2(false)
               })
               .catch(e => dispatch(setAlert({
-                message: `${e.response.data.error}`,
+                message: `${e.response.data.error || 'Ocurrio un error'}`,
                 type: 'error'
               })))
             }else{
@@ -88,14 +88,14 @@ export default function NewOferta({item, token, eClose, producto}) {
                   setLoading2(false)
               })
               .catch(e => dispatch(setAlert({
-                message: `${e.response.data.error}`,
+                message: `${e.response.data.error || 'Ocurrio un error'}`,
                 type: 'error'
               })))
             }
         }
     })
 
-    useEffect(() => {
+    const getSucursal = () => {
       setLoading(true)
       apiClient.get('/sucursal' ,
       {
@@ -110,10 +110,14 @@ export default function NewOferta({item, token, eClose, producto}) {
           })
         })
         .catch(e => dispatch(setAlert({
-          message: `${e.response.data.error}`,
+          message: `${e.response.data.error || 'Ocurrio un error'}`,
           type: 'error'
         })))
-    }, [])
+    }
+
+    useEffect(() => {
+      getSucursal()
+    }, [token])
 
   return (
     <div>
@@ -162,10 +166,19 @@ export default function NewOferta({item, token, eClose, producto}) {
             <Loading />:
             <>
               <Button text={'CANCELAR'} onClick={eClose}/>
-              <Button text={'ACEPTAR'} onClick={formik.handleSubmit}/>
+              <Button text={'ACEPTAR'} onClick={()=>setOpenConfirm(true)}/>
             </>
           }
         </div>
+        {
+              openConfirm &&
+              <Confirm
+                confirmAction={formik.handleSubmit}
+                handleClose={()=>setOpenConfirm(false)}
+                loading={loading2}
+                open={openConfirm}
+              />
+            }
     </div>
   )
 }

@@ -18,7 +18,8 @@ export default function DataSale({
     subTotal,
     finishSale,
     dineroIngresado,
-    onChangeDineroIngresado
+    onChangeDineroIngresado,
+    useSenia
 }) {
   return (
     <ContainerInfo>
@@ -33,7 +34,7 @@ export default function DataSale({
           </div>
         }
         {
-          pago.descripcion === 'EFECTIVO' && <Input label={"Dinero ingresado"} type='number' name='dineroIngresado' value={dineroIngresado} onChange={onChangeDineroIngresado} prefix={'$'}/>
+          (pago.descripcion === 'EFECTIVO' && !useSenia) && <Input label={"Dinero ingresado"} type='number' name='dineroIngresado' value={dineroIngresado} onChange={onChangeDineroIngresado} prefix={'$'}/>
         }
         <InputSelect label={'Obra social'} name={'obrasocial'} value={''} emptyOption={[{_id: '', descripcion: 'Sin obra social'}]} onChange={onChangeObraSocial} condicion={total>0} e='Eliga productos antes de seleccionar obra social'/>
       </ContainerInput>

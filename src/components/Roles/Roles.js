@@ -27,9 +27,7 @@ export default function Roles() {
 
     const listRoles = useSearch(search.value, tag, data)
 
-    console.log(listRoles)
-
-    useEffect(()=>{
+    const getRoles = () => {
       setLoading(true)
       apiClient.get(`/roles` ,
       {
@@ -42,10 +40,14 @@ export default function Roles() {
             setLoading(false)
           })
           .catch(e=>dispatch(setAlert({
-            message: `${e.response.data.error}`,
+            message: `${e.response.data.error || 'Ocurrio un error'}`,
             type: 'error'
           })))
-    },[])
+    }
+
+    useEffect(()=>{
+      getRoles()
+    },[user.token])
 
     useEffect(()=>{
       const socket = io(process.env.NEXT_PUBLIC_DB_HOST)

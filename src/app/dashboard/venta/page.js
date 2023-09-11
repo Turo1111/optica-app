@@ -7,6 +7,7 @@ import NotPermissions from '@/components/NotPermissions';
 import InfoVenta from '@/components/Ventas/InfoVenta';
 import ItemVenta from '@/components/Ventas/ItemVenta';
 import PagarDeuda from '@/components/Ventas/PagarDeuda';
+import PrintSale from '@/components/Ventas/PrintSale';
 import { useInputValue } from '@/hooks/useInputValue';
 import { useSearch } from '@/hooks/useSearch';
 import { useAppDispatch, useAppSelector } from '@/redux/hook';
@@ -27,14 +28,13 @@ export default function Venta() {
   const [openInfo, setOpenInfo] = useState(false)
   const [openSaldo, setOpenSaldo] = useState(false)
   const [tagSearch, setTagSearch] = useState([])
+  const [openPrint, setOpenPrint] = useState(false)
 
   const search = useInputValue('','')
 
   const tag = ["cliente", "sucursal", 'empleado']
 
   const listVentas = useSearch(search.value, tag, data, tagSearch)
-
-  console.log(listVentas)
 
   useEffect(()=>{
     if (user.usuario !== '') {  
@@ -49,7 +49,7 @@ export default function Venta() {
     }
   },[user])
 
-  useEffect(() => {
+  const getVenta = () => {
     setLoading(true)
     if (user.token) {
       apiClient.get('/venta' ,
@@ -59,17 +59,20 @@ export default function Venta() {
         }
       })
         .then(r => {
-          console.log("data venta",r.data.body)
           setData((prevData)=>{
             setLoading(false)
             return r.data.body
           })
         })
         .catch(e => dispatch(setAlert({
-          message: `${e.response.data.error}`,
+          message: `${e.response.data.error || 'Ocurrio un error'}`,
           type: 'error'
         })))
     }
+  }
+
+  useEffect(() => {
+    getVenta()
   }, [user.token])
 
   useEffect(()=>{
@@ -133,6 +136,10 @@ return (
                     setOpenSaldo(true)
                     setVentaSelected(item)
                   }}
+                  handleOpenPrint={()=>{
+                    setOpenPrint(true)
+                    setVentaSelected(item)
+                  }}
                 />
               ))
             }
@@ -160,7 +167,33 @@ return (
           height='auto'
           width='35%'
         >
-          <PagarDeuda venta={ventaSelected} handleClose={()=>setOpenSaldo(false)} token={user.token} />
+          <PagarDeuda venta={ventaSelected} handleClose={()=>setOpenSaldo(false)} token={user.token} idSucursal={user.idSucursal} />
+        </Modal>
+      }
+      {
+        openPrint && 
+        <Modal 
+          open={openPrint} 
+          eClose={()=>setOpenPrint(false)} 
+          title={'Imprimir venta'} 
+          height='auto'
+          width='35%'
+        >
+          <PrintSale id='print' onClose={()=>setOpenPrint(false)}
+            _id={ventaSelected._id}
+            cliente={ventaSelected.cliente}
+            fecha={(ventaSelected.fecha)}
+            obraSocial={ventaSelected.obraSocial}
+            orden={ventaSelected.orden}
+            tipoPago={ventaSelected.tipoPago}
+            dineroIngresado={ventaSelected.dineroIngresado}
+            carrito={[]}
+            descuento={ventaSelected.descuento}
+            subTotal={ventaSelected.subTotal}
+            total={ventaSelected.total}
+            useSenia={ventaSelected.useSenia}
+            token={user.token}
+        />
         </Modal>
       }
     </>

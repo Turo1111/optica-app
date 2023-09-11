@@ -10,35 +10,33 @@ export default function InfoCliente({_id, nombreCompleto, telefono, dni, cuentaC
     const [senia, setSenia] = useState([])
     const dispatch = useAppDispatch();
 
+    const getSenia = () => {
+      apiClient.get(`/senia/${_id}` ,
+      {
+        headers: {
+          Authorization: `Bearer ${token}` // Agregar el token en el encabezado como "Bearer {token}"
+        }
+      })
+      .then(r=>{
+        setSenia(r.data.body)
+      })
+      .catch(e=>{
+        dispatch(setAlert({
+        message: `${e.response.data.error || 'Ocurrio un error'}`,
+        type: 'error'
+      }))})
+    }
+
     useEffect(()=>{
-        apiClient.get(`/senia/${_id}` ,
-        {
-          headers: {
-            Authorization: `Bearer ${token}` // Agregar el token en el encabezado como "Bearer {token}"
-          }
-        })
-          .then(r=>{
-            setSenia(r.data.body)
-          })
-          .catch(e=>{
-            dispatch(setAlert({
-            message: `${e.response.data.error}`,
-            type: 'error'
-          }))})
-    },[])
+      getSenia()
+    },[token])
 
   return (
     <div style={{ padding: 5}}>
         <Title color={process.env.TEXT_COLOR}>Nombre Completo : {nombreCompleto  || "No definido"}</Title>
         <Tag color={process.env.TEXT_COLOR}> Telefono : {telefono || "No definido"}</Tag>
         <Tag color={process.env.TEXT_COLOR}> DNI : {dni || "No definido"}</Tag>
-        <Tag color={process.env.TEXT_COLOR}> Seña activa : </Tag>
-        <Tag color={process.env.TEXT_COLOR}> Cuenta corriente : $ {cuentaCorriente || "0"}</Tag>
-        {
-            !senia ? <Title color={process.env.TEXT_COLOR} style={{margin: '15px 0'}}>NO TIENE SENIA ACTIVA</Title> :
-            <Table data={senia} columns={columnsSenia} onClick={(item)=>console.log("")} 
-            />
-        }
+        <Tag color={process.env.TEXT_COLOR}> Cuenta corriente : $ {(parseFloat(cuentaCorriente)).toFixed(2) || "0"}</Tag>
     </div>
   )
 }

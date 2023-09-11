@@ -7,11 +7,13 @@ import apiClient from '@/utils/client'
 import { useAppDispatch } from '@/redux/hook'
 import { setAlert } from '@/redux/alertSlice'
 import Loading from '../Loading'
+import Confirm from '../Confirm'
 
 export default function NewEditSucursal({token, item , edit, handleClose}) {
 
     const dispatch = useAppDispatch();
     const [loading, setLoading] = useState(false)
+    const [openConfirm, setOpenConfirm] = useState(false)
 
     const formik = useFormik({
         initialValues: initialValues(item),
@@ -43,7 +45,7 @@ export default function NewEditSucursal({token, item , edit, handleClose}) {
             .catch(e=>{
               setLoading(false)
               dispatch(setAlert({
-              message: `${e.response.data.error}`,
+              message: `${e.response.data.error || 'Ocurrio un error'}`,
               type: 'error'
             }))})
           }else{
@@ -64,7 +66,7 @@ export default function NewEditSucursal({token, item , edit, handleClose}) {
             .catch(e=>{
               setLoading(false)
               dispatch(setAlert({
-              message: `${e.response.data.error}`,
+              message: `${e.response.data.error || 'Ocurrio un error'}`,
               type: 'error'
             }))})
           }
@@ -83,10 +85,19 @@ export default function NewEditSucursal({token, item , edit, handleClose}) {
             <Loading />:
             <>
               <Button text={'CANCELAR'} onClick={handleClose}/>
-              <Button text={'ACEPTAR'} onClick={formik.handleSubmit}/>
+              <Button text={'ACEPTAR'} onClick={()=>setOpenConfirm(true)}/>
             </>
           }
         </div>
+        {
+              openConfirm &&
+              <Confirm
+                confirmAction={formik.handleSubmit}
+                handleClose={()=>setOpenConfirm(false)}
+                loading={loading}
+                open={openConfirm}
+              />
+            }
     </div>
   )
 }

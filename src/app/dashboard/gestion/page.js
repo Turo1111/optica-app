@@ -4,7 +4,9 @@ import Empleados from '@/components/Empleados/Empleados'
 import Modal from '@/components/Modal'
 import NotPermissions from '@/components/NotPermissions'
 import ObraSocial from '@/components/ObraSociales/ObraSocial'
+import CierreCajaModal from '@/components/Registros/CierreCajaModal'
 import Registros from '@/components/Registros/Registros'
+import RetiroDineroModal from '@/components/Registros/RetiroDineroModal'
 import Roles from '@/components/Roles/Roles'
 import Sucursales from '@/components/Sucursales/Sucursales'
 import { useAppSelector } from '@/redux/hook'
@@ -23,6 +25,8 @@ export default function Gestion() {
     const user = useAppSelector(getUser);
     const [permission, setPermission] = useState(false)
     const [openReg, setOpenReg] = useState(false)
+    const [openCierreCaja, setOpenCierreCaja] = useState(false)
+    const [openRetiroDinero, setOpenRetiroDinero] = useState(false)
 
     useEffect(()=>{
         if (user.usuario !== '') {
@@ -74,23 +78,59 @@ export default function Gestion() {
                   <MdArrowForwardIos/>
               </IconWrapper>
           </ItemLista>
+          <ItemLista color={process.env.TEXT_COLOR} onClick={()=>setOpenCierreCaja(true)} >
+              CIERRES DE CAJA
+              <IconWrapper color={process.env.TEXT_COLOR}>
+                  <MdArrowForwardIos/>
+              </IconWrapper>
+          </ItemLista>
+          <ItemLista color={process.env.TEXT_COLOR} onClick={()=>setOpenRetiroDinero(true)} >
+              RETIROS DE DINERO
+              <IconWrapper color={process.env.TEXT_COLOR}>
+                  <MdArrowForwardIos/>
+              </IconWrapper>
+          </ItemLista>
         </Lista>
-        <Modal eClose={()=>setOpenSucursal(false)} open={openSucursal} title={'SUCURSALES'} height='90%' width='40%' >
-            <Sucursales/>
-        </Modal>
-        <Modal eClose={()=>setOpenObraSocial(false)} open={openObraSocial} title={'OBRA SOCIALES'} height='90%' width='40%' >
-            <ObraSocial/>
-        </Modal>
-        <Modal eClose={()=>setOpenRoles(false)} open={openRoles} title={'ROLES'} height='90%' width='40%' >
-            <Roles/>
-        </Modal>
-        <Modal eClose={()=>setOpenUsuarios(false)} open={openUsuarios} title={'EMPLEADOS'} height='90%' width='40%' >
-            <Empleados/>
-        </Modal>
+        {
+            openSucursal &&
+            <Modal eClose={()=>setOpenSucursal(false)} open={openSucursal} title={'SUCURSALES'} height='90%' width='40%' >
+                <Sucursales/>
+            </Modal>
+        }
+        {
+            openObraSocial && 
+            <Modal eClose={()=>setOpenObraSocial(false)} open={openObraSocial} title={'OBRA SOCIALES'} height='90%' width='40%' >
+                <ObraSocial/>
+            </Modal>
+        }
+        {
+            openRoles &&
+            <Modal eClose={()=>setOpenRoles(false)} open={openRoles} title={'ROLES'} height='90%' width='40%' >
+                <Roles/>
+            </Modal>
+        }
+        {
+            openUsuarios &&
+            <Modal eClose={()=>setOpenUsuarios(false)} open={openUsuarios} title={'EMPLEADOS'} height='90%' width='40%' >
+                <Empleados/>
+            </Modal>
+        }
         {
             openReg && 
             <Modal eClose={()=>setOpenReg(false)} open={openReg} title={'REGISTROS'} height='90%' width='40%' >
                 <Registros/>
+            </Modal>
+        }
+        {
+            openCierreCaja && 
+            <Modal eClose={()=>setOpenCierreCaja(false)} open={openCierreCaja} title={'CIERRES DE CAJA'} height='90%' width='60%' >
+                <CierreCajaModal/>
+            </Modal>
+        }
+        {
+            openRetiroDinero && 
+            <Modal eClose={()=>setOpenRetiroDinero(false)} open={openRetiroDinero} title={'RETIROS DE DINERO'} height='90%' width='60%' >
+                <RetiroDineroModal/>
             </Modal>
         }
     </>
@@ -102,6 +142,7 @@ const Lista = styled.ul `
     background-color: '#fff'; 
     border-radius: 15; 
     padding: 0 ;
+    overflow-y: scroll;
 `
 
 const ItemLista = styled.li `

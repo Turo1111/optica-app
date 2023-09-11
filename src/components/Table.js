@@ -1,3 +1,4 @@
+import { useDate } from '@/hooks/useDate'
 import React from 'react'
 import styled from 'styled-components'
 
@@ -25,8 +26,14 @@ export default function Table({data = [], columns, onClick, date=false, maxHeigh
                         style={{ flexBasis: column.width, textAlign: column.align }}
                         data-label={column.label}
                       >
-                        {console.log(item[column.field])}
-                        {column.date ? item[column.field].substring(0, 10):item[column.field]?.toString()}
+                        {column.date ? 
+                          useDate(item[column.field]).date
+                          :
+                          (column.price ? 
+                            `$ ${item[column.field]?.toString()}` 
+                            : 
+                            item[column.field]?.toString())
+                        }
                       </div>
                     ))}
                 </TableRow>
@@ -47,6 +54,9 @@ const TableHeader = styled.li `
     font-size: 14px;
     text-transform: uppercase;
     letter-spacing: 0.03em;
+    @media only screen and (max-width: 800px) {
+      font-size: 12px;
+    }
     @media only screen and (max-width: 445px) {
       font-size: 10px;
     }
@@ -64,6 +74,9 @@ const TableRow = styled.li `
     :hover{
         background-color: ${props=>props.onClick && '#F9F5F6'};
     };
+    @media only screen and (max-width: 800px) {
+      font-size: 12px;
+    }
     @media only screen and (max-width: 445px) {
       font-size: 10px;
     }
@@ -71,5 +84,6 @@ const TableRow = styled.li `
 const List = styled.ul `
   max-height: ${props => !props.maxHeight ? 'none' : '300px' };
   padding: 0;
-  overflow-y: scroll;
+  overflow: scroll;
+  min-width: 550px;
 `

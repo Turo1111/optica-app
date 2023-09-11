@@ -7,20 +7,22 @@ import { useAppDispatch } from '@/redux/hook'
 import { setAlert } from '@/redux/alertSlice'
 import apiClient from '@/utils/client'
 import Loading from '../Loading'
+import Confirm from '../Confirm'
 
 export default function NewTransfer({item, token, handleClose}) {
 
     const dispatch = useAppDispatch();
     const [listStock, setListStock] = useState([])
     const [loading, setLoading] = useState(false)
+    const [openConfirm, setOpenConfirm] = useState(false)
 
     const formik = useFormik({
         initialValues: {
             idSalida: '',
             idDestino: '',
             cantidad: 0,
-            precioEfectivo: 0,
-            precioLista: 0
+            precioEfectivo: item.precioGeneral,
+            precioLista: parseFloat(item.precioGeneral)+(parseFloat(item.precioGeneral)*0.2)
         },
         validateOnChange: false,
         onSubmit: (formValue) => {
@@ -104,14 +106,14 @@ export default function NewTransfer({item, token, handleClose}) {
                     .catch(e=>{
                       setLoading(false)
                       dispatch(setAlert({
-                      message: `${e.response.data.error}`,
+                      message: `${e.response.data.error || 'Ocurrio un error'}`,
                       type: 'error'
                     }))})
                 })
                 .catch(e=>{
                   setLoading(false)
                   dispatch(setAlert({
-                  message: `${e.response.data.error}`,
+                  message: `${e.response.data.error || 'Ocurrio un error'}`,
                   type: 'error'
                 }))})
                 return null
@@ -142,7 +144,7 @@ export default function NewTransfer({item, token, handleClose}) {
                 .catch(e=>{
                   setLoading(false)
                   dispatch(setAlert({
-                  message: `${e.response.data.error}`,
+                  message: `${e.response.data.error || 'Ocurrio un error'}`,
                   type: 'error'
                 }))})
                 apiClient.patch(`/stock/${stockSalida._id}`, {
@@ -166,7 +168,7 @@ export default function NewTransfer({item, token, handleClose}) {
                 .catch(e=>{
                   setLoading(false)
                   dispatch(setAlert({
-                  message: `${e.response.data.error}`,
+                  message: `${e.response.data.error || 'Ocurrio un error'}`,
                   type: 'error'
                 }))})
             }
@@ -185,17 +187,21 @@ export default function NewTransfer({item, token, handleClose}) {
                 setListStock(r.data.body)
               })
               .catch(e=>dispatch(setAlert({
-                message: `${e.response.data.error}`,
+                message: `${e.response.data.error || 'Ocurrio un error'}`,
                 type: 'error'
               })))
         }
     },[item])
 
+    useEffect(()=>{
+      formik.setFieldValue('precioLista', (formik.values.precioEfectivo+(formik.values.precioEfectivo*0.2)).toFixed(2))
+    },[formik.values.precioEfectivo])
+
   return (
     <div>
         <InputSelect label={"Sucursal de salida"} type='text' name='sucursal'  onChange={(id, item)=>formik.setFieldValue('idSalida', id)} />
         <InputSelect label={"Sucursal de destino"} type='text' name='sucursal'  onChange={(id, item)=>formik.setFieldValue('idDestino', id)} />
-        {formik.values.idSalida !== '' && <label style={{marginBottom: 25, color: `${process.env.TEXT_COLOR}`}} >Stock disponible : {listStock.find(stock => stock.idSucursal === formik.values.idSalida).cantidad} unidades</label>}
+        {formik.values?.idSalida !== '' && <label style={{marginBottom: 25, color: `${process.env.TEXT_COLOR}`}} >Stock disponible : {listStock.find(stock => stock.idSucursal === formik.values.idSalida).cantidad || 0} unidades</label>}
         <Input label={"Cantidad"} type='number' name='cantidad' value={formik.values.cantidad} onChange={formik.handleChange} required={true} />
         <Input label={"Precio efectivo"} type='number' name='precioEfectivo' value={formik.values.precioEfectivo} onChange={formik.handleChange} prefix={'$'} />
         <Input label={"Precio lista"} type='number' name='precioLista' value={formik.values.precioLista} onChange={formik.handleChange}  prefix={'$'} />
@@ -205,10 +211,19 @@ export default function NewTransfer({item, token, handleClose}) {
             <Loading />:
             <>
               <Button text={'CANCELAR'} onClick={handleClose}/>
-              <Button text={'ACEPTAR'} onClick={formik.handleSubmit}/>
+              <Button text={'ACEPTAR'} onClick={()=>setOpenConfirm(true)}/>
             </>
           }
         </div>
+        {
+              openConfirm &&
+              <Confirm
+                confirmAction={formik.handleSubmit}
+                handleClose={()=>setOpenConfirm(false)}
+                loading={loading}
+                open={openConfirm}
+              />
+            }
     </div>
   )
 }

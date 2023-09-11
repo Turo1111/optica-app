@@ -28,7 +28,7 @@ export default function ObraSocial() {
 
     const listObras = useSearch(search.value, tag, data)
 
-    useEffect(()=>{
+    function getOBS() {
       setLoading(true)
       apiClient.get('/obrasocial' ,
       {
@@ -41,10 +41,14 @@ export default function ObraSocial() {
         setLoading(false)
       })
       .catch(e=>dispatch(setAlert({
-        message: `${e.response.data.error}`,
+        message: `${e.response.data.error || 'Ocurrio un error'}`,
         type: 'error'
       })))
-    },[])
+    }
+
+    useEffect(()=>{
+      getOBS()
+    },[user.token])
 
     useEffect(()=>{
       

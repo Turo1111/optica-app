@@ -27,7 +27,7 @@ export default function Empleados() {
 
     const listEmpleados = useSearch(search.value, tag, data)
 
-    useEffect(()=>{
+    const getEmpleado = () => {
       setLoading(true)
       apiClient.get(`/empleado` ,
       {
@@ -40,16 +40,18 @@ export default function Empleados() {
             setLoading(false)
           })
           .catch(e=>dispatch(setAlert({
-            message: `${e.response.data.error}`,
+            message: `${e.response.data.error || 'Ocurrio un error'}`,
             type: 'error'
           })))
-    },[])
+    }
 
     useEffect(()=>{
-      console.log(data)
+      getEmpleado()
+    },[user.token])
+
+    useEffect(()=>{
       const socket = io(process.env.NEXT_PUBLIC_DB_HOST)
       socket.on('empleado', (empleado) => {
-        console.log("algo en empleado",empleado)
         setData((prevData)=>{
           const exist = prevData.find(elem => elem._id === empleado.res._id )
           if (exist) {

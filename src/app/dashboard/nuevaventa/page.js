@@ -1,6 +1,7 @@
 'use client'
 import Button from '@/components/Button'
 import NewEditCliente from '@/components/Clientes/NewEditCliente'
+import Confirm from '@/components/Confirm'
 import EmptyList from '@/components/EmptyList'
 import Input from '@/components/Input'
 import InputSearch from '@/components/InputSearch'
@@ -12,6 +13,7 @@ import AddCard from '@/components/NuevaVenta/AddCard'
 import AddProduct from '@/components/NuevaVenta/AddProduct'
 import SelectClient from '@/components/NuevaVenta/ContainerClient'
 import DataSale from '@/components/NuevaVenta/DataSale'
+import FinishSale from '@/components/NuevaVenta/FinishSale'
 import ItemCartProduct from '@/components/NuevaVenta/ItemCartProduct'
 import NewOrder from '@/components/NuevaVenta/NewOrder'
 import SelectProduct from '@/components/NuevaVenta/SelectProduct'
@@ -58,6 +60,9 @@ export default function NuevaVenta() {
     const [cuotas, setCuotas] = useState(calculateCuotas(total, dineroIngresado))
     const [loading, setLoading] = useState(false)
     const [loadingData, setLoadingData] = useState(false)
+    const [venta, setVenta] = useState(undefined)
+    const [openFinishSale, setOpenFinishSale] = useState(false)
+    const [openConfirm, setOpenConfirm] = useState(false)
 
     const tag = ["descripcion", "codigo", "categoria", "color", "alto", "ancho", "marca", "numeracion"]
 
@@ -68,6 +73,13 @@ export default function NuevaVenta() {
     const listCliente = useSearch(searchClient.value, tag2, clientes)
 
     const addCart = (item) => {
+      if (obraSocialSelected || pago.descripcion !== 'EFECTIVO') {
+        dispatch(setAlert({
+          message: 'Para agregar productos quite la obra social y cambie el tipo de pago a EFECTIVO',
+          type: 'warning'
+        }))
+        return
+      }
       if(item) {
         const exist = cart.some(elem => elem._id === item._id )
         if (!exist) {
@@ -78,9 +90,7 @@ export default function NuevaVenta() {
               type: 'success'
             }))
             setOpenAddProduct(false)
-            if (obraSocialSelected) {
-              setObraSocialSelected(obraSocialSelected)
-            }
+            
             return [...prevData, item]
           })
         }
@@ -122,6 +132,7 @@ export default function NuevaVenta() {
       setDataOrder({idObraSocial: '', fecha: '', numero: ''})
       setDineroIngresado(0)
       setDescuento(0)
+      setObraSocialSelected(undefined)
       setLoading(false)
     }
 
@@ -165,14 +176,15 @@ export default function NuevaVenta() {
         }))
         return;
       }
-      if (parseFloat(dineroIngresado) > parseFloat(total)) {
+      if (parseFloat(dineroIngresado) > (parseFloat(total)+parseFloat(dineroIngresado))) {
         dispatch(setAlert({
           message: 'No se puede ingresar un valor mayor al total',
           type: 'error'
         }))
         return;
       }
-      if ( clientSelected._id === '64c95db35ae46355b5f7df64' && parseFloat(dineroIngresado).toFixed(2) < parseFloat(total).toFixed(2)) {
+      if ( clientSelected._id === '64c95db35ae46355b5f7df64' && parseFloat(dineroIngresado).toFixed(2) < parseFloat(total).toFixed(2) && pago.descripcion === 'EFECTIVO' ) {
+        
         dispatch(setAlert({
           message: 'Consumidor final tiene que ingresar el total de la venta',
           type: 'error'
@@ -182,6 +194,13 @@ export default function NuevaVenta() {
       if ( user.idSucursal === '' || user.idSucursal === undefined) {
         dispatch(setAlert({
           message: 'Usuario sin sucursal asociada',
+          type: 'error'
+        }))
+        return;
+      }
+      if ( useSenia && dineroIngresado <= 0) {
+        dispatch(setAlert({
+          message: 'Ingrese una senia mayor a 0',
           type: 'error'
         }))
         return;
@@ -199,26 +218,21 @@ export default function NuevaVenta() {
           idEmpleado: user.idEmpleado,
           idSucursal: user.idSucursal,
           idCliente: clientSelected._id,
+          cliente: clientSelected.nombreCompleto,
+          carrito: cart,
           idOrden: '',
           descuento: descuento,
           subTotal: subTotal,
-          dineroIngresado :  pago.descripcion === 'TARJETA' ?  total : (dineroIngresado <= 0 ? total : dineroIngresado )
+          useSenia: useSenia,
+          orden: dataOrder.numero,
+          obraSocial: obraSocialSelected?.descripcion,
+          dineroIngresado :  pago.descripcion === 'TARJETA' ?  total : (dineroIngresado <= 0 ? total : dineroIngresado ),
+          estado: useSenia ? 'EN TALLER' 
+                          : ( pago.descripcion === 'TARJETA' || pago.descripcion === 'EFECTIVO Y TARJETA' ) ? 'ENTREGADO Y PAGADO' 
+                            : ( pago.descripcion === 'CUENTA CORRIENTE' || pago.descripcion === 'EFECTIVO' ) && parseFloat(dineroIngresado) < (parseFloat(total)+parseFloat(dineroIngresado)) ? 'ENTREGADO'
+                              : 'ENTREGADO Y PAGADO'
         }
         setLoading(true)
-        if (useSenia) {
-          apiClient.patch(`/senia/${clientSelected.senia._id}`, {estado: false},{
-            headers: {
-              Authorization: `Bearer ${user.token}` // Agregar el token en el encabezado como "Bearer {token}"
-            }
-          })
-          .then(r=>console.log(r))
-          .catch(e=>{
-            setLoading(false)
-            dispatch(setAlert({
-            message: `${e.response.data.error}`,
-            type: 'error'
-          }))})
-        }
         if (dataOrder.idObraSocial !== '') {
           apiClient.post('/orden', dataOrder,{
             headers: {
@@ -234,10 +248,11 @@ export default function NuevaVenta() {
             })
               .then(r=>{
                 cart.map(itemCart => {
+                  
                   apiClient.post('lineaventa', {
                     idProducto: itemCart._id,
                     cantidad: itemCart.cantidad,
-                    total: pago.descripcion === 'TARJETA' ? itemCart.totalTarjeta : itemCart.totalEfectivo,
+                    total: itemCart.total,
                     idVenta: r.data.body._id
                   },{
                     headers: {
@@ -245,6 +260,7 @@ export default function NuevaVenta() {
                     }
                   })
                   .then(r=>{
+                    if (itemCart._id !== '64f0ca05ae80e2477accbc24' || itemCart._id !== '64f0c9e9ae80e2477accbc14') {
                       apiClient.patch(`/stock/${itemCart.idStock}`, {
                         idSucursal: user.idSucursal, 
                         cantidad: parseFloat(itemCart.stock)-parseFloat(itemCart.cantidad)
@@ -256,6 +272,8 @@ export default function NuevaVenta() {
                       })
                       .then(r=>{
                         reset()
+                        setOpenFinishSale(true)
+                        setVenta(venta)
                         dispatch(setAlert({
                           message: 'Venta creada correctamente',
                           type: 'success'
@@ -264,15 +282,16 @@ export default function NuevaVenta() {
                       .catch(e=>{
                         setLoading(false)
                         dispatch(setAlert({
-                        message: `${e.response.data.error}`,
+                        message: `${e.response.data.error || 'Ocurrio un error'}`,
                         type: 'error'
                       }))})
+                    }
                     
                   })
                   .catch(e=>{
                     setLoading(false)
                     dispatch(setAlert({
-                    message: `${e.response.data.error}`,
+                    message: `${e.response.data.error || 'Ocurrio un error'}`,
                     type: 'error'
                   }))}) 
                 })
@@ -280,14 +299,14 @@ export default function NuevaVenta() {
               .catch(e=>{
                 setLoading(false)
                 dispatch(setAlert({
-                message: `${e.response.data.error}`,
+                message: `${e.response.data.error || 'Ocurrio un error'}`,
                 type: 'error'
               }))}) 
           })
           .catch(e=>{
             setLoading(false)
             dispatch(setAlert({
-            message: `${e.response.data.error}`,
+            message: `${e.response.data.error || 'Ocurrio un error'}`,
             type: 'error'
           }))})
         }else{
@@ -301,7 +320,7 @@ export default function NuevaVenta() {
                 apiClient.post('lineaventa', {
                   idProducto: itemCart._id,
                   cantidad: itemCart.cantidad,
-                  total: pago.descripcion === 'TARJETA' ? itemCart.totalTarjeta : itemCart.totalEfectivo,
+                  total: itemCart.total,
                   idVenta: r.data.body._id
                 },{
                   headers: {
@@ -309,33 +328,37 @@ export default function NuevaVenta() {
                   }
                 })
                 .then(r=>{
-                  apiClient.patch(`/stock/${itemCart.idStock}`, {
-                    idSucursal: user.idSucursal, 
-                    cantidad: parseFloat(itemCart.stock)-parseFloat(itemCart.cantidad)
-                  },
-                  {
-                    headers: {
-                      Authorization: `Bearer ${user.token}` // Agregar el token en el encabezado como "Bearer {token}"
-                    }
-                  })
-                  .then(r=>{
-                    reset()
-                    dispatch(setAlert({
-                      message: 'Venta creada correctamente',
-                      type: 'success'
-                    }))
-                  })
-                  .catch(e=>{
-                    setLoading(false)
-                    dispatch(setAlert({
-                    message: `${e.response.data.error}`,
-                    type: 'error'
-                  }))})
+                  if (itemCart._id !== '64f0ca05ae80e2477accbc24' || itemCart._id !== '64f0c9e9ae80e2477accbc14') {
+                    apiClient.patch(`/stock/${itemCart.idStock}`, {
+                      idSucursal: user.idSucursal, 
+                      cantidad: parseFloat(itemCart.stock)-parseFloat(itemCart.cantidad)
+                    },
+                    {
+                      headers: {
+                        Authorization: `Bearer ${user.token}` // Agregar el token en el encabezado como "Bearer {token}"
+                      }
+                    })
+                    .then(r=>{
+                      reset()
+                      setOpenFinishSale(true)
+                      setVenta(venta)
+                      dispatch(setAlert({
+                        message: 'Venta creada correctamente',
+                        type: 'success'
+                      }))
+                    })
+                    .catch(e=>{
+                      setLoading(false)
+                      dispatch(setAlert({
+                      message: `${e.response.data.error || 'Ocurrio un error'}`,
+                      type: 'error'
+                    }))})
+                  }
                 })
                 .catch(e=>{
                   setLoading(false)
                   dispatch(setAlert({
-                  message: `${e.response.data.error}`,
+                  message: `${e.response.data.error || 'Ocurrio un error'}`,
                   type: 'error'
                 }))}) 
               })
@@ -343,7 +366,7 @@ export default function NuevaVenta() {
             .catch(e=>{
               setLoading(false)
               dispatch(setAlert({
-              message: `${e.response.data.error}`,
+              message: `${e.response.data.error || 'Ocurrio un error'}`,
               type: 'error'
             }))}) 
         } 
@@ -357,7 +380,7 @@ export default function NuevaVenta() {
       
     }
 
-    useEffect(() => {
+    const getClienteProducto = () => {
       setLoadingData(true)
       apiClient.get(`/producto`,{
         headers: {
@@ -367,7 +390,10 @@ export default function NuevaVenta() {
       .then((r)=>{
         setProductos(r.data.body)
       })
-      .catch((e)=>console.log('error',e))
+      .catch((e)=>dispatch(setAlert({
+        message: 'Error en el servidor, revise el estado',
+        type: 'error'
+      })))
       apiClient.get(`/cliente`,{
         headers: {
           Authorization: `Bearer ${user.token}` // Agregar el token en el encabezado como "Bearer {token}"
@@ -377,113 +403,15 @@ export default function NuevaVenta() {
         setLoadingData(false)
         setClientes(r.data.body)
       })
-      .catch((e)=>console.log('error',e))
+      .catch((e)=>dispatch(setAlert({
+        message: 'Error en el servidor, revise el estado',
+        type: 'error'
+      })))
+    }
+
+    useEffect(() => {
+      getClienteProducto()
     }, [user.token])
-
-    /* useEffect(()=>{
-      if (cart.length === 0) {
-        setSubTotal(0)
-        setTotal(0)
-        return;
-      }
-
-      const initialValue = 0
-
-      const sumEfectivo = cart?.reduce( (accumulator, currentValue) => {
-          return (parseFloat(accumulator) + parseFloat(currentValue.totalEfectivo)).toFixed(2)
-      }, initialValue)
-      const sumTarjeta = cart?.reduce( (accumulator, currentValue) => {
-        console.log(currentValue)
-        return (parseFloat(accumulator) + parseFloat(currentValue.totalTarjeta)).toFixed(2)
-      }, initialValue)
-
-      if (!obraSocialSelected) {
-        if (pago.descripcion === 'TARJETA') {
-          setSubTotal(sumTarjeta)
-          setTotal(sumTarjeta)
-          console.log('sin obra social y pago con tarjeta', sumTarjeta)
-          return;
-        }else{
-          setSubTotal(sumEfectivo)
-          setTotal(sumEfectivo)
-          console.log('sin obra social y pago con efectivo', sumEfectivo)
-          return;
-        }
-      }
-      if (obraSocialSelected.productosDescuento.length === 0) {
-        if (obraSocialSelected.tipoDescuento) {
-          if (pago.descripcion === 'TARJETA') {
-            let descuentoTotal = 0
-            descuentoTotal = (parseFloat(obraSocialSelected.cantidadDescuento)).toFixed(2)
-            setDescuento(descuentoTotal)
-            setSubTotal(sumTarjeta)
-            setTotal(sumTarjeta-descuentoTotal)
-            console.log('con obra social , pago con tarjeta y descuento efectivo a cualquier producto')
-            return;
-          }else{
-            let descuentoTotal = 0
-            descuentoTotal = (parseFloat(obraSocialSelected.cantidadDescuento)).toFixed(2)
-            setDescuento(descuentoTotal)
-            setSubTotal(sumEfectivo)
-            setTotal(sumEfectivo-descuentoTotal)
-            console.log('con obra social, pago con efectivo y descuento efectivo a cualquier producto')
-            return;
-          }
-        }else{
-          if (pago.descripcion === 'TARJETA') {
-            let descuentoTotal = 0
-            descuentoTotal = (parseFloat(sumTarjeta*(obraSocialSelected.cantidadDescuento)/100)).toFixed(2)
-            setDescuento(descuentoTotal)
-            setSubTotal(sumTarjeta)
-            setTotal(sumTarjeta-descuentoTotal)
-            console.log('con obra social , pago con tarjeta y descuento porcentaje a cualquier producto')
-            return;
-          }else{
-            let descuentoTotal = 0
-            descuentoTotal = (parseFloat(sumEfectivo*(obraSocialSelected.cantidadDescuento)/100)).toFixed(2)
-            setDescuento(descuentoTotal)
-            setSubTotal(sumEfectivo)
-            setTotal(sumEfectivo-descuentoTotal)
-            console.log('con obra social, pago con efectivo y descuento porcentaje a cualquier producto')
-            return;
-          }
-        }
-      }else{
-        let descuentoTotal = 0
-        cart.forEach(itemCart=>{
-          if (obraSocialSelected.productosDescuento.includes(itemCart._id)) {
-            if (obraSocialSelected.tipoDescuento) {
-              if (pago.descripcion === 'TARJETA') {
-                descuentoTotal = (parseFloat(descuentoTotal)+(parseFloat(obraSocialSelected.cantidadDescuento))).toFixed(2)
-                console.log('con obra social , pago con tarjeta y descuento efectivo a un producto')
-                return ;
-              }else{
-                descuentoTotal = (parseFloat(descuentoTotal)+(parseFloat(obraSocialSelected.cantidadDescuento))).toFixed(2)
-                console.log('con obra social, pago con efectivo y descuento efectivo a un producto')
-              }
-            }else{
-              if (pago.descripcion === 'TARJETA') {
-                descuentoTotal = (parseFloat(descuentoTotal)+(parseFloat(parseFloat(itemCart.totalTarjeta)*(obraSocialSelected.cantidadDescuento)/100))).toFixed(2)
-                console.log('con obra social , pago con tarjeta y descuento porcentaje a un producto')
-              }else{
-                descuentoTotal = (parseFloat(descuentoTotal)+(parseFloat(parseFloat(itemCart.totalEfectivo)*(obraSocialSelected.cantidadDescuento)/100))).toFixed(2)
-                console.log('con obra social, pago con efectivo y descuento porcentaje a un producto')
-              }
-            }
-          }
-        })
-        if (pago.descripcion === 'TARJETA') {
-          setDescuento(descuentoTotal)
-          setSubTotal(sumTarjeta)
-          setTotal(sumTarjeta-descuentoTotal)
-        }else{
-          setDescuento(descuentoTotal)
-          setSubTotal(sumEfectivo)
-          setTotal(sumEfectivo-descuentoTotal)
-        }
-      }
-      
-    },[cart, pago, obraSocialSelected]) */
     
     useEffect(()=>{
       if (consumidorFinal) {
@@ -495,7 +423,6 @@ export default function NuevaVenta() {
     },[consumidorFinal])
 
     useEffect(()=>{
-      console.log('cambio', openNewOrder, dataOrder);
       if (!openNewOrder && dataOrder.fecha === '' && dataOrder.idObraSocial !== '') {
         dispatch(setAlert({
           message: 'Necesita completar los datos',
@@ -531,27 +458,23 @@ export default function NuevaVenta() {
     },[useSenia])
 
     useEffect(()=>{
-      console.log("carrito",cart, 'datacard', dataCard);
       const initialValue = 0
       const sumTotal = cart?.reduce( (accumulator, currentValue) => {
           return (parseFloat(accumulator) + parseFloat(currentValue.total)).toFixed(2)
       }, initialValue)
       if(pago.descripcion === 'EFECTIVO' || pago.descripcion === 'CUENTA CORRIENTE' ){
-        console.log('EFECTIVO o CC');
         setSubTotal(parseFloat(sumTotal))
-        setTotal(parseFloat(sumTotal)-descuento)
+        setTotal((parseFloat(sumTotal)-descuento))
         return;
       }
       if(pago.descripcion === 'TARJETA'){
-        console.log('TARJETA', sumTotal);
         setSubTotal(parseFloat(sumTotal))
-        setTotal( (parseFloat(sumTotal)+(parseFloat(sumTotal)*(20/100)))-descuento)
+        setTotal( ((parseFloat(sumTotal)+(parseFloat(sumTotal)*(20/100)))-descuento))
         return;
       }
       if(pago.descripcion === 'EFECTIVO Y TARJETA'){
-        console.log('eyt', sumTotal, ((sumTotal-dineroIngresado)+((sumTotal-dineroIngresado)*(20/100))));
         setSubTotal((parseFloat(sumTotal)).toFixed(2))
-        setTotal( ((parseFloat(dineroIngresado) + ((sumTotal-dineroIngresado)+((sumTotal-dineroIngresado)*(20/100))))-descuento).toFixed(2))
+        setTotal( (((parseFloat(dineroIngresado) + ((sumTotal-dineroIngresado)+((sumTotal-dineroIngresado)*(20/100))))-descuento)).toFixed(2))
         return;
       }
     },[dataCard, dineroIngresado, cart, descuento, pago])
@@ -569,7 +492,7 @@ export default function NuevaVenta() {
       }
       if (obraSocialSelected.productosDescuento.length === 0) {
         let descuento = obraSocialSelected.tipoDescuento ? parseFloat(obraSocialSelected.cantidadDescuento) : total*parseFloat(obraSocialSelected.cantidadDescuento/100)
-        setDescuento(descuento)
+        setDescuento(parseFloat(descuento).toFixed(2))
         return;
       }
       if (obraSocialSelected.productosDescuento.length !== 0) {
@@ -582,7 +505,7 @@ export default function NuevaVenta() {
               descuentoTotal += descuento
             }
           })
-          setDescuento(descuentoTotal)
+          setDescuento(parseFloat(descuentoTotal).toFixed(2))
       }
       return
     },[obraSocialSelected])
@@ -611,11 +534,34 @@ export default function NuevaVenta() {
           )}
           cart={cart}
           pago={pago}
-          deleteItemCart={(id)=>setCart((prevData)=>prevData.filter(elem=>elem._id!==id))}
+          deleteItemCart={(id)=>{
+            if (obraSocialSelected || pago.descripcion !== 'EFECTIVO') {
+              dispatch(setAlert({
+                message: 'Para agregar o quitar productos quite la obra social y cambie el tipo de pago a EFECTIVO',
+                type: 'warning'
+              }))
+              return
+            }
+            setCart((prevData)=>prevData.filter(elem=>elem._id!==id))
+          }}
           changeCart={(item)=>{
+            if (obraSocialSelected || pago.descripcion !== 'EFECTIVO') {
+              dispatch(setAlert({
+                message: 'Para agregar o quitar productos quite la obra social y cambie el tipo de pago a EFECTIVO',
+                type: 'warning'
+              }))
+              return
+            }
             setCart((prevData)=>prevData.map(elem=>elem._id===item._id ? item : elem))
           }}
           onSelectProduct={(item)=>{
+            if (item.idCategoria === '64c94598d2bab952ad754b99') {
+              dispatch(setAlert({
+                message: 'Para elegir un lente debe seleccionar un armazon primero',
+                type: 'warning'
+              }))
+              return
+            }
             setProductSelected(item)
             setOpenAddProduct(true)
           }}
@@ -633,16 +579,54 @@ export default function NuevaVenta() {
           consumidorFinal={consumidorFinal}
           useSenia={useSenia}
           onChangeUseSenia={(value)=>{
-            if (clientSelected?.senia) {
-              setDineroIngresado(clientSelected?.senia?.saldo)
-              setUseSenia(!useSenia)
+            if (pago.descripcion !== 'EFECTIVO') {
+              dispatch(setAlert({
+                message: 'No disponible cuando el tipo de pago es distinto a Efectivo',
+                type: 'warning'
+              }))
+              return
             }
+            setUseSenia(!useSenia)
+          }}
+          dineroIngresado={dineroIngresado}
+          onChangeDineroIngresado={(e)=>{
+            console.log(e.target.value);
+            if (parseFloat(e.target.value) <= 0 || e.target.value === '') {
+              dispatch(setAlert({
+                message: 'Valor incorrecto',
+                type: 'warning'
+              }))
+              return
+            }
+            if (parseFloat(e.target.value) > parseFloat(total)) {
+              dispatch(setAlert({
+                message: 'No se puede ingresar un numero mayor al total',
+                type: 'warning'
+              }))
+              return
+            }
+            setDineroIngresado(e.target.value)
           }}
         />
       </ContainerSelected>
         <DataSale
           pago={pago}
+          useSenia={useSenia}
           onChangeTipoPago={(_id, item)=>{
+            if (useSenia) {
+              dispatch(setAlert({
+                message: 'No disponible cuando se realiza una venta señada',
+                type: 'warning'
+              }))
+              return
+            }
+            if (obraSocialSelected) {
+              dispatch(setAlert({
+                message: 'Si desea cambiar el metodo de pago, quite la obra social seleccionada',
+                type: 'warning'
+              }))
+              return
+            }
             if (item.descripcion === 'TARJETA' || item.descripcion === 'EFECTIVO Y TARJETA' | item.descripcion === 'CUENTA CORRIENTE') {
               setDineroIngresado(0)
               setOpenAddCard(true)
@@ -672,9 +656,18 @@ export default function NuevaVenta() {
           observacion={observacion}
           onChangeObservacion={(e)=>setObservacion(e.target.value)}
           descuento={descuento} subTotal={subTotal} total={total}
-          finishSale={finishSale}
+          finishSale={()=>setOpenConfirm(true)}
           dineroIngresado={dineroIngresado}
-          onChangeDineroIngresado={(e)=>setDineroIngresado(e.target.value)}
+          onChangeDineroIngresado={(e)=>{
+            if (parseFloat(e.target.value) > (parseFloat(total))) {
+              dispatch(setAlert({
+                message: 'No se puede ingresar un numero mayor al total',
+                type: 'warning'
+              }))
+              return
+            }
+            setDineroIngresado(e.target.value)
+          }}
         />
         {
           openAddProduct &&
@@ -720,9 +713,9 @@ export default function NuevaVenta() {
               pago={pago}
               dineroIngresado={dineroIngresado}
               onChangeDineroIngresado={(e)=>{
-                if (parseFloat(e.target.value) >= parseFloat(total)) {
+                if (parseFloat(e.target.value) > parseFloat(total)) {
                   dispatch(setAlert({
-                    message: 'Necesita completar los datos',
+                    message: 'No se puede ingresar un numero mayor al total',
                     type: 'warning'
                   }))
                   return
@@ -750,12 +743,32 @@ export default function NuevaVenta() {
             })} />
           </Modal>
         }
+        {
+          openFinishSale &&
+          <Modal 
+            open={openFinishSale} 
+            eClose={()=>setOpenFinishSale(false)} 
+            title={'Resumen de la venta'} 
+            height='auto'
+            width='35%'
+          >
+            <FinishSale venta={venta} onClose={()=>setOpenFinishSale(false)}/>
+          </Modal>
+        }
+        {
+          openConfirm &&
+          <Confirm
+            confirmAction={finishSale}
+            handleClose={()=>setOpenConfirm(false)}
+            loading={loading}
+            open={openConfirm}
+          />
+        }
     </Container>
   )
 }
 
 function calculateCuotas (total, dineroIngresado) {
-  console.log("cuotas", (total), (total-dineroIngresado)*(20/100));
   return [
       {
           cantidad: 1,

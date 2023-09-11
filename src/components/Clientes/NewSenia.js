@@ -51,7 +51,7 @@ export default function NewSenia({id, token, handleClose}) {
             .catch(e=>{
               setLoading(false)
                 dispatch(setAlert({
-                message: `${e.response.data.error}`,
+                message: `${e.response.data.error || 'Ocurrio un error'}`,
                 type: 'error'
                 }))
             }) 

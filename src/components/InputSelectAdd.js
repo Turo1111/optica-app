@@ -162,7 +162,7 @@ const InputSelectAdd = ({type = 'text', label, value, onChange, name, edit = fal
     .catch(e=>{
       setLoading2(false)
       dispatch(setAlert({
-      message: `${e.response.data.error}`,
+      message: `${e.response.data.error || 'Ocurrio un error'}`,
       type: 'error'
     }))})
   }
@@ -186,7 +186,7 @@ const InputSelectAdd = ({type = 'text', label, value, onChange, name, edit = fal
     .catch(e=>{
       setLoading2(false)
       dispatch(setAlert({
-        message: `${e.response.data.error}`,
+        message: `${e.response.data.error || 'Ocurrio un error'}`,
         type: 'error'
       }))
     })
@@ -205,7 +205,7 @@ const InputSelectAdd = ({type = 'text', label, value, onChange, name, edit = fal
       setData(r.data.body)
     })
     .catch(e=>dispatch(setAlert({
-      message: `${e.response.data.error}`,
+      message: `${e.response.data.error || 'Ocurrio un error'}`,
       type: 'error'
     })))
   },[name])
@@ -230,12 +230,10 @@ const InputSelectAdd = ({type = 'text', label, value, onChange, name, edit = fal
 
   useEffect(()=>{
     if (value === '' || value === undefined) {
-      console.log('value vacio', value);
       setInputValue('')
       setIsActive(false);
       setIsFocused(false);
     }else {
-      console.log('value no vacio', value);
       setIsActive(true);
       setIsFocused(true);
     }

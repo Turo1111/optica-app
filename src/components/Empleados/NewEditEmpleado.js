@@ -8,17 +8,18 @@ import apiClient from '@/utils/client'
 import { useAppDispatch } from '@/redux/hook'
 import { setAlert } from '@/redux/alertSlice'
 import Loading from '../Loading'
+import Confirm from '../Confirm'
 
 export default function NewEditEmpleado({token, item , edit, handleClose}) {
 
     const dispatch = useAppDispatch();
     const [loading, setLoading] = useState(false)
+    const [openConfirm, setOpenConfirm] = useState(false)
 
     const formik = useFormik({
         initialValues: initialValues(item),
         validateOnChange: false,
         onSubmit: (formValue) => {
-          console.log("aca",formValue);
           if (formValue.nombreCompleto === '') {
             dispatch(setAlert({
               message: 'Debe ingresar un nombre al empleado',
@@ -73,7 +74,7 @@ export default function NewEditEmpleado({token, item , edit, handleClose}) {
             .catch(e=>{
               setLoading(false)
               dispatch(setAlert({
-              message: `${e.response.data.error}`,
+              message: `${e.response.data.error || 'Ocurrio un error'}`,
               type: 'error'
             }))
             })
@@ -95,7 +96,7 @@ export default function NewEditEmpleado({token, item , edit, handleClose}) {
             .catch(e=>{
               setLoading(false)
               dispatch(setAlert({
-              message: `${e.response.data.error}`,
+              message: `${e.response.data.error || 'Ocurrio un error'}`,
               type: 'error'
             }))})
           }
@@ -114,8 +115,9 @@ export default function NewEditEmpleado({token, item , edit, handleClose}) {
             formik.setFieldValue('sucursal', item.descripcion)
           }} edit={item && true}  />
         <InputSelect label={"Rol"} type='text' name='roles' value={formik.values.roles}  onChange={(id, item)=>{
+          console.log(item);
           formik.setFieldValue('idRol', id)
-          formik.setFieldValue('rol', item.descripcion)
+          formik.setFieldValue('roles', item.descripcion)
         }} edit={item && true} />
         <ToggleSwitch checked={formik.values.estado} onChange={(newValue)=>formik.setFieldValue(`estado`, !formik.values.estado)} label={'Estado'} />
         <div style={{display: 'flex', justifyContent: 'space-around', marginTop: 15}}>
@@ -124,10 +126,19 @@ export default function NewEditEmpleado({token, item , edit, handleClose}) {
             <Loading />:
             <>
               <Button text={'CANCELAR'} onClick={handleClose}/>
-              <Button text={'ACEPTAR'} onClick={formik.handleSubmit}/>
+              <Button text={'ACEPTAR'} onClick={()=>setOpenConfirm(true)}/>
             </>
           }
         </div>
+        {
+              openConfirm &&
+              <Confirm
+                confirmAction={formik.handleSubmit}
+                handleClose={()=>setOpenConfirm(false)}
+                loading={loading}
+                open={openConfirm}
+              />
+            }
     </div>
   )
 }

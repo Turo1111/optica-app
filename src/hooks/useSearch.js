@@ -6,7 +6,6 @@ export const useSearch = (search, tags, list, tagSearch = []) => {
   let result = []
 
   if (tagSearch.length !== 0) {
-    console.log("entre en tag search")
     tagSearch.map(
       itemTag=>{
         newList = newList.filter(itemLista=>{

@@ -2,10 +2,11 @@ import { useEffect, useState } from 'react';
 import JsBarcode from 'jsbarcode';
 
 const useBarcodeGenerator = (barcodeNumber) => {
-  
   const [barcodeDataURL, setBarcodeDataURL] = useState('');
 
-  useEffect(()=>{generateBarcode()},[barcodeNumber])
+  useEffect(() => {
+    generateBarcode();
+  }, [barcodeNumber]);
 
   const generateBarcode = () => {
     try {
@@ -19,7 +20,14 @@ const useBarcodeGenerator = (barcodeNumber) => {
     }
   };
 
-  return { barcodeDataURL };
+  const downloadBarcodeImage = () => {
+    const link = document.createElement('a');
+    link.href = barcodeDataURL;
+    link.download = 'barcode.png';
+    link.click();
+  };
+
+  return { barcodeDataURL, downloadBarcodeImage };
 };
 
 export default useBarcodeGenerator;

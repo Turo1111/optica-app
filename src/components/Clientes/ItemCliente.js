@@ -5,7 +5,6 @@ import styled from 'styled-components'
 import { FaMoneyCheckAlt } from "react-icons/fa";
 
 export default function ItemCliente({_id, nombreCompleto, telefono, dni, senia, handleOpenInfoModal, handleOpenEditModal, handleOpenSeniaModal, cuentaCorriente}) {
-
   
   return (
     <Container>
@@ -13,16 +12,16 @@ export default function ItemCliente({_id, nombreCompleto, telefono, dni, senia, 
             <Title color={process.env.TEXT_COLOR}>{nombreCompleto || "No definido"}</Title>
             <Tag color={process.env.TEXT_COLOR}> Telefono : {telefono || "No definido"}</Tag>
             <Tag color={process.env.TEXT_COLOR}> DNI : {dni || "No definido"}</Tag>
-            <Tag color={process.env.TEXT_COLOR}> Debe : $ {cuentaCorriente || "0"}</Tag>
+            <Tag color={process.env.TEXT_COLOR}> Debe : $ {(parseFloat(cuentaCorriente)).toFixed(2) || "0"}</Tag>
             {/* <Tag color={process.env.TEXT_COLOR}> 16 COMPRAS</Tag>  */}
         </div>
         <div style={{display: 'flex'}}>
             <IconWrapper bg={'#8294C4'} hover={'#637195'}  onClick={()=>handleOpenInfoModal({_id, nombreCompleto, telefono, dni, senia, cuentaCorriente})}>
                 <FaInfo/>
             </IconWrapper>
-            <IconWrapper bg={'#AAC8A7'} hover={'#637195'}  onClick={()=>handleOpenSeniaModal({_id, nombreCompleto, telefono, dni, senia, cuentaCorriente})}>
+            {/* <IconWrapper bg={'#AAC8A7'} hover={'#637195'}  onClick={()=>handleOpenSeniaModal({_id, nombreCompleto, telefono, dni, senia, cuentaCorriente})}>
                 <FaMoneyCheckAlt/>
-            </IconWrapper>
+            </IconWrapper> */}
             <IconWrapper bg={'#FCDDB0'} hover={'#E1BA82'} onClick={()=>handleOpenEditModal({_id, nombreCompleto, telefono, dni, senia, cuentaCorriente})}>
                 <MdEdit/>
             </IconWrapper>

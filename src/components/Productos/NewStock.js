@@ -1,22 +1,24 @@
 import { useFormik } from 'formik'
-import React, { useState } from 'react'
-import InputSelect from './InputSelect'
-import Input from './Input'
-import Button from './Button'
+import React, { useEffect, useState } from 'react'
+import InputSelect from '../InputSelect'
+import Input from '../Input'
+import Button from '../Button'
 import apiClient from '@/utils/client'
 import { setAlert } from '@/redux/alertSlice'
 import { useAppDispatch, useAppSelector } from '@/redux/hook'
 import { getUser } from '@/redux/userSlice'
-import Loading from './Loading'
+import Loading from '../Loading'
+import Confirm from '../Confirm'
 
-export default function NewStock({idProducto, item, eClose}) {
+export default function NewStock({idProducto, item, eClose, precioGeneral}) {
 
     const dispatch = useAppDispatch();
     const user = useAppSelector(getUser);
     const [loading, setLoading] = useState(false)
+    const [openConfirm, setOpenConfirm] = useState(false)
   
     const formik = useFormik({
-        initialValues: initialValues(idProducto, item),
+        initialValues: initialValues(idProducto, item, precioGeneral),
         validateOnChange: false,
         onSubmit: (formValue) => {
           if (formValue.idSucursal === '') {
@@ -59,7 +61,7 @@ export default function NewStock({idProducto, item, eClose}) {
               .catch(e=>{
                 setLoading(false)
                 dispatch(setAlert({
-                message: `${e.response.data.error}`,
+                message: `${e.response.data.error || 'Ocurrio un error'}`,
                 type: 'error'
               }))})
           }else{
@@ -80,7 +82,7 @@ export default function NewStock({idProducto, item, eClose}) {
               .catch(e=>{
                 setLoading(false)
                 dispatch(setAlert({
-                message: `${e.response.data.error}`,
+                message: `${e.response.data.error || 'Ocurrio un error'}`,
                 type: 'error'
               }))})
           }
@@ -91,6 +93,10 @@ export default function NewStock({idProducto, item, eClose}) {
         formik.resetForm(initialValues)
         eClose()
     }
+
+    useEffect(()=>{
+      formik.setFieldValue('precioLista', (formik.values.precioEfectivo+(formik.values.precioEfectivo*0.2)).toFixed(2))
+    },[formik.values.precioEfectivo])
     
     return (
         <div>
@@ -99,23 +105,32 @@ export default function NewStock({idProducto, item, eClose}) {
               formik.setFieldValue('sucursal', item.descripcion)
             }} />
             <Input label={"Stock"} type='number' name='cantidad' value={formik.values.cantidad} onChange={formik.handleChange} required={true}  />
-            <Input label={"Precio efectivo"} type='number' name='precioEfectivo' value={formik.values.precioEfectivo} onChange={formik.handleChange} required={true}  />
-            <Input label={"Precio lista"} type='number' name='precioLista' value={formik.values.precioLista} onChange={formik.handleChange} required={true}  />
+            <Input label={"Precio efectivo"} type='number' name='precioEfectivo' value={formik.values.precioEfectivo} onChange={formik.handleChange} required={true} prefix={'$'} />
+            <Input label={"Precio lista"} type='number' name='precioLista' value={formik.values.precioLista} onChange={formik.handleChange} required={true} prefix={'$'} />
             <div style={{display: 'flex', justifyContent: 'space-around'}}>
             {
               loading ? 
               <Loading />:
               <>
                 <Button text={'CANCELAR'} onClick={handleClose}/>
-                <Button text={'GUARDAR'} onClick={formik.handleSubmit}/>
+                <Button text={'GUARDAR'} onClick={()=>setOpenConfirm(true)}/>
               </>
             }
             </div>
+            {
+              openConfirm &&
+              <Confirm
+                confirmAction={formik.handleSubmit}
+                handleClose={()=>setOpenConfirm(false)}
+                loading={loading}
+                open={openConfirm}
+              />
+            }
         </div>
     )        
 }
 
-function initialValues (idProducto, item) {
+function initialValues (idProducto, item, precioGeneral) {
     if (item) {
         return item
     }
@@ -123,7 +138,7 @@ function initialValues (idProducto, item) {
         cantidad: '',
         idSucursal: '',
         idProducto: idProducto,
-        precioEfectivo: '',
-        precioLista: ''
+        precioEfectivo: precioGeneral,
+        precioLista: parseFloat(precioGeneral)+(parseFloat(precioGeneral)*0.2)
     }
 }

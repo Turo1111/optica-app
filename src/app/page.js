@@ -55,10 +55,12 @@ export default function Home() {
       })
       .catch(e=>{
         setLoading(false)
+        console.log('error', e.response);
         dispatch(setAlert({
-          message: `${e.response.data.error}`,
+          message: `${e.response.data?.error || 'Ocurrio un error'}`,
           type: 'error'
-        })) } 
+        })) 
+      } 
       )
         
     }

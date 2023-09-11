@@ -37,8 +37,6 @@ export default function Clientes() {
 
   const listCliente = useSearch(search.value, tag, data, tagSearch) 
 
-  console.log(listCliente);
-
   useEffect(()=>{
     if (user.usuario !== '') {  
       user.roles.permisos.forEach((permiso) => {
@@ -67,7 +65,7 @@ export default function Clientes() {
     }
   },[openNewEdit])
 
-  useEffect(() => {
+  const getCliente = () => {
     setLoading(true)
     if (user.token) {
       apiClient.get('/cliente',
@@ -77,17 +75,21 @@ export default function Clientes() {
         }
       })
         .then(r => {
-          console.log(r.data.body);
           setData((prevData)=>{
+            console.log(r.data.body);
             setLoading(false)
             return r.data.body
           })
         })
         .catch(e => dispatch(setAlert({
-          message: `${e.response.data.error}`,
+          message: `${e.response.data.error || 'Ocurrio un error'}`,
           type: 'error'
         })))
     }
+  }
+
+  useEffect(() => {
+    getCliente()
   }, [user.token])
 
   useEffect(()=>{
@@ -111,7 +113,6 @@ export default function Clientes() {
   useEffect(()=>{
     const socket = io(process.env.NEXT_PUBLIC_DB_HOST)
     socket.on('senia', (senia) => {
-      console.log('senia', senia)
       setData((prevData)=>{
         const exist = prevData.find(elem => elem._id === senia.res.idCliente )
         if (exist) {

@@ -8,7 +8,7 @@ import { useInputValue } from '@/hooks/useInputValue';
 import { useSearch } from '@/hooks/useSearch';
 import InputSearch from '../InputSearch';
 
-export default function Registros() {
+export default function CierreCajaModal() {
 
     const [loading, setLoading] = useState(false)
     const dispatch = useAppDispatch();
@@ -18,13 +18,13 @@ export default function Registros() {
 
     const search = useInputValue('','')
 
-    const tag = ["accion", "coleccion", "fechaHora"]
+    const tag = ["empleado", "total", "fecha"]
 
     const listReg = useSearch(search.value, tag, data, tagSearch)
 
-    useEffect(()=>{
-        setLoading(true)
-        apiClient.get(`/reg` ,
+    const getCC = () => {
+      setLoading(true)
+        apiClient.get(`/cierrecaja` ,
         {
           headers: {
             Authorization: `Bearer ${user.token}` // Agregar el token en el encabezado como "Bearer {token}"
@@ -38,12 +38,16 @@ export default function Registros() {
               message: `${e.response.data.error || 'Ocurrio un error'}`,
               type: 'error'
             })))
-      },[])
+    }
+
+    useEffect(()=>{
+      getCC()
+    },[user.token])
 
   return (
     <div>
             <InputSearch
-              placeholder={'Buscar Registros'}
+              placeholder={'Buscar cierres'}
               {...search}
               tags={tag}
               tagSearch={tagSearch}
@@ -61,7 +65,9 @@ export default function Registros() {
 }
 
 const columns = [
-    { label: 'Accion', field: 'accion', width: '30%' },
-    { label: 'Coleccion', field: 'coleccion', width: '35%' },
-    { label: 'Fecha', field: 'fechaHora', width: '35%', date: true },
+    { label: 'Fecha', field: 'fecha', width: '20%', date: true },
+    { label: 'Empleado', field: 'empleado', width: '25%', textAlign: 'center'},
+    { label: 'Sucursal', field: 'sucursal', width: '25%', textAlign: 'center' },
+    { label: 'Esperado', field: 'totalEsperado', width: '15%', price: true, textAlign: 'center' },
+    { label: 'Total', field: 'total', width: '15%', price: true, textAlign: 'center' },
 ];

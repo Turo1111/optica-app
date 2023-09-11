@@ -12,6 +12,9 @@ import { AiOutlineMenu } from 'react-icons/ai';
 import { MdClose } from 'react-icons/md';
 import { CSSTransition } from 'react-transition-group'
 import useOutsideClick from '@/hooks/useOutsideClick';
+import Modal from './Modal';
+import CierreCaja from './CierreCaja';
+import RetiroDinero from './RetiroDinero';
 
 /* const itemsLi = ["COMPRA", "CONTABILIDAD"] */
 const itemsLi = ["NUEVA VENTA", "VENTA", "PRODUCTOS","GESTION", "CLIENTES"]
@@ -24,6 +27,8 @@ export default function Dashboard({children}) {
    const router = typeof window !== 'undefined' ? useRouter() : null;
    const [valueStorage , setValue, clearValue] = useLocalStorage("user", "")
    const [openMenu, setOpenMenu] = useState(false)
+   const [openCierreCaja, setOpenCierreCaja] = useState(false)
+   const [openRetiroDinero, setOpenRetiroDinero] = useState(false)
 
    const modalRef = useRef(null);
 
@@ -78,7 +83,7 @@ export default function Dashboard({children}) {
         <Content>
             <ContainerDashboard bg={process.env.BLUE_COLOR} open={openMenu} ref={modalRef} >
                 <Logo>LOGOTIPO</Logo>
-                <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column', borderTop: '1px solid #d9d9d9', borderBottom: '1px solid #d9d9d9', padding: '15px 0'}}>
                     <UserContainer >
                         <IconWrapper>
                             <BsPersonSquare/>
@@ -94,6 +99,21 @@ export default function Dashboard({children}) {
                             }} >Cerrar Sesion</LogOut>
                         </div>
                     </UserContainer>
+                    <ItemFunction onClick={()=>{
+                        setOpenCierreCaja(true)
+                    }} >Cierre de Caja</ItemFunction>
+                    <ItemFunction onClick={()=>{
+                       if (user.idEmpleado !== '64fa6a541c9ce1e60edf7138')  {
+                            dispatch(
+                                setAlert({
+                                  message: 'SIN PERMISO',
+                                  type: 'error',
+                                })
+                            );
+                            return
+                       }
+                        setOpenRetiroDinero(true)
+                    }} >Retirar dinero</ItemFunction>
                 </div>
                 <ListaMenu >
                     {itemsLi.map((item,index) => {
@@ -119,6 +139,30 @@ export default function Dashboard({children}) {
                 </Container1>
             </div>
         </Content>
+        {
+            openCierreCaja && 
+            <Modal 
+              open={openCierreCaja} 
+              eClose={()=>setOpenCierreCaja(false)} 
+              title={'CIERRE DE CAJA'} 
+              height='auto'
+              width='35%'
+            >
+              <CierreCaja token={user.token} idSucursal={user.idSucursal} onClose={()=>setOpenCierreCaja(false)}  />
+            </Modal>
+        }
+        {
+            openRetiroDinero && 
+            <Modal 
+              open={openRetiroDinero} 
+              eClose={()=>setOpenRetiroDinero(false)} 
+              title={'RETIRAR DINERO'} 
+              height='auto'
+              width='35%'
+            >
+              <RetiroDinero token={user.token} idSucursal={user.idSucursal} onClose={()=>setOpenRetiroDinero(false)}  />
+            </Modal>
+        }
     </Container>
   )
 }
@@ -219,11 +263,7 @@ const UserContainer = styled.div `
     display: flex;
     justify-content: space-evenly;
     align-items: center;
-    margin: 25px 0;
-    padding: 25px 0;
-    border-top: 1px solid #d9d9d9;
-    border-bottom: 1px solid #d9d9d9;
-    width: 80%;
+    margin-bottom: 15px;
 `
 
 const IconWrapper = styled.div`
@@ -280,4 +320,20 @@ const ItemMenu = styled.li `
     /* @media only screen and (max-width: 768px) {
         padding: 10px;
     } */
+`
+
+const ItemFunction = styled.li `
+    list-style: none;
+    font-weight: 600;
+    font-size: 16px;
+    margin: 5px 0;
+    padding: 10px;
+    color: #fff;
+    width: 100%;
+    padding-inline-start: 30px;
+    cursor: pointer;
+    :hover{
+        color: ${process.env.BLUE_COLOR};
+        background-color: #fff
+    }
 `

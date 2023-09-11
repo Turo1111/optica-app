@@ -1,19 +1,21 @@
+import useConvertToBuenosAiresTime from '@/hooks/useConvertToBuenosAiresTime'
 import { useDate } from '@/hooks/useDate'
 import React from 'react'
+import { BiPrinter } from 'react-icons/bi'
 import { FaInfo } from 'react-icons/fa'
 import { MdOutlineAttachMoney } from 'react-icons/md'
 import styled from 'styled-components'
 
-export default function ItemVenta({cantidadProductos, cliente, fecha, sucursal, tipoPago, total, handleOpenInfo, dineroIngresado, handleOpenSaldo}) {
+export default function ItemVenta({cantidadProductos, cliente, fecha, sucursal, tipoPago, total, handleOpenInfo, dineroIngresado, handleOpenSaldo, handleOpenPrint}) {
 
-    console.log(fecha)
+    const {date} = useDate(fecha)
 
   return (
     <Container>
         <ContainerData>
             <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}} >
                 <Title>{cliente}</Title>
-                <Fecha>{fecha.substring(0, 10)}</Fecha>
+                <Fecha>{date}</Fecha>
             </div>
             <ContainerData2>
                 <Tag>{sucursal}</Tag>
@@ -30,8 +32,11 @@ export default function ItemVenta({cantidadProductos, cliente, fecha, sucursal, 
             <IconWrapper bg={'#8294C4'} hover={'#637195'}  onClick={handleOpenInfo}>
                 <FaInfo/>
             </IconWrapper>
-            <IconWrapper bg={'#AAC8A7'} hover={'#637195'}  onClick={handleOpenSaldo}>
+            <IconWrapper bg={'#AAC8A7'} hover={'#94A684'}  onClick={handleOpenSaldo}>
                 <MdOutlineAttachMoney/>
+            </IconWrapper>
+            <IconWrapper bg={'#EFD595'} hover={'#C08261'}  onClick={handleOpenPrint}>
+                <BiPrinter/>
             </IconWrapper>
         </div>
     </Container>

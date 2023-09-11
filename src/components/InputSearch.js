@@ -131,7 +131,6 @@ const InputSearch = ({placeholder, width = '80%', deleteTagSearch, tagSearch = [
   
   useEffect(()=>{
     if (modal && value !== '') {
-      console.log('entro')
       setOpenList(true)
     }
     else{

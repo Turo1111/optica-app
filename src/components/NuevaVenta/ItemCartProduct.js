@@ -26,16 +26,18 @@ export default function ItemCartProduct({item, changeCart, deleteItem, tipoPago}
                         : item.total
                     )
                 })} 
-                upQty={()=>changeCart({...item, 
-                    cantidad: item.stock >= item.cantidad+1 ? (item.cantidad+1) : item.cantidad, 
-                    total: (item.stock >= item.cantidad+1 ? 
-                            item.descuento !== undefined ? 
-                            ((item.cantidad+1)*item.precioEfectivo)-(((item.cantidad+1)*item.precioEfectivo)*(item.descuento/100)) 
-                            : 
-                            (item.cantidad+1)*item.precioEfectivo 
-                        : (item.cantidad)*item.precioEfectivo
-                    )
-                })} 
+                upQty={()=>{
+                    changeCart({...item, 
+                        cantidad: item.stock >= item.cantidad+1 ? (item.cantidad+1) : item.cantidad, 
+                        total: item.stock >= item.cantidad+1 ? 
+                                item.descuento !== undefined ? 
+                                    ((item.cantidad+1)*item.precioEfectivo)-(((item.cantidad+1)*item.precioEfectivo)*(item.descuento/100)) 
+                                    : 
+                                    (item.cantidad+1)*item.precioEfectivo 
+                            : item.total
+                        
+                    })
+                }} 
             />
     </Container>
   )

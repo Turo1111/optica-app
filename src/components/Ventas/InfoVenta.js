@@ -3,37 +3,44 @@ import styled from 'styled-components'
 import EmptyList from '../EmptyList'
 import apiClient from '@/utils/client'
 import Loading from '../Loading'
+import Table from '../Table'
+import { useDate } from '@/hooks/useDate'
 
 export default function InfoVenta({_id, cliente, fecha, sucursal, tipoPago, total, subTotal, descuento, empleado, orden, token, obraSocialDescripcion, dineroIngresado}) {
 
     const [productos, setProductos] = useState([])
     const [loading, setLoading] = useState(false)
+    const {date} = useDate(fecha)
+
+    const getLV = () => {
+      if (_id) {
+        setLoading(true)
+          apiClient.get(`/lineaventa/${_id}` ,
+          {
+            headers: {
+              Authorization: `Bearer ${token}` // Agregar el token en el encabezado como "Bearer {token}"
+            }
+          })
+            .then(r=>{
+              setLoading(false)
+              setProductos(r.data.body)
+            })
+            .catch(e=>dispatch(setAlert({
+              message: `${e.response.data.error || 'Ocurrio un error'}`,
+              type: 'error'
+            })))
+      }
+    }
 
     useEffect(()=>{
-        if (_id) {
-          setLoading(true)
-            apiClient.get(`/lineaventa/${_id}` ,
-            {
-              headers: {
-                Authorization: `Bearer ${token}` // Agregar el token en el encabezado como "Bearer {token}"
-              }
-            })
-              .then(r=>{
-                setLoading(false)
-                setProductos(r.data.body)
-              })
-              .catch(e=>dispatch(setAlert({
-                message: `${e.response.data.error}`,
-                type: 'error'
-              })))
-        }
+      getLV()
     },[_id])
 
   return (
     <div style={{display: 'flex', flexDirection: 'column', flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'}} >
         <div>
             <Tag>CLIENTE : {cliente}</Tag>
-            <Tag>FECHA : {fecha}</Tag>
+            <Tag>FECHA : {date}</Tag>
             <Tag>SUCURSAL : {sucursal}</Tag>
             <Tag>EMPLEADO : {empleado}</Tag>
             {obraSocialDescripcion && <Tag>OBRA SOCIAL : {obraSocialDescripcion}</Tag>}
@@ -42,39 +49,19 @@ export default function InfoVenta({_id, cliente, fecha, sucursal, tipoPago, tota
             <Tag>DINERO INGRESADO : $ {dineroIngresado}</Tag>
             {tipoPago.banco && <Tag>BANCO : {tipoPago.banco} {tipoPago.cuotas} cuotas</Tag>}
         </div>
-        <div style={{ display: 'flex', flex: 1 }}>
-          <Container1>
-            <Container2>
-              <ul style={{margin: 0, flex: 1, backgroundColor: '#fff', borderRadius: 15, padding: 0, overflowY: scroll }}>
-                {
-                  loading ? 
-                  <Loading/>:
-                  <>
-                  {
-                    productos.length === 0 ?
-                    <div>No hay productos</div>
-                    :
-                    productos.map((item, index) => (
-                      <div>
-                        <Tag>{item.producto}</Tag>
-                        <div style={{display: 'flex', justifyContent: 'space-between'}}>
-                          <Tag style={{fontWeight: 400, margin: 0}}>{item.cantidad} unidades</Tag>
-                          <Tag style={{fontWeight: 400, margin: 0}}>$ {item.total}</Tag>
-                        </div>
-                      </div>
-                    ))
-                  }
-                  </>
-                }
-                </ul>
-            </Container2>
-          </Container1>
-        </div>
+        <Table data={productos} columns={columns} maxHeight={false} onClick={()=>''} />
           <Tag style={{textAlign: 'end'}} >SUB-TOTAL : $ {subTotal}</Tag>
           <Tag style={{textAlign: 'end'}} >TOTAL : $ {total}</Tag>
+          <Tag style={{textAlign: 'end'}} >FALTANTE A PAGAR : $ {(parseFloat(total)-parseFloat(dineroIngresado)).toFixed(2)}</Tag>
     </div>
   )
 }
+
+const columns = [
+  { label: 'Producto', field: 'descripcion', width: '50%' },
+  { label: 'Cantidad', field: 'cantidad', width: '20%', align: 'center' },
+  { label: 'Total', field: 'total', width: '30%', align: 'center', price: true },
+];
 
 const Tag = styled.h5 `
     font-size: 16px;
@@ -107,4 +94,12 @@ const Container2 = styled.main `
         padding: 5px;
         border-radius: 0px;
     }
+`
+
+const List = styled.ul `
+  flex: 1;
+  background-color: #fff; 
+  border-radius: 15px;
+  padding: 0;
+  overflow-y: scroll;
 `
