@@ -30,7 +30,8 @@ export default function Venta() {
   const [openSaldo, setOpenSaldo] = useState(false)
   const [tagSearch, setTagSearch] = useState([])
   const [openPrint, setOpenPrint] = useState(false)
-  const socket = io(process.env.NEXT_PUBLIC_DB_HOST)
+  
+  
 
   const search = useInputValue('','')
 
@@ -52,10 +53,6 @@ export default function Venta() {
   },[user])
 
   const getVenta = () => {
-    
-  }
-
-  useEffect(() => {
     setLoading(true)
     if (user.token) {
       apiClient.get('/venta' ,
@@ -75,10 +72,17 @@ export default function Venta() {
           type: 'error'
         })))
     }
+  }
+
+  useEffect(() => {
+    getVenta()
   }, [user.token])
 
   useEffect(()=>{
-    if (typeof window !== 'undefined') {
+    if (typeof self !== 'undefined') {
+      // Código que depende de self o del navegador
+      const socket = io(process.env.NEXT_PUBLIC_DB_HOST);
+      // Resto del código
       
       socket.on('venta', (venta) => {
         setData((prevData)=>{
