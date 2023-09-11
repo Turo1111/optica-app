@@ -16,7 +16,7 @@ import { getUser } from '@/redux/userSlice';
 import apiClient from '@/utils/client';
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components';
-const io = require('socket.io-client')
+import io from 'socket.io-client';
 
 export default function Venta() {
   
