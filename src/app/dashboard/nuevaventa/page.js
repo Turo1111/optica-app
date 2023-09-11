@@ -381,6 +381,10 @@ export default function NuevaVenta() {
     }
 
     const getClienteProducto = () => {
+      
+    }
+
+    useEffect(() => {
       setLoadingData(true)
       apiClient.get(`/producto`,{
         headers: {
@@ -407,10 +411,6 @@ export default function NuevaVenta() {
         message: 'Error en el servidor, revise el estado',
         type: 'error'
       })))
-    }
-
-    useEffect(() => {
-      getClienteProducto()
     }, [user.token])
     
     useEffect(()=>{
@@ -590,7 +590,6 @@ export default function NuevaVenta() {
           }}
           dineroIngresado={dineroIngresado}
           onChangeDineroIngresado={(e)=>{
-            console.log(e.target.value);
             if (parseFloat(e.target.value) <= 0 || e.target.value === '') {
               dispatch(setAlert({
                 message: 'Valor incorrecto',

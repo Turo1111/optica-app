@@ -51,6 +51,10 @@ export default function Venta() {
   },[user])
 
   const getVenta = () => {
+    
+  }
+
+  useEffect(() => {
     setLoading(true)
     if (user.token) {
       apiClient.get('/venta' ,
@@ -70,10 +74,6 @@ export default function Venta() {
           type: 'error'
         })))
     }
-  }
-
-  useEffect(() => {
-    getVenta()
   }, [user.token])
 
   useEffect(()=>{
