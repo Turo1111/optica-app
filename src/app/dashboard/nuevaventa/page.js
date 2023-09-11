@@ -1,5 +1,5 @@
 'use client'
-import Button from '@/components/Button'
+/* import Button from '@/components/Button'
 import NewEditCliente from '@/components/Clientes/NewEditCliente'
 import Confirm from '@/components/Confirm'
 import EmptyList from '@/components/EmptyList'
@@ -27,7 +27,7 @@ import { getUser } from '@/redux/userSlice'
 import apiClient from '@/utils/client'
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
-import io from 'socket.io-client';
+import io from 'socket.io-client'; */
 
 export default function NuevaVenta() {
 /* 
@@ -770,7 +770,7 @@ export default function NuevaVenta() {
   ) */
   return <>NuevaVenta</>
 }
-
+/* 
 function calculateCuotas (total, dineroIngresado) {
   return [
       {
@@ -805,3 +805,4 @@ const ContainerSelected = styled.div `
     flex-direction: column;
   }
 `
+ */

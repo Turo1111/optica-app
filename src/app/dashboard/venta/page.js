@@ -1,5 +1,5 @@
 'use client'
-import EmptyList from '@/components/EmptyList';
+/* import EmptyList from '@/components/EmptyList';
 import InputSearch from '@/components/InputSearch';
 import Loading from '@/components/Loading';
 import Modal from '@/components/Modal';
@@ -16,10 +16,10 @@ import { getUser } from '@/redux/userSlice';
 import apiClient from '@/utils/client';
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components';
-import io from 'socket.io-client';
+import io from 'socket.io-client'; */
 
 export default function Venta() {
- /*  
+  /* 
   const [data, setData] = useState([])
   const [loading, setLoading] = useState(false)
   const user = useAppSelector(getUser);
@@ -30,7 +30,6 @@ export default function Venta() {
   const [openSaldo, setOpenSaldo] = useState(false)
   const [tagSearch, setTagSearch] = useState([])
   const [openPrint, setOpenPrint] = useState(false)
-  const self = window;
 
   const search = useInputValue('','')
 
@@ -78,7 +77,7 @@ export default function Venta() {
   }, [user.token])
 
   useEffect(()=>{
-    if (typeof self !== 'undefined') {
+    
       // Código que depende de self o del navegador
       const socket = io(process.env.NEXT_PUBLIC_DB_HOST);
       // Resto del código
@@ -97,7 +96,7 @@ export default function Venta() {
       return () => {
         socket.disconnect();
       }; 
-    }
+    
   },[data])
 
   if (!permission) {
@@ -216,11 +215,11 @@ return (
   ) */
   return <>venta</>
 }
-
+/* 
 const List = styled.ul `
   flex: 1;
   background-color: #fff; 
   border-radius: 15px;
   padding: 0;
   overflow-y: scroll;
-`
+` */
