@@ -63,6 +63,7 @@ export default function NuevaVenta() {
     const [venta, setVenta] = useState(undefined)
     const [openFinishSale, setOpenFinishSale] = useState(false)
     const [openConfirm, setOpenConfirm] = useState(false)
+    const socket = io(process.env.NEXT_PUBLIC_DB_HOST)
 
     const tag = ["descripcion", "codigo", "categoria", "color", "alto", "ancho", "marca", "numeracion"]
 
@@ -434,7 +435,7 @@ export default function NuevaVenta() {
     },[openNewOrder, dataOrder, dispatch])
 
     useEffect(()=>{
-      const socket = io(process.env.NEXT_PUBLIC_DB_HOST)
+      
       socket.on('cliente', (cliente) => {
         setClientes((prevData)=>{
           const exist = prevData.find(elem => elem._id === cliente.res._id )
