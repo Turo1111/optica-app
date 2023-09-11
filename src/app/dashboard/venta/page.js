@@ -8,7 +8,7 @@ import InfoVenta from '@/components/Ventas/InfoVenta';
 import ItemVenta from '@/components/Ventas/ItemVenta';
 import PagarDeuda from '@/components/Ventas/PagarDeuda';
 import PrintSale from '@/components/Ventas/PrintSale';
-/* import { useInputValue } from '@/hooks/useInputValue';
+import { useInputValue } from '@/hooks/useInputValue';
 import { useSearch } from '@/hooks/useSearch';
 import { setAlert } from '@/redux/alertSlice'
 import { useAppDispatch, useAppSelector } from '@/redux/hook';
@@ -16,10 +16,10 @@ import { getUser } from '@/redux/userSlice';
 import apiClient from '@/utils/client';
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components';
-import io from 'socket.io-client'; */
+import io from 'socket.io-client'; 
 
 export default function Venta() {
-  /* 
+ 
   const [data, setData] = useState([])
   const [loading, setLoading] = useState(false)
   const user = useAppSelector(getUser);
@@ -212,14 +212,13 @@ return (
         </Modal>
       }
     </>
-  ) */
-  return <>venta</>
+  ) 
 }
-/* 
+
 const List = styled.ul `
   flex: 1;
   background-color: #fff; 
   border-radius: 15px;
   padding: 0;
   overflow-y: scroll;
-` */
+` 
