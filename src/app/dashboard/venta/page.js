@@ -10,6 +10,7 @@ import PagarDeuda from '@/components/Ventas/PagarDeuda';
 import PrintSale from '@/components/Ventas/PrintSale';
 import { useInputValue } from '@/hooks/useInputValue';
 import { useSearch } from '@/hooks/useSearch';
+import { setAlert } from '@/redux/alertSlice';
 import { useAppDispatch, useAppSelector } from '@/redux/hook';
 import { getUser } from '@/redux/userSlice';
 import apiClient from '@/utils/client';
