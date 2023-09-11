@@ -132,16 +132,25 @@ return (
                   key={index}
                   {...item}
                   handleOpenInfo={()=>{
-                    setOpenInfo(true)
-                    setVentaSelected(item)
+                    if (ventaSelected !== undefined) {
+                      // Abre el modal de impresión
+                      setOpenInfo(true)
+                      setVentaSelected(item)
+                    }
                   }}
                   handleOpenSaldo={()=>{
-                    setOpenSaldo(true)
-                    setVentaSelected(item)
+                    if (ventaSelected !== undefined) {
+                      // Abre el modal de impresión
+                      setOpenSaldo(true)
+                      setVentaSelected(item)
+                    }
                   }}
                   handleOpenPrint={()=>{
-                    setOpenPrint(true)
-                    setVentaSelected(item)
+                    if (ventaSelected !== undefined) {
+                      // Abre el modal de impresión
+                      setOpenPrint(true)
+                      setVentaSelected(item)
+                    }
                   }}
                 />
               ))
