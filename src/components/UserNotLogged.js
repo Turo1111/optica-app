@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import { useRouter } from 'next/navigation';
 
 export default function UserNotLogged() {
-
+ // eslint-disable-next-line react-hooks/rules-of-hooks
   const router = typeof window !== 'undefined' ? useRouter() : null;
 
   useEffect(() => {

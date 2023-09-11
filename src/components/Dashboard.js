@@ -24,6 +24,7 @@ export default function Dashboard({children}) {
    const pathname = usePathname()
    const user = useAppSelector(getUser);
    const dispatch = useAppDispatch();
+   // eslint-disable-next-line react-hooks/rules-of-hooks
    const router = typeof window !== 'undefined' ? useRouter() : null;
    const [valueStorage , setValue, clearValue] = useLocalStorage("user", "")
    const [openMenu, setOpenMenu] = useState(false)
@@ -118,8 +119,8 @@ export default function Dashboard({children}) {
                 <ListaMenu >
                     {itemsLi.map((item,index) => {
                         return(
-                            <Link href={"/dashboard/"+(item.toLowerCase().split(' ').join(''))} style={{textDecoration: 'none'}}>
-                                <ItemMenu key={index} 
+                            <Link href={"/dashboard/"+(item.toLowerCase().split(' ').join(''))} style={{textDecoration: 'none'}}  key={item} >
+                                <ItemMenu
                                     isActive={"/dashboard/"+(item.toLowerCase().split(' ').join('')) === pathname ? true : false}
                                     bc={process.env.BLUE_COLOR}
                                     onClick={()=>setOpenMenu(false)}

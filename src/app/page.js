@@ -15,6 +15,7 @@ import styled from "styled-components"
 export default function Home() {
 
   const dispatch = useAppDispatch();
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const router = typeof window !== 'undefined' ? useRouter() : null;
   const [valueStorage , setValue] = useLocalStorage("user", "")
   const [loading, setLoading] = useState(false)

@@ -147,9 +147,9 @@ export default function InfoProduct({token, item, handleOpenEditModal, handleOpe
                 <Caracteristicas color={process.env.TEXT_COLOR}>
                     <label style={{fontWeight: 600}}>Descuento con :</label> {listObraSocial || 'No definido'}
                 </Caracteristicas>  
-                <div style={{display: 'flex', justifyContent: 'space-around', alignItems: 'center'}}>
-                    <img src={barcodeDataURL} alt="Barcode" />
-                    <Button text={'Descargar Barcode'} onClick={downloadBarcodeImage}/>
+                <div style={{ display: 'flex', justifyContent: 'space-around', alignItems: 'center' }}>
+                  <Image src={barcodeDataURL} alt="Barcode" width={200} height={180} />
+                  <Button text={'Descargar Barcode'} onClick={downloadBarcodeImage} />
                 </div>
             </div>
             <div style={{display: 'flex', justifyContent: 'center', width: 250, height: 250, padding: 15, backgroundColor: '#d9d9d9', position: 'relative', overflow: 'hidden', borderRadius: 15}} >

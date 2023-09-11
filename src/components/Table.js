@@ -27,7 +27,7 @@ export default function Table({data = [], columns, onClick, date=false, maxHeigh
                         data-label={column.label}
                       >
                         {column.date ? 
-                          useDate(item[column.field]).date
+                          new Date(item[column.field])
                           :
                           (column.price ? 
                             `$ ${item[column.field]?.toString()}` 

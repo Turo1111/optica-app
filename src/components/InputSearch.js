@@ -154,7 +154,7 @@ const InputSearch = ({placeholder, width = '80%', deleteTagSearch, tagSearch = [
           <ContainerTagSearch ancho={ancho} alto={alto} >
             {
               tagSearch.map((item)=> 
-                <ContainerTag onClick={()=>deleteTagSearch(item)} >
+                <ContainerTag onClick={()=>deleteTagSearch(item)} key={item.tag} >
                   {item.search} - {item.tag}
                   <MdClose style={{marginLeft: 5}}/>
                 </ContainerTag>

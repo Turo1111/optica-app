@@ -121,7 +121,7 @@ export default function AddProduct({item, addCart, onClose, user}) {
               })
             .then((r)=>{
                 setLoading(false)
-                setOferta(r.data.body.find(itemOferta=> useDate(itemOferta.fechaInicio).date <= fechaHoy && useDate(itemOferta.fechaFinal).date >= fechaHoy))})
+                setOferta(r.data.body.find(itemOferta=> new Date(itemOferta.fechaInicio) <= fechaHoy && new Date(itemOferta.fechaFinal) >= fechaHoy))})
             .catch(e=>dispatch(setAlert({
                 message: `${e.response.data.error || 'Ocurrio un error'}`,
                 type: 'error'
@@ -169,7 +169,7 @@ export default function AddProduct({item, addCart, onClose, user}) {
               })
             .then((r)=>{
                 setLoading(false)
-                setOfertaLente(r.data.body.find(itemOferta=> useDate(itemOferta.fechaInicio).date <= fechaHoy && useDate(itemOferta.fechaFinal).date >= fechaHoy))})
+                setOfertaLente(r.data.body.find(itemOferta=> new Date(itemOferta.fechaInicio) <= fechaHoy && new Date(itemOferta.fechaFinal) >= fechaHoy))})
             .catch(e=>dispatch(setAlert({
                 message: `${e.response.data.error || 'Ocurrio un error'}`,
                 type: 'error'
