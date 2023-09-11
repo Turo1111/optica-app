@@ -30,7 +30,7 @@ import styled from 'styled-components'
 import io from 'socket.io-client';
 
 export default function NuevaVenta() {
-
+/* 
     const searchProduct = useInputValue('','')
     const searchClient = useInputValue('','')
     const [consumidorFinal, setConsumidorFinal] = useState(false)
@@ -767,7 +767,8 @@ export default function NuevaVenta() {
           />
         }
     </Container>
-  )
+  ) */
+  return <>NuevaVenta</>
 }
 
 function calculateCuotas (total, dineroIngresado) {

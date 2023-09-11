@@ -19,7 +19,7 @@ import styled from 'styled-components';
 import io from 'socket.io-client';
 
 export default function Venta() {
-  
+ /*  
   const [data, setData] = useState([])
   const [loading, setLoading] = useState(false)
   const user = useAppSelector(getUser);
@@ -213,7 +213,8 @@ return (
         </Modal>
       }
     </>
-  )
+  ) */
+  return <>venta</>
 }
 
 const List = styled.ul `
