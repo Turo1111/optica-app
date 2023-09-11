@@ -30,6 +30,7 @@ export default function Venta() {
   const [openSaldo, setOpenSaldo] = useState(false)
   const [tagSearch, setTagSearch] = useState([])
   const [openPrint, setOpenPrint] = useState(false)
+  const socket = io(process.env.NEXT_PUBLIC_DB_HOST)
 
   const search = useInputValue('','')
 
@@ -78,7 +79,7 @@ export default function Venta() {
 
   useEffect(()=>{
     if (typeof window !== 'undefined') {
-      const socket = io(process.env.NEXT_PUBLIC_DB_HOST)
+      
       socket.on('venta', (venta) => {
         setData((prevData)=>{
           const exist = prevData.find(elem => elem._id === venta.res._id )
