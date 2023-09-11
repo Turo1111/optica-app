@@ -1,9 +1,6 @@
 import { useDate } from '@/hooks/useDate';
 import React from 'react'
 import styled from 'styled-components'
-import Button from '../Button';
-import html2pdf from 'html2pdf.js';
-import Table from '../Table';
 import PrintSale from '../Ventas/PrintSale';
 
 export default function FinishSale({venta, onClose}) {

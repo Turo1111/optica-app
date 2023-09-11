@@ -1,12 +1,7 @@
 'use client'
-/* import Button from '@/components/Button'
 import NewEditCliente from '@/components/Clientes/NewEditCliente'
 import Confirm from '@/components/Confirm'
-import EmptyList from '@/components/EmptyList'
-import Input from '@/components/Input'
-import InputSearch from '@/components/InputSearch'
-import InputSelect from '@/components/InputSelect'
-import Loading from '@/components/Loading'
+ import Loading from '@/components/Loading'
 import Modal from '@/components/Modal'
 import NotPermissions from '@/components/NotPermissions'
 import AddCard from '@/components/NuevaVenta/AddCard'
@@ -14,11 +9,8 @@ import AddProduct from '@/components/NuevaVenta/AddProduct'
 import SelectClient from '@/components/NuevaVenta/ContainerClient'
 import DataSale from '@/components/NuevaVenta/DataSale'
 import FinishSale from '@/components/NuevaVenta/FinishSale'
-import ItemCartProduct from '@/components/NuevaVenta/ItemCartProduct'
 import NewOrder from '@/components/NuevaVenta/NewOrder'
 import SelectProduct from '@/components/NuevaVenta/SelectProduct'
-import TextArea from '@/components/TextArea'
-import ToggleSwitch from '@/components/ToggleSwitch'
 import { useInputValue } from '@/hooks/useInputValue'
 import { useSearch } from '@/hooks/useSearch'
 import { setAlert } from '@/redux/alertSlice'
@@ -27,10 +19,10 @@ import { getUser } from '@/redux/userSlice'
 import apiClient from '@/utils/client'
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
-import io from 'socket.io-client'; */
+import io from 'socket.io-client';  
 
 export default function NuevaVenta() {
-/* 
+
     const searchProduct = useInputValue('','')
     const searchClient = useInputValue('','')
     const [consumidorFinal, setConsumidorFinal] = useState(false)
@@ -767,10 +759,9 @@ export default function NuevaVenta() {
           />
         }
     </Container>
-  ) */
-  return <>NuevaVenta</>
+  )  
 }
-/* 
+
 function calculateCuotas (total, dineroIngresado) {
   return [
       {
@@ -805,4 +796,4 @@ const ContainerSelected = styled.div `
     flex-direction: column;
   }
 `
- */
+ 

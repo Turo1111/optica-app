@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
+import dynamic from 'next/dynamic';
 
-import html2pdf from 'html2pdf.js';
+const html2pdf = dynamic(() => import('html2pdf.js'), { ssr: false });
 import styled from 'styled-components';
 import Table from '../Table';
 import Button from '../Button';
@@ -8,6 +9,8 @@ import Loading from '../Loading';
 import { useDate } from '@/hooks/useDate';
 import apiClient from '@/utils/client';
 import Confirm from '../Confirm';
+import { useAppDispatch } from '@/redux/hook';
+import { setAlert } from '@/redux/alertSlice';
 
 export default function PrintSale({
     _id,
@@ -30,12 +33,19 @@ export default function PrintSale({
   const [lineaVenta, setLineaVenta] = useState([])
   const [loading, setLoading] = useState(false)
   const [openConfirm, setOpenConfirm] = useState(false)
+  const dispatch = useAppDispatch();
 
-  function generatePdf() {
+  /* function generatePdf() {
     const element = document.getElementById('print');
     html2pdf().from(element).save(`venta-${cliente}-${fecha}.pdf`);
-    onClose()
-  }
+    onClose() 
+  }*/
+
+  const elementRef = useRef(null);
+
+  const generatePdf = () => {
+    html2pdf().from(elementRef.current).save(`venta-${cliente}-${fecha}.pdf`);
+  };
 
   useEffect(()=>{
     if (carrito.length === 0) {
@@ -63,7 +73,7 @@ export default function PrintSale({
 
   return (
     <>
-      <ContainerPrint id={id} >
+      <ContainerPrint ref={elementRef} >
           <div>
               <Tag>CLIENTE : {cliente}</Tag>
               <Tag>FECHA : {fecha}</Tag>
@@ -96,15 +106,16 @@ export default function PrintSale({
           />
         }
     </>
-  )
+  ) 
 }
+
 const ContainerPrint = styled.div `
   display: flex;
   flex: 1;
   flex-direction: column;
   overflow: scroll;
   white-space: nowrap;
-  text-overflow: ellipsis
+  text-overflow: ellipsis;
 `
 
 const columns = [
@@ -123,6 +134,6 @@ const Tag = styled.h5 `
   @media only screen and (max-width: 768px) {
     font-size: 14px;
   }
-`
+` 
 
 

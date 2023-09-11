@@ -1,5 +1,5 @@
 'use client'
-/* import EmptyList from '@/components/EmptyList';
+import EmptyList from '@/components/EmptyList';
 import InputSearch from '@/components/InputSearch';
 import Loading from '@/components/Loading';
 import Modal from '@/components/Modal';
@@ -8,7 +8,7 @@ import InfoVenta from '@/components/Ventas/InfoVenta';
 import ItemVenta from '@/components/Ventas/ItemVenta';
 import PagarDeuda from '@/components/Ventas/PagarDeuda';
 import PrintSale from '@/components/Ventas/PrintSale';
-import { useInputValue } from '@/hooks/useInputValue';
+/* import { useInputValue } from '@/hooks/useInputValue';
 import { useSearch } from '@/hooks/useSearch';
 import { setAlert } from '@/redux/alertSlice'
 import { useAppDispatch, useAppSelector } from '@/redux/hook';
