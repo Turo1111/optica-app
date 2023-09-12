@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import dynamic from 'next/dynamic';
 
 const html2pdf = dynamic(() => import('html2pdf.js'), { ssr: false });
@@ -34,6 +34,7 @@ export default function PrintSale({
   const [loading, setLoading] = useState(false)
   const [openConfirm, setOpenConfirm] = useState(false)
   const dispatch = useAppDispatch();
+  const {date: fechaDate} = useDate(fecha)
 
   /* function generatePdf() {
     const element = document.getElementById('print');
@@ -44,7 +45,7 @@ export default function PrintSale({
   const elementRef = useRef(null);
 
   const generatePdf = () => {
-    html2pdf().from(elementRef.current).save(`venta-${cliente}-${fecha}.pdf`);
+    html2pdf().from(elementRef.current).save(`venta-${cliente}-${fechaDate}.pdf`);
   };
 
   useEffect(()=>{
@@ -76,7 +77,7 @@ export default function PrintSale({
       <ContainerPrint ref={elementRef} >
           <div>
               <Tag>CLIENTE : {cliente}</Tag>
-              <Tag>FECHA : {fecha}</Tag>
+              <Tag>FECHA : {fechaDate}</Tag>
               {obraSocial && <Tag>OBRA SOCIAL : {obraSocial}</Tag>}
               {obraSocial && <Tag>NUMERO DE ORDEN : {orden}</Tag>}
               <Tag>TIPO DE PAGO : {tipoPago.descripcion}</Tag>

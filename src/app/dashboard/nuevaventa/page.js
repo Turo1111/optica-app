@@ -20,6 +20,7 @@ import apiClient from '@/utils/client'
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import io from 'socket.io-client';  
+import PrintSale from '@/components/Ventas/PrintSale'
 
 export default function NuevaVenta() {
 
@@ -746,7 +747,19 @@ export default function NuevaVenta() {
             height='auto'
             width='35%'
           >
-            <FinishSale venta={venta} onClose={()=>setOpenFinishSale(false)}/>
+            <PrintSale id='print' onClose={()=>setOpenFinishSale(false)}
+              cliente={venta.cliente}
+              fecha={venta.fecha}
+              obraSocial={venta.obraSocial}
+              orden={venta.orden}
+              tipoPago={venta.tipoPago}
+              dineroIngresado={venta.dineroIngresado}
+              carrito={venta.carrito}
+              descuento={venta.descuento}
+              subTotal={venta.subTotal}
+              total={venta.total}
+              useSenia={venta.useSenia}
+            />
           </Modal>
         }
         {
