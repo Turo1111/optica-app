@@ -1,7 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react'
-import dynamic from 'next/dynamic';
-
-const html2pdf = dynamic(() => import('html2pdf.js'), { ssr: false });
 import styled from 'styled-components';
 import Table from '../Table';
 import Button from '../Button';
@@ -11,6 +8,8 @@ import apiClient from '@/utils/client';
 import Confirm from '../Confirm';
 import { useAppDispatch } from '@/redux/hook';
 import { setAlert } from '@/redux/alertSlice';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 export default function PrintSale({
     _id,
@@ -36,16 +35,25 @@ export default function PrintSale({
   const dispatch = useAppDispatch();
   const {date: fechaDate} = useDate(fecha)
 
-  /* function generatePdf() {
-    const element = document.getElementById('print');
-    html2pdf().from(element).save(`venta-${cliente}-${fecha}.pdf`);
-    onClose() 
-  }*/
-
   const elementRef = useRef(null);
 
   const generatePdf = () => {
-    html2pdf().from(elementRef.current).save(`venta-${cliente}-${fechaDate}.pdf`);
+    const element = elementRef.current;
+
+    if (element) {
+      html2canvas(element).then((canvas) => {
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = pdf.internal.pageSize.getHeight();
+        const imgWidth = pdfWidth;
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+        pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+        const pdfName = `venta-${cliente}-${fecha}.pdf`;
+        pdf.save(pdfName);
+      });
+    }
   };
 
   useEffect(()=>{
@@ -74,7 +82,7 @@ export default function PrintSale({
 
   return (
     <>
-      <ContainerPrint ref={elementRef} >
+      <ContainerPrint ref={elementRef} id='print' >
           <div>
               <Tag>CLIENTE : {cliente}</Tag>
               <Tag>FECHA : {fechaDate}</Tag>
