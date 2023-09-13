@@ -23,7 +23,8 @@ export default function Table({data = [], columns, onClick, date=false, maxHeigh
               return(
                 <TableRow key={index} onClick={()=>onClick(item)} color={process.env.TEXT_COLOR} >
                     {columns.map((column, columnIndex) =>{ 
-                      const {date: fecha} = useDate(item[column.field]) 
+                       // eslint-disable-next-line
+                      const fecha = useDate(item[column.field]).date;
                       return(
                         <div
                           key={columnIndex}
