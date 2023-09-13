@@ -18,26 +18,32 @@ export default function Table({data = [], columns, onClick, date=false, maxHeigh
                     <div style={{textAlign: 'center'}} data-label="Sucursal">NO HAY ELEMENTOS</div>
                 </TableRow>
             :
-            data.map((item,index)=>(
+            data.map((item,index)=>{
+
+              return(
                 <TableRow key={index} onClick={()=>onClick(item)} color={process.env.TEXT_COLOR} >
-                    {columns.map((column, columnIndex) => (
-                      <div
-                        key={columnIndex}
-                        style={{ flexBasis: column.width, textAlign: column.align }}
-                        data-label={column.label}
-                      >
-                        {column.date ? 
-                          new Date(item[column.field])
-                          :
-                          (column.price ? 
-                            `$ ${item[column.field]?.toString()}` 
-                            : 
-                            item[column.field]?.toString())
-                        }
-                      </div>
-                    ))}
+                    {columns.map((column, columnIndex) =>{ 
+                      const {date: fecha} = useDate(item[column.field]) 
+                      return(
+                        <div
+                          key={columnIndex}
+                          style={{ flexBasis: column.width, textAlign: column.align }}
+                          data-label={column.label}
+                        >
+                          {column.date ? 
+                            fecha
+                            :
+                            (column.price ? 
+                              `$ ${item[column.field]?.toString()}` 
+                              : 
+                              item[column.field]?.toString())
+                          }
+                        </div>
+                      )
+                    })}
                 </TableRow>
-            ))
+              )
+            })
         }
     </List>
   )
@@ -79,11 +85,11 @@ const TableRow = styled.li `
     }
     @media only screen and (max-width: 445px) {
       font-size: 10px;
+      padding: 25px 0px;
     }
 `
 const List = styled.ul `
   max-height: ${props => !props.maxHeight ? 'none' : '300px' };
   padding: 0;
   overflow: scroll;
-  min-width: 550px;
 `

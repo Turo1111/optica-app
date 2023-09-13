@@ -46,28 +46,28 @@ export default function CierreCajaModal() {
 
   return (
     <div>
-            <InputSearch
-              placeholder={'Buscar cierres'}
-              {...search}
-              tags={tag}
-              tagSearch={tagSearch}
-              deleteTagSearch={(item) => setTagSearch((prevData) => prevData.filter((elem) => elem.tag !== item.tag))}
-              onSelectTag={(search, tag) =>
-                tag !== 'SIN ETIQUETA' &&
-                setTagSearch((prevData) =>
-                  !prevData.find((elem) => elem.tag === tag) ? [...prevData, { search, tag }] : prevData
-                )
-              }
-            />
+        <InputSearch
+          placeholder={'Buscar cierres'}
+          {...search}
+          tags={tag}
+          tagSearch={tagSearch}
+          deleteTagSearch={(item) => setTagSearch((prevData) => prevData.filter((elem) => elem.tag !== item.tag))}
+          onSelectTag={(search, tag) =>
+            tag !== 'SIN ETIQUETA' &&
+            setTagSearch((prevData) =>
+              !prevData.find((elem) => elem.tag === tag) ? [...prevData, { search, tag }] : prevData
+            )
+          }
+        />
         <Table data={listReg} columns={columns} maxHeight={false} />
     </div>
   )
 }
 
 const columns = [
-    { label: 'Fecha', field: 'fecha', width: '20%', date: true },
-    { label: 'Empleado', field: 'empleado', width: '25%', textAlign: 'center'},
-    { label: 'Sucursal', field: 'sucursal', width: '25%', textAlign: 'center' },
-    { label: 'Esperado', field: 'totalEsperado', width: '15%', price: true, textAlign: 'center' },
-    { label: 'Total', field: 'total', width: '15%', price: true, textAlign: 'center' },
+    { label: 'Fecha', field: 'fecha', width: '15%', date: true, align: 'start' },
+    { label: 'Empleado', field: 'empleado', width: '26%', align: 'center'},
+    { label: 'Sucursal', field: 'sucursal', width: '26%', align: 'center' },
+    { label: 'Esperado', field: 'totalEsperado', width: '16%', price: true, align: 'center' },
+    { label: 'Total', field: 'total', width: '17%', price: true, align: 'center' },
 ];
