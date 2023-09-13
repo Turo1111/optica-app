@@ -50,7 +50,7 @@ export default function PrintSale({
         const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
         pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
-        const pdfName = `venta-${cliente}-${fecha}.pdf`;
+        const pdfName = `venta-${cliente}-${fechaDate}.pdf`;
         pdf.save(pdfName);
       });
     }
