@@ -23,10 +23,6 @@ import { MdClose } from 'react-icons/md'
 import styled from 'styled-components'
 const io = require('socket.io-client')
 
-const getProducto = () => {
-
-}
-
 export default function Productos() {
   const [openNewProduct, setOpenNewProduct] = useState(false)
   const [openInfoProduct, setOpenInfoProduct] = useState(false)
@@ -91,15 +87,6 @@ export default function Productos() {
     const socket = io(process.env.NEXT_PUBLIC_DB_HOST)
     socket.on('producto', (producto) => {
       getProducto()
-      /* setData((prevData)=>{
-        const exist = prevData.find(elem => elem._id === producto.res._id )
-        if (exist) {
-          return prevData.map((item) =>
-          item._id === producto.res._id ? producto.res : item
-        )
-        }
-        return [...prevData, producto.res]
-      }) */
     })
     return () => {
       socket.disconnect();
@@ -107,12 +94,14 @@ export default function Productos() {
   }, [data])
 
   useEffect(()=>{
-    if (openNewProduct || openEditProduct) {
+    if (openNewProduct || openEditProduct || openNewTransfer || openUpdate) {
       user.roles.permisos.forEach((permiso) => {
-        if (permiso.screen.toLowerCase() === 'venta') {
+        if (permiso.screen.toLowerCase() === 'producto') {
           if (!permiso.escritura) {
             setOpenNewProduct(false)
             setOpenEditProduct(false)
+            setOpenNewTransfer(false)
+            setOpenUpdate(false)
             dispatch(setAlert({
               message: 'NO TIENES PERMISOS DE USUARIO',
               type: 'error'
@@ -121,7 +110,7 @@ export default function Productos() {
         }
       });
     }
-  },[openNewProduct, openEditProduct])
+  },[openNewProduct, openEditProduct, openNewTransfer, openUpdate])
 
   const handleOpenInfoModal = (item) => {
     setProductSelected(item)
@@ -186,24 +175,6 @@ export default function Productos() {
             <Button text={'ACTUALIZAR'} onClick={() => setOpenUpdate(true)} />
             <Button text={'NUEVO'} onClick={() => setOpenNewProduct(true)} />
           </ContainerSearch>
-          {/* <List>
-            {
-              listProducto.length === 0 ?
-              <EmptyList onClick={() => setOpenNewProduct(true)} />
-              :
-              listProducto.map((item, index) => (
-                <ItemProducto
-                  key={index}
-                  handleOpenInfoModal={() => handleOpenInfoModal(item)}
-                  handleOpenEditModal={() => handleOpenEditModal(item)}
-                  handleOpenTransferModal={() => handleOpenTransferModal(item)}
-                  item={item}
-                >
-                  {item}
-                </ItemProducto>
-              ))
-            }
-          </List> */}
           <Table data={listProducto} columns={columns} maxHeight={false} onClick={(item) => handleOpenInfoModal(item)}/>
         </>
       }

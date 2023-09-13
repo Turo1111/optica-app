@@ -325,6 +325,7 @@ export default function NuevaVenta() {
                 .then(r=>{
                   if (itemCart._id !== '64f0ca05ae80e2477accbc24' || itemCart._id !== '64f0c9e9ae80e2477accbc14') {
                     apiClient.patch(`/stock/${itemCart.idStock}`, {
+                      idProducto: itemCart._id,
                       idSucursal: user.idSucursal, 
                       cantidad: parseFloat(itemCart.stock)-parseFloat(itemCart.cantidad)
                     },
@@ -586,13 +587,7 @@ export default function NuevaVenta() {
           }}
           dineroIngresado={dineroIngresado}
           onChangeDineroIngresado={(e)=>{
-            if (parseFloat(e.target.value) <= 0 || e.target.value === '') {
-              dispatch(setAlert({
-                message: 'Valor incorrecto',
-                type: 'warning'
-              }))
-              return
-            }
+            
             if (parseFloat(e.target.value) > parseFloat(total)) {
               dispatch(setAlert({
                 message: 'No se puede ingresar un numero mayor al total',

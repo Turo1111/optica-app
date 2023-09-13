@@ -140,6 +140,16 @@ export default function Clientes() {
   },[data])
 
   const handleOpenEditModal = (item) => {
+    console.log(item._id);
+    if(item._id === '64c95db35ae46355b5f7df64'){
+      dispatch(
+        setAlert({
+          message: `No se puede modificar este cliente`,
+          type: 'error',
+        })
+      )
+      return
+    }
     setClientSelected(prevData => {
       setOpenNewEdit(true)
       return item

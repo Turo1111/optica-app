@@ -20,6 +20,7 @@ export default function NewEditCliente({token, item , edit, handleClose}) {
         initialValues: initialValues(item),
         validateOnChange: false,
         onSubmit: (formValue) => {
+          
           if (formValue.nombreCompleto  === '') {
             dispatch(setAlert({
               message: 'Debe ingresar un nombre al cliente',

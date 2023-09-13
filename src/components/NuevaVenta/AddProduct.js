@@ -12,6 +12,7 @@ import { useInputValue } from '@/hooks/useInputValue'
 import { useSearch } from '@/hooks/useSearch'
 import InputSearch from '../InputSearch'
 import Input from '../Input'
+const io = require('socket.io-client')
 
 export default function AddProduct({item, addCart, onClose, user}) {
 
@@ -121,7 +122,11 @@ export default function AddProduct({item, addCart, onClose, user}) {
               })
             .then((r)=>{
                 setLoading(false)
-                setOferta(r.data.body.find(itemOferta=> new Date(itemOferta.fechaInicio) <= fechaHoy && new Date(itemOferta.fechaFinal) >= fechaHoy))})
+                console.log(r.data.body);
+                setOferta(r.data.body.find(itemOferta=> {
+                    // eslint-disable-next-line
+                    return useDate(itemOferta.fechaInicio).date <= fechaHoy && useDate(itemOferta.fechaFinal).date >= fechaHoy
+                }))})
             .catch(e=>dispatch(setAlert({
                 message: `${e.response.data.error || 'Ocurrio un error'}`,
                 type: 'error'
@@ -169,7 +174,8 @@ export default function AddProduct({item, addCart, onClose, user}) {
               })
             .then((r)=>{
                 setLoading(false)
-                setOfertaLente(r.data.body.find(itemOferta=> new Date(itemOferta.fechaInicio) <= fechaHoy && new Date(itemOferta.fechaFinal) >= fechaHoy))})
+                // eslint-disable-next-line
+                setOfertaLente(r.data.body.find(itemOferta=> useDate(itemOferta.fechaInicio).date <= fechaHoy && useDate(itemOferta.fechaFinal).date >= fechaHoy))})
             .catch(e=>dispatch(setAlert({
                 message: `${e.response.data.error || 'Ocurrio un error'}`,
                 type: 'error'
@@ -181,6 +187,29 @@ export default function AddProduct({item, addCart, onClose, user}) {
         getOferta()
     },[lenteSelected])
 
+    useEffect(()=>{
+        const socket = io(process.env.NEXT_PUBLIC_DB_HOST)
+        socket.on('stock', (stockSocket) => {
+         setStock((prevData)=>{
+            if (stock.idProducto === stockSocket.res.idProducto && stock.idSucursal === stockSocket.res.idSucursal) {
+
+                return {...prevData, cantidad: stockSocket.res.cantidad}
+            }
+          })
+          setDataLentes((prevData)=>{
+            return prevData.map(itemLente=>{
+                if (itemLente._id === stockSocket.res.idProducto) {
+                    
+                    return {...itemLente, stock : {...itemLente.stock, cantidad: stockSocket.res.cantidad}}
+                }
+                return itemLente
+            })
+          })  
+        })
+        return () => {
+          socket.disconnect();
+        }; 
+    },[dataLentes, stock])
 
     if (loading) {
         return <Loading/>
@@ -237,7 +266,7 @@ export default function AddProduct({item, addCart, onClose, user}) {
                                     setQtyLente(1)
                                     setTotalLente(0)
                                 }}
-                                active={lenteSelected?._id===item._id}
+                                active={lenteSelected?._id===item?._id}
                                 style={{display: 'flex', justifyContent: 'space-between'}}
                                 >
                                     <label>{item.descripcion}</label><label>$ {item.stock.precioEfectivo}</label>
