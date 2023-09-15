@@ -115,7 +115,6 @@ export default function NewEditEmpleado({token, item , edit, handleClose}) {
             formik.setFieldValue('sucursal', item.descripcion)
           }} edit={item && true}  />
         <InputSelect label={"Rol"} type='text' name='roles' value={formik.values.roles}  onChange={(id, item)=>{
-          console.log(item);
           formik.setFieldValue('idRol', id)
           formik.setFieldValue('roles', item.descripcion)
         }} edit={item && true} />

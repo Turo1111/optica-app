@@ -189,7 +189,7 @@ return (
           eClose={()=>setOpenPrint(false)} 
           title={'Imprimir venta'} 
           height='auto'
-          width='35%'
+          width='55%'
         >
           <PrintSale id='print' onClose={()=>setOpenPrint(false)}
             _id={ventaSelected._id}

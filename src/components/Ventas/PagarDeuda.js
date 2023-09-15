@@ -8,6 +8,7 @@ import { useAppDispatch } from '@/redux/hook';
 import Loading from '../Loading';
 import { useDate } from '@/hooks/useDate';
 import Confirm from '../Confirm';
+import styled from 'styled-components';
 
 export default function PagarDeuda({venta, handleClose, token, idSucursal}) {
 
@@ -24,7 +25,6 @@ export default function PagarDeuda({venta, handleClose, token, idSucursal}) {
         }
       })
       .then(r=>{
-        console.log("fecha cc",r.data.body);
         setLastCC(new Date(r.data.body.fecha))
       })
       .catch(e=>{
@@ -90,6 +90,7 @@ export default function PagarDeuda({venta, handleClose, token, idSucursal}) {
 
   return (
     <div>
+        <Tag style={{textAlign: 'start'}} >FALTANTE A PAGAR : $ {(parseFloat(venta.total)-parseFloat(venta.dineroIngresado)).toFixed(2)}</Tag>
         <Input label={"Pago"} type='number' name='pago' value={formik.values.pago} onChange={formik.handleChange} required={true} prefix={'$'}  />
         <div style={{display: 'flex', justifyContent: 'space-around', marginTop: 15}}>
           {
@@ -113,3 +114,14 @@ export default function PagarDeuda({venta, handleClose, token, idSucursal}) {
     </div>
   )
 }
+
+const Tag = styled.h5 `
+    font-size: 16px;
+    padding: 0 15px;
+    font-weight: 500;
+    margin: 10px 0;
+    color: ${process.env.TEXT_COLOR};
+    @media only screen and (max-width: 768px) {
+      font-size: 14px;
+    }
+`

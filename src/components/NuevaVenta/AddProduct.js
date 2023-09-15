@@ -122,7 +122,6 @@ export default function AddProduct({item, addCart, onClose, user}) {
               })
             .then((r)=>{
                 setLoading(false)
-                console.log(r.data.body);
                 setOferta(r.data.body.find(itemOferta=> {
                     // eslint-disable-next-line
                     return useDate(itemOferta.fechaInicio).date <= fechaHoy && useDate(itemOferta.fechaFinal).date >= fechaHoy

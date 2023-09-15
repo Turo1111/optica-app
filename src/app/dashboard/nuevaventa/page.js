@@ -740,7 +740,7 @@ export default function NuevaVenta() {
             eClose={()=>setOpenFinishSale(false)} 
             title={'Resumen de la venta'} 
             height='auto'
-            width='35%'
+            width='45%'
           >
             <PrintSale id='print' onClose={()=>setOpenFinishSale(false)}
               cliente={venta.cliente}
