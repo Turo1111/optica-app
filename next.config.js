@@ -13,6 +13,10 @@ const nextConfig = {
     },
     compiler: {
         styledComponents: true
+    },
+    webpack: (config) => {
+      config.resolve.alias['@emotion/core'] = '@emotion/react';
+      return config;
     }
 }
 
