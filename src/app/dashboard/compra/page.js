@@ -30,7 +30,6 @@ export default function Compra() {
   const [tagSearch, setTagSearch] = useState([])
   const [openInfo, setOpenInfo] = useState(false)
   const [openNew, setOpenNew] = useState(false)
-+
   const tag = ["proveedor", "sucursal"]
 
   const listCompra = useSearch(search.value, tag, data, tagSearch) 
