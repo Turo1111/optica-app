@@ -50,12 +50,10 @@ export default function FilterData({handleClose, handleFilter, filter}) {
         .then(r => {
           setSucursales((prevData)=>{
             setLoading(false)
-            console.log(r.data.body);
             return r.data.body
           })
         })
         .catch(e => {
-          console.log(e);
           dispatch(setAlert({
           message: `${e.response?.data.error || 'Ocurrio un error'}`,
           type: 'error'
@@ -90,11 +88,6 @@ export default function FilterData({handleClose, handleFilter, filter}) {
     },[user.token])
 
     const applyFilter = () => {
-      console.log(selectedSucursales);
-      console.log(selectedTipoFecha);
-      console.log(selectedTipoPago);
-      console.log(selectedObraSocial);
-      console.log(fechaInicio, fechaFinal);
       if (selectedSucursales.length === 0) {
         dispatch(setAlert({
           message: `Seleccione al menos una sucursal`,
@@ -146,13 +139,6 @@ export default function FilterData({handleClose, handleFilter, filter}) {
             break;
         }
       }
-      console.log({
-        fechaInicio: fechaInicio.value === '' ? fechaInicioTP : new Date(fechaInicio.value),
-        fechaFinal: fechaFinal.value === '' ? fechaFinalTP : new Date(fechaFinal.value),
-        sucursales: selectedSucursales.map(item => item._id),
-        obraSociales: selectedObraSocial.map(item => item._id),
-        tipoPago: selectedTipoPago.map(item => item.descripcion),
-      });
       handleFilter({
         fechaInicio: fechaInicio.value === '' ? fechaInicioTP : new Date(fechaInicio.value),
         fechaFinal: fechaFinal.value === '' ? fechaFinalTP : new Date(fechaFinal.value),

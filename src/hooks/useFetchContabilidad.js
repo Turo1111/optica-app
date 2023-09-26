@@ -31,7 +31,6 @@ export const useFetchContabilidad = (filter, filterChart) => {
             setTipoPago(r.data.body.tipoPago);
             setPorSucursal(r.data.body.sucursal);
             setCrecimiento(r.data.body.crecimiento)
-            console.log("aca",r.data.body);
           })
           .catch(e => {
             dispatch(setAlert({
@@ -52,7 +51,6 @@ export const useFetchContabilidad = (filter, filterChart) => {
           })
           .then(r => {
             setDineroIngresado(r.data.body.total);
-            console.log(r.data.body);
           })
           .catch(e => {
             dispatch(setAlert({
@@ -74,7 +72,6 @@ export const useFetchContabilidad = (filter, filterChart) => {
             })
             .then(r => {
               setDataChart(r.data.body) 
-              console.log("fetch Anual",r.data.body);
             })
             .catch(e => {
               dispatch(setAlert({
@@ -92,7 +89,6 @@ export const useFetchContabilidad = (filter, filterChart) => {
             })
             .then(r => {
               setDataChart(r.data.body)  
-              console.log("fetch semana",r.data.body);
             })
             .catch(e => {
               dispatch(setAlert({
@@ -110,7 +106,6 @@ export const useFetchContabilidad = (filter, filterChart) => {
               })
               .then(r => {
                 setDataChart(r.data.body)
-                console.log("fetch",r.data.body);
               })
               .catch(e => {
                 dispatch(setAlert({

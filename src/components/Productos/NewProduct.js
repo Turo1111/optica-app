@@ -128,6 +128,7 @@ export default function NewProduct({token, eClose}) {
           }}
         /> 
         <Input label={"Precio general"} name='precioGeneral' type='number' value={formik.values.precioGeneral} onChange={formik.handleChange} prefix={'$'} />
+        <Input label={"Precio Compra"} name='precioCompra' type='number' value={formik.values.precioCompra} onChange={formik.handleChange} prefix={'$'} />
         <div style={{display: 'flex', justifyContent: 'space-around'}}>
           {
             loading ? 
@@ -167,6 +168,7 @@ const initialValues = {
     marca: '',
     color: '',
     imagen: null,
-    precioGeneral: 0
+    precioGeneral: 0,
+    precioCompra: 0
   
 }

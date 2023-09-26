@@ -16,7 +16,7 @@ import Modal from './Modal';
 import CierreCaja from './CierreCaja';
 import RetiroDinero from './RetiroDinero';
 
-const itemsLi = ["NUEVA VENTA", "VENTA", "PRODUCTOS","GESTION", "CLIENTES", "CONTABILIDAD"]
+const itemsLi = ["NUEVA VENTA", "VENTA", "PRODUCTOS","GESTION", "CLIENTES", "CONTABILIDAD", "COMPRA"]
 
 export default function Dashboard({children}) {
 

@@ -5,8 +5,6 @@ import Button from '../Button';
 
 export default function DataCenter({dataChart}) {
 
-  console.log('data center', dataChart);
-
   const chartSetting = {
     yAxis: [
       {
@@ -33,9 +31,6 @@ export default function DataCenter({dataChart}) {
     
     return clavesYEtiquetas;
   }
-
-  console.log(obtenerClavesYEtiquetas(dataChart[0]))
-  console.log(dataChart.length)
 
   return (
     <Container>

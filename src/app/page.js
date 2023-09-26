@@ -56,9 +56,8 @@ export default function Home() {
       })
       .catch(e=>{
         setLoading(false)
-        console.log('error', e);
         dispatch(setAlert({
-          message: `${e.response?.data?.error || 'Ocurrio un error'}`,
+          message: `${e.response?.data?.err.message || 'Ocurrio un error'}`,
           type: 'error'
         })) 
       } 

@@ -33,8 +33,6 @@ export default function FilterChartData({handleClose, handleFilter}) {
     ];
 
     const applyFilter = () => {
-      /* console.log(selectedTipoFecha,selectedTipoDato);
-      return */
       if (selectedTipoFecha?.length === 0 || selectedTipoFecha === undefined) {
         dispatch(setAlert({
           message: `Seleccione al menos un tipo de fecha`,

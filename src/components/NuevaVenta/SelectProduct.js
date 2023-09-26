@@ -61,7 +61,7 @@ const ContainerCart = styled.div `
   }
   `
 
-  const List = styled.ul `
+const List = styled.ul `
   flex: 1;
   background-color: #fff; 
   border-radius: 15px;
