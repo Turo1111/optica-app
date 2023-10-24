@@ -34,7 +34,7 @@ export default function Contabilidad() {
     const {total, cantidad, tipoPago, porSucursal, dineroIngresado, crecimiento, dataChart} = useFetchContabilidad(filter, filterChart)
 
   return (
-    <div>
+    <ContainerMain>
         <div style={{display: 'flex', justifyContent: 'space-around'}} >
             <ItemLista color={process.env.TEXT_COLOR} onClick={()=>setOpenFilter(true)} >Filtros numeros</ItemLista>
             <ItemLista color={process.env.TEXT_COLOR} onClick={()=>setOpenFilterChart(true)} >Filtros grafica</ItemLista>
@@ -68,9 +68,13 @@ export default function Contabilidad() {
               <FilterChartData handleClose={()=>setOpenFilterChart(false)} handleFilter={(f)=>setFilterChart(f)} />
             </Modal>
         }
-    </div>
+    </ContainerMain>
   )
 }
+
+const ContainerMain = styled.div `
+  overflow-y: scroll;
+`
 
 const ItemLista = styled.div `
     list-style: none;
